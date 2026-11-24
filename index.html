@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Gia Phả Nguyễn Hữu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE  quiet and modern: a family register anyone can use
+   IDEA   a clean printed pedigree chart, black ink on white paper
+   PICTURE the top-down family chart itself, opened on the living branch
+   COLOUR white, near-black ink, three greys; solid black marks the selected person, a heavy outline the direct line
+   TYPE   Inter for everything, weight for hierarchy
+   LAYOUT slim header with VI | EN at top right; title and figures; chart with detail panel beside it (bottom sheet on phones) */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0e0e0e);--ink:light-dark(#111111,#f1f1f1);--mute:light-dark(#6b6b6b,#a0a0a0);--line:light-dark(#dcdcdc,#333333);--soft:light-dark(#f5f5f5,#171717);--card:light-dark(#ffffff,#141414)}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{margin:0;letter-spacing:-.02em;line-height:1.08;text-wrap:balance}
+h1{font-size:clamp(34px,5.5vw,52px);font-weight:700}
+h2{font-size:clamp(26px,3.5vw,34px);font-weight:700}
+a{color:var(--ink)}
+button{font:inherit;color:inherit}
+.band{padding:clamp(28px,4vw,56px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+.soft{background:var(--soft)}
+header.bar{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:0 max(5vw,16px)}
+.barin{max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:8px 20px;min-height:58px;flex-wrap:wrap}
+.brand{font-weight:700}
+.bar nav{display:flex;flex-wrap:wrap;gap:0 18px;flex:1}
+.bar nav a{text-decoration:none;color:var(--mute);padding:8px 0;font-size:15px}
+.bar nav a:hover{color:var(--ink)}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;padding:3px;margin-left:auto}
+.lang button{border:0;background:none;border-radius:999px;padding:6px 14px;min-height:36px;cursor:pointer;font-weight:600;font-size:14px;color:var(--mute)}
+.lang button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:24px 56px;align-items:end}
+.hero p{color:var(--mute);font-size:17px;max-width:58ch;margin:14px 0 0}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;border-top:1px solid var(--line);padding-top:14px}
+.stats b{display:block;font-size:clamp(28px,4vw,40px);line-height:1.1;font-weight:700}
+.stats span{font-size:14px;color:var(--mute)}
+.cta{min-height:46px;padding:0 22px;border:0;border-radius:999px;background:var(--ink);color:var(--bg);font-weight:600;cursor:pointer;margin-top:20px}
+.cta:hover{opacity:.85}
+.fig{position:relative;height:190px;margin-top:28px}
+.fig>svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.cap{font-size:13px;color:var(--mute);margin:4px 0 0}
+.intro{color:var(--mute);max-width:70ch;margin:8px 0 18px}
+.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.search{position:relative;flex:1 1 240px;max-width:380px}
+input,select,textarea{font:16px Inter,system-ui,sans-serif;color:var(--ink)}
+.search input,.sel{width:100%;padding:10px 14px;min-height:44px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.sel{width:auto}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.hits{position:absolute;z-index:6;left:0;right:0;top:calc(100% + 4px);background:var(--bg);border:1px solid var(--line);border-radius:8px;max-height:320px;overflow:auto;box-shadow:0 10px 30px #0002}
+.hits button,.pick button{display:block;width:100%;text-align:left;border:0;background:none;padding:10px 14px;cursor:pointer;min-height:44px}
+.hits button:hover,.pick button:hover{background:var(--soft)}
+.hits small,.pick small{color:var(--mute)}
+.btn{min-height:44px;padding:0 16px;border:1px solid var(--line);border-radius:8px;background:var(--bg);cursor:pointer}
+.btn:hover{border-color:var(--ink)}
+.btn.main{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.zb{width:44px;padding:0;font-size:18px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+.chartwrap{border:1px solid var(--line);border-radius:12px;background:var(--soft);height:min(74vh,760px);overflow:auto;cursor:grab;touch-action:pan-x pan-y}
+.chartwrap.drag{cursor:grabbing;user-select:none}
+.chart{padding:28px;min-width:max-content}
+.chart ul{display:flex;justify-content:center;margin:0;padding:20px 0 0;position:relative}
+.chart>ul{padding-top:0}
+.chart li{list-style:none;text-align:center;position:relative;padding:20px 5px 0;display:flex;flex-direction:column;align-items:center}
+.chart li::before,.chart li::after{content:"";position:absolute;top:0;right:50%;border-top:2px solid var(--line);width:50%;height:20px}
+.chart li::after{right:auto;left:50%;border-left:2px solid var(--line)}
+.chart li:only-child::before,.chart li:only-child::after{display:none}
+.chart li:only-child{padding-top:0}
+.chart li:first-child::before,.chart li:last-child::after{border:0 none}
+.chart li:last-child::before{border-right:2px solid var(--line);border-radius:0 6px 0 0}
+.chart li:first-child::after{border-radius:6px 0 0 0}
+.chart ul ul::before{content:"";position:absolute;top:0;left:50%;border-left:2px solid var(--line);height:20px}
+.chart>ul>li{padding-top:0}
+.chart>ul>li::before,.chart>ul>li::after{display:none}
+.node{display:flex;flex-direction:column;align-items:center}
+.box{position:relative;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 12px;font-size:14px;line-height:1.3;white-space:nowrap;cursor:pointer;max-width:200px;overflow:hidden;text-overflow:ellipsis}
+.box small{display:block;color:var(--mute);font-size:12px}
+.box:hover{border-color:var(--ink)}
+.box.dl{border:2px solid var(--ink);font-weight:600}
+.box.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.box.on small{color:var(--bg);opacity:.75}
+.box .ci{position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%;background:currentColor}
+.box .nw{font-size:11px;color:var(--mute)}
+.tgl{margin-top:4px;border:1px solid var(--line);background:var(--bg);border-radius:999px;font-size:12px;padding:0 9px;min-height:24px;cursor:pointer;color:var(--mute)}
+.tgl:hover{border-color:var(--ink);color:var(--ink)}
+.panel{position:sticky;top:76px;border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--bg);max-height:calc(100vh - 96px);overflow:auto}
+.panel h3{font-size:24px}
+.panel .x{display:none}
+dl.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;margin:14px 0 0}
+dl.kv dt{color:var(--mute);font-size:14px}
+dl.kv dd{margin:0;overflow-wrap:anywhere}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);border-radius:999px;background:var(--bg);padding:4px 12px;min-height:34px;cursor:pointer;font-size:14px}
+.chip:hover{border-color:var(--ink)}
+.note{margin-top:12px;font-size:15px}
+.contact{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+.contact h4{margin:0;font-size:15px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.acts .btn{min-height:40px;font-size:15px}
+.muted{color:var(--mute);font-size:14px}
+.chain{font-size:14px;color:var(--mute);margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.chain button{border:0;background:none;padding:0;text-decoration:underline;cursor:pointer;font-size:14px}
+.dir{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:16px}
+.pc{border:1px solid var(--line);border-radius:10px;padding:16px;background:var(--bg)}
+.pc h3{font-size:18px}
+.pc .meta{font-size:14px;color:var(--mute);margin:4px 0 8px}
+.pc .ln{font-size:15px;overflow-wrap:anywhere}
+.status{padding:12px 16px;border-radius:8px;border:1px solid var(--line);background:var(--bg);margin-top:12px;font-size:15px}
+.people{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:22px}
+.card h3{font-size:20px}
+.card .y{color:var(--mute);font-size:14px;margin:4px 0 8px}
+.card p{margin:0 0 10px}
+.route{list-style:none;padding:0;margin:22px 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px 26px;counter-reset:r}
+.route li{border-top:2px solid var(--ink);padding-top:10px}
+.route b{display:block;font-size:17px}
+.route span{display:block;font-size:14px;color:var(--mute)}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px 48px;margin-top:28px}
+blockquote{margin:0;padding:4px 0 4px 18px;border-left:3px solid var(--ink);font-size:19px;line-height:1.45;font-weight:500}
+blockquote footer{font-size:14px;font-weight:400;color:var(--mute);margin-top:8px}
+ul.plain li{margin-bottom:8px}
+ul.plain{padding-left:18px}
+.src li{overflow-wrap:anywhere}
+footer.foot{border-top:1px solid var(--line);color:var(--mute);font-size:14px}
+dialog{border:0;border-radius:14px;padding:0;width:min(560px,calc(100vw - 24px));max-height:calc(100vh - 32px);background:var(--bg);color:var(--ink);box-shadow:0 20px 60px #0005}
+dialog::backdrop{background:#0008}
+.dlg{padding:22px;overflow:auto;max-height:calc(100vh - 32px);position:relative}
+.dlg h3{font-size:24px;margin-bottom:4px;padding-right:44px}
+.x2{position:absolute;right:12px;top:12px;width:44px;height:44px;border:0;border-radius:50%;background:var(--soft);cursor:pointer}
+.fg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px 14px;margin-top:14px}
+.fg .w{grid-column:1/-1}
+.fg label{display:block;font-size:14px;font-weight:500}
+.fg input,.fg select,.fg textarea{width:100%;margin-top:4px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.fg textarea{min-height:70px;resize:vertical}
+.ok{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin-top:14px}
+.ok input{width:20px;height:20px;margin-top:2px;flex:none}
+.err{font-size:14px;min-height:20px;margin-top:8px;font-weight:600}
+.pick{max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:8px;margin-top:10px}
+textarea.copy{width:100%;min-height:180px;font:14px/1.5 ui-monospace,monospace;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--soft)}
+.av{display:inline-block;width:40px;height:40px;border-radius:50%;background-color:var(--soft);background-repeat:no-repeat;border:1px solid var(--line);flex:none;vertical-align:middle}
+.av.bx{display:block;width:34px;height:34px;margin:0 auto 4px}
+.box.on .av{border-color:var(--bg)}
+.av.lg{width:56px;height:56px}
+.av.xl{display:block;width:88px;height:88px;margin-bottom:10px}
+.pc .av{margin-bottom:8px}
+.facegrid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.facebtn{border:0;background:none;padding:0;cursor:pointer;border-radius:50%}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-top:14px}
+.ph{display:flex;flex-direction:column;text-align:left;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:0;overflow:hidden;cursor:pointer}
+.ph:hover{border-color:var(--ink)}
+.phimg{display:block;aspect-ratio:4/3;background:var(--soft)}
+.phimg img{width:100%;height:100%;object-fit:cover;display:block}
+.phcap{display:flex;flex-direction:column;gap:2px;padding:12px 14px}
+dialog.pvd{width:min(1180px,calc(100vw - 24px))}
+.pvgrid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start;margin-top:8px}
+.pvimgw{min-width:0}
+.pvimg{position:relative;width:100%;max-height:72vh;margin:0 auto;background:var(--soft);border-radius:8px;overflow:hidden}
+.pvimg img{width:100%;height:100%;display:block;object-fit:contain}
+.pvimg.tagging{cursor:crosshair}
+.mk{position:absolute;aspect-ratio:1;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1.5px #000a,inset 0 0 0 1.5px #000a;pointer-events:auto}
+.mk.pend{border-style:dashed}
+.mk.foc{border-width:3px;box-shadow:0 0 0 3px #000,0 0 0 6px #fff}
+.mkl{position:absolute;top:calc(100% + 4px);left:50%;transform:translateX(-50%);background:#111;color:#fff;font-size:13px;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.pvside h3{padding-right:44px}
+.hint{font-weight:600}
+.tags{display:flex;flex-direction:column;gap:8px}
+.trow{display:flex;align-items:center;gap:8px}
+.btn.sm{min-height:34px;padding:0 10px}
+.btn:disabled{opacity:.4;cursor:default}
+dialog.prd{width:min(900px,calc(100vw - 24px))}
+.phead{display:flex;gap:18px;align-items:center;padding-right:44px;margin-bottom:18px}
+.phead h3{font-size:clamp(24px,4vw,32px);padding-right:0}
+.av.xxl{width:104px;height:104px;border-width:2px}
+.av.ini{display:grid;place-items:center;font-size:40px;font-weight:700;color:var(--mute)}
+.pcols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px 32px}
+.pcols .kv{margin-top:0}
+.ph4{margin:26px 0 10px;font-size:17px;border-top:1px solid var(--line);padding-top:16px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;align-items:start}
+.pth{display:flex;flex-direction:column;text-align:left;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:0;overflow:hidden;cursor:pointer}
+.pth:hover{border-color:var(--ink)}
+.pthi{position:relative;display:block;width:100%;background:var(--soft);overflow:hidden}
+.pthi img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ring{position:absolute;aspect-ratio:1;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 2px #000,0 0 0 9999px #0000004d}
+.pthc{display:flex;flex-direction:column;gap:2px;padding:10px 12px}
+@media(max-width:640px){.pcols{grid-template-columns:minmax(0,1fr)}.av.xxl{width:80px;height:80px}}
+@media(max-width:820px){.pvgrid{grid-template-columns:minmax(0,1fr)}}
+.linkbtn{border:0;background:none;padding:0;text-decoration:underline;cursor:pointer;color:var(--mute);font-size:14px}
+.qimg{width:100%;max-height:180px;object-fit:cover;border-radius:6px;margin-bottom:8px}
+@media(max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}.panel{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:20;max-height:62vh;border-radius:16px 16px 0 0;box-shadow:0 -10px 30px #0003;transform:translateY(110%);transition:transform .2s}.panel.on{transform:none}.panel .x{display:grid;position:absolute;right:10px;top:10px;width:44px;height:44px;place-items:center;border:0;background:var(--soft);border-radius:50%;cursor:pointer}.people{grid-template-columns:repeat(2,minmax(0,1fr))}.route{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){.people,.route,.two,.fg{grid-template-columns:minmax(0,1fr)}.bar nav{order:3;flex-basis:100%;overflow-x:auto;flex-wrap:nowrap}.bar nav a{flex:none}.chart{padding:16px}.chartwrap{height:66vh}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="bar" id="top"><div class="barin">
+ <div class="brand" data-i="brand"></div>
+ <nav><a href="#cay" data-i="navTree"></a><a href="#danh-ba" data-i="navDir"></a><a href="#anh" data-i="navPhotos"></a><a href="#danh-nhan" data-i="navPeople"></a><a href="#nguon-goc" data-i="navOrigin"></a><a href="#tai-lieu" data-i="navSrc"></a></nav>
+ <div class="lang" role="group" aria-label="Language"><button id="lvi" aria-pressed="true">VI</button><button id="len" aria-pressed="false">EN</button></div>
+</div></header>
+
+<section class="band">
+ <div class="wrap">
+  <div class="hero">
+   <div><h1 data-i="h1"></h1><p data-i="lead"></p><button class="cta" data-start="1" data-i="cta"></button></div>
+   <div class="stats" id="stats"></div>
+  </div>
+  <div class="fig" id="fig" role="img"></div>
+  <p class="cap" data-i="figcap"></p>
+ </div>
+</section>
+
+<section class="band soft" id="cay">
+ <div class="wrap">
+  <h2 data-i="treeH"></h2>
+  <p class="intro" data-i="treeIntro"></p>
+  <div class="tools">
+   <div class="search"><input id="q" type="search" autocomplete="off"><div class="hits" id="hits" hidden></div></div>
+   <span style="display:flex;gap:8px;align-items:center"><label class="muted" for="root" data-i="startFrom"></label><select id="root" class="sel"></select></span>
+   <button class="btn main" id="bPath" data-i="bPath"></button>
+   <button class="btn" id="bAll" data-i="bAll"></button>
+   <button class="btn" id="bClose" data-i="bClose"></button>
+   <button class="btn zb" id="zOut" aria-label="−">−</button><button class="btn zb" id="zIn" aria-label="+">+</button>
+  </div>
+  <div class="grid">
+   <div class="chartwrap" id="cw"><div class="chart" id="chart"></div></div>
+   <aside class="panel" id="panel" aria-live="polite"></aside>
+  </div>
+ </div>
+</section>
+
+<section class="band" id="danh-ba">
+ <div class="wrap">
+  <h2 data-i="dirH"></h2>
+  <p class="intro" data-i="dirIntro"></p>
+  <div class="tools"><div class="search"><input id="dq" type="search" autocomplete="off"></div><button class="btn main" data-start="1" data-i="cta"></button></div>
+  <div class="status" id="dbStatus"></div>
+  <div class="dir" id="dir"></div>
+ </div>
+</section>
+
+<section class="band" id="duyet" hidden>
+ <div class="wrap">
+  <div class="tools" style="justify-content:space-between"><h2 id="qh"></h2><button class="btn" id="signOut" data-i="signout"></button></div>
+  <p class="muted" id="adminNote"></p>
+  <div class="dir" id="qlist"></div>
+ </div>
+</section>
+
+<section class="band soft" id="anh">
+ <div class="wrap">
+  <h2 data-i="phH"></h2>
+  <p class="intro" data-i="phIntro"></p>
+  <div class="tools"><div class="search"><input id="gq" type="search" autocomplete="off"></div><button class="btn main" id="upBtn" data-i="upload" hidden></button><input type="file" id="fileIn" accept="image/jpeg,image/png,image/webp,image/gif" hidden></div>
+  <p class="muted" id="phNote" hidden></p>
+  <div class="gal" id="gal"></div>
+ </div>
+</section>
+
+<dialog id="prof" class="prd"><div class="dlg" id="profBody"></div></dialog>
+<dialog id="pv" class="pvd"><div class="dlg" id="pvBody"></div></dialog>
+
+<section class="band" id="danh-nhan"><div class="wrap"><h2 data-i="peopleH"></h2><p class="intro" data-i="peopleIntro"></p><div class="people" id="people"></div></div></section>
+
+<section class="band soft" id="nguon-goc"><div class="wrap"><h2 data-i="originH"></h2><p class="intro" data-i="originIntro"></p><ol class="route" id="route"></ol><div class="two" id="quotes"></div></div></section>
+
+<section class="band" id="tai-lieu"><div class="wrap two" style="margin-top:0">
+ <div><h2 data-i="notesH"></h2><ul class="plain" id="notes"></ul><p data-i="notesEnd"></p></div>
+ <div><h2 data-i="srcH"></h2><ul class="plain src" id="srcs"></ul></div>
+</div></section>
+
+<footer class="band foot"><div class="wrap"><span data-i="foot"></span> <a href="#top" data-i="toTop"></a> · <button class="linkbtn" id="adminBtn" data-i="admin"></button></div></footer>
+
+<!-- ===== CẤU HÌNH: dán Project URL và anon public key của Supabase vào đây ===== -->
+<script>window.GP_CONFIG={url:'/*SB_URL*/',key:'/*SB_KEY*/'};</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<dialog id="dlg"><div class="dlg" id="dlgBody"></div></dialog>
+
+<script>
+{
+const RAW=`b1||Nguyễn Bặc||924–979|Định Quốc Công, khai quốc công thần nhà Đinh. Tiền tổ (đời 1) dòng Nguyễn Hữu.|
+b2|b1|Nguyễn Đệ|||Đô Kiểm Hiệu. Dời về Gia Miêu, Thanh Hóa.|
+b3|b2|Nguyễn Viễn|||Tạ Quốc Công|
+b4|b3|Nguyễn Phụng|||Tả Đô Đốc|
+b5|b4|Nguyễn Nộn|||Hoài Đạo Hiếu Vũ Vương; lấy công chúa Ngọa Thiềm đời Trần.|
+b5a|b5|Nguyễn Long|||Đô Chỉ Huy Sứ|
+b6|b5|Nguyễn Thế Tứ|||Đô Hiệu Kiểm|
+b7|b6|Nguyễn Nạp Hòa|||Tả Tướng Quân; Bình Nam Đại Tướng Quân.|
+b8|b7|Nguyễn Công Luật|||Hữu Kiểm Điểm; chống Hồ Quý Ly nên bị giết.|
+b9|b8|Nguyễn Minh Du|||Du Cần Vương; dời về làng Nhị Khê.|
+b10|b9|Nguyễn Ứng Long|Bà họ Nhữ; Trần Thị Thái||Đại Lý Tự Khanh, tức Nguyễn Phi Khanh.|
+b11|b10|Nguyễn Trãi|Phạm Thị Mẫn; Nguyễn Thị Lộ; bà họ Phùng; bà họ Trần; bà họ Lê|1380–1442|Quan Phục Hầu. Hậu tổ (đời 11). Danh nhân văn hóa thế giới.|
+b12|b11|Nguyễn Công Duẩn|Mai Thị Áng||Hoằng Quốc Công; người con còn sống sót sau vụ án Lệ Chi Viên.|
+b13|b12|Nguyễn Đức Trung|Nguyễn Thị Huyền (Thục Thuận Phu Nhân)||Trình Quốc Công. Con gái thứ 6 là Hoàng hậu Trường Lạc, vợ vua Lê Thánh Tông.|
+vl|b13|Nguyễn Văn Lang|||Nghĩa Quân Vương; nhánh về sau là dòng chúa Nguyễn.|
+vl1|vl|Nguyễn Hoằng Du|||An Hòa Hầu|
+vl2|vl1|Nguyễn Hoằng Thái|||Khanh Đại Hầu|
+vl3|vl2|Nguyễn Hoằng Đình||||
+vl4|vl3|Nguyễn Thả|||Không có con nối dõi.|
+vl5|vl|Nguyễn Hoằng Úy||||
+vl6|vl|Nguyễn Hoằng Phụng||||
+b14|b13|Vĩnh|Nguyễn Thị Ngọc||Hằng Quốc Công|
+b15|b14|Đạt|Nguyễn Thị Chánh||Tùng Nhơn Hầu. Thế kỷ 16 theo Nguyễn Kim vào Đàng Trong. Con gái Nguyễn Thị Lựu là vợ chúa Tiên Nguyễn Hoàng.|
+b16|b15|Nhẫn|Trương Thị Yến|||
+b17|b16|Nguyễn Triều Văn|Trương Thị Ngọc||Triều Văn hầu. Năm 1609 theo chúa Nguyễn Hoàng vào Thuận Hóa, định cư Phong Lộc, Quảng Bình.|
+b18|b17|Dật|Tống Thị Phân|1603–1681|Chiêu Vũ hầu, đại công thần của chúa Nguyễn thời Trịnh–Nguyễn phân tranh. Truy tặng Chiêu quận công.|
+hao|b18|Hào||1642–1713|Hào Lương Hầu, danh tướng, tác giả truyện Nôm Song Tinh Bất Dạ.|
+dong|b18|Dõng (Dũng)|||Theo gia phả của ông Nguyễn Hữu Lễ.|
+canh|b18|Cảnh|Bà Chánh; bà Quy; bà Hường|1650–1700|Lễ Thành Hầu; mở cõi Đồng Nai – Gia Định năm 1698.|
+c20|canh|Tú|Nguyễn Thị Vân (Thanh Nghị Hân Phu Nhân)|||
+c21|c20|Quang||||
+c22|c21|Nghị|Nguyễn Thị Ngọc Tú|||
+c23|c22|Luận|Tống Thị Cận|||
+c24|c23|Huy|Lê Thị Ân; Tôn Nữ Ngọc Hòa|||
+c25|c24|Độ||1813–1888|Phụ chánh đại thần, Thái sư Vĩnh Lại Quận Công, Bắc Kỳ kinh lược sứ triều Đồng Khánh.|
+c26|c25|Lang||||
+c27|c26|Đình||||
+2.2|dong|Tòng (tự Nhân Hậu)|Nguyễn Thị Sắc||Đặc tấn phụ quốc thượng tướng quân cẩm y vệ. Thế tổ khảo đệ Nhị phái, lăng mộ ở Thanh Quýt.|2.2
+2.3.1|2.2|Hành|Bà Hành|||2.3.1
+2.3.2|2.2|Phổ|Tăng Thị Tuyên|||2.3.2
+2.3.3|2.2|Trà|Nguyễn Thị Nhiêu; Trương Thị Nghĩa|||2.3.3
+2.4.1|2.3.3|Ý|Nguyễn Thị Trập|||2.4.1
+2.4.2|2.3.2|Tùng|Phan Thị Tùng|||2.4.2
+2.4.3|2.3.1|Liễu|Lê Thị Liễu|||2.4.3
+2.5.1|2.4.1|Nhẩm||||2.5.1
+2.5.2|2.4.1|Hồ|Nguyễn Thị Tự|||2.5.2
+2.5.3|2.4.1|Phong|Lê Thị Lánh|||2.5.3
+2.5.4|2.4.1|Hòe|Trần Thị Lắm|||2.5.4
+2.5.5|2.4.1|Danh|Lê Thị Yến; Võ Thị Diệt||Khâm mông ân tứ kỳ lão hương vọng.|2.5.5
+2.5.6|2.4.2|Dương||||2.5.6
+2.5.7|2.4.2|Dũng|Lê Thị Sai|||2.5.7
+2.5.8|2.4.3|Điện|Nguyễn Thị Điện|||2.5.8
+2.6.1|2.5.5|Quận|Nguyễn Thị Liên||Hương thủ bộ, khâm mông ân tứ kỳ lão.|2.6.1
+2.6.2|2.5.4|Thứ|Nguyễn Thị Bí|||2.6.2
+2.6.3|2.5.3|Lưu|Bùi Thị Tám|||2.6.3
+2.6.4|2.5.3|Ất|Lê Thị Hùng|||2.6.4
+2.6.5|2.5.7|Mày|Bà Mày|||2.6.5
+2.6.6|2.5.2|Ân|Nguyễn Thị Tuất|||2.6.6
+2.6.7|2.5.8|Toại|Nguyễn Thị Toại|||2.6.7
+2.6.8|2.5.8|Do (Lẫm)||||2.6.8
+2.7.1|2.6.1|Châu|Bà Châu|||2.7.1
+2.7.2|2.6.1|Đắc|Lê Thị Đắc|||2.7.2
+2.7.3|2.6.2|Miều|Bà Miều|||2.7.3
+2.7.4|2.6.3|Si|Nguyễn Thị Si (Huy)|||2.7.4
+2.7.5|2.6.3|Cu|Bà Cu|||2.7.5
+2.7.6|2.6.3|Cải||||2.7.6
+2.7.7|2.6.3|Lấy||||2.7.7
+2.7.8|2.6.3|Chuyện|Trần Thị Đạt|||2.7.8
+2.7.9|2.6.4|Tròn||||2.7.9
+2.7.10|2.6.4|Duật|Thị Luân; Thị Ba|||2.7.10
+2.7.11|2.6.5|Hùng|Lê Thị Hùng|||2.7.11
+2.7.12|2.6.6|Dựng|Bà Dựng||Dựng hoặc Dũng.|2.7.12
+2.7.13|2.6.7|Bép|Bà Bép|||2.7.13
+2.7.14|2.6.7|Chí|Tăng Thị Điền|||2.7.14
+2.8.1|2.7.1|Phú|Lê Thị Phú|||2.8.1
+2.8.2|2.7.1|Đại||||2.8.2
+2.8.3|2.7.2|Chiêm Chi|Lê Thị Hà Hữu|||2.8.3
+2.8.4|2.7.2|Hoán||||2.8.4
+2.8.5|2.7.3|Dần|Bà Dần|||2.8.5
+2.8.6|2.7.4|Bền|Phan Thị Thêm|||2.8.6
+2.8.7|2.7.4|Chất|Nguyễn Thị Để|||2.8.7
+2.8.8|2.7.4|Tư|Lê Thị Út|||2.8.8
+2.8.9|2.7.4|Tùng|Lê Thị Xuân|||2.8.9
+2.8.10|2.7.4|An|Nguyễn Thị An|||2.8.10
+2.8.11|2.7.4|Chợ||||2.8.11
+2.8.12|2.7.4|Mạnh||||2.8.12
+2.8.13|2.7.5|Tuấn|Lê Thị Bếp|||2.8.13
+2.8.14|2.7.5|Toàn|Bà Toàn|||2.8.14
+2.8.15|2.7.8|Nức|Trương Thị Quyên|||2.8.15
+2.8.16|2.7.8|Đặng||||2.8.16
+2.8.17|2.7.8|Bình||||2.8.17
+2.8.18|2.7.12|Thiết|Lê Thị Thiết|||2.8.18
+2.8.19|2.7.11|Chung|Trần Thị Thúi|||2.8.19
+2.8.20|2.7.10|Điện|Nguyễn Thị Để|||2.8.20
+2.8.21|2.7.14|Huy|Trương Thị Thừa|||2.8.21
+2.8.22|2.7.14|Bé||||2.8.22
+2.8.23|2.7.14|Xoài||||2.8.23
+2.9.1|2.8.1|Quới|Lê Thị Quý|||2.9.1
+2.9.2|2.8.2|Biện||||2.9.2
+2.9.3|2.8.3|Huynh|Võ Thị Thiện|||2.9.3
+2.9.4|2.8.1|Thạnh|Lê Thị Thạnh|||2.9.4
+2.9.5|2.8.5|Trân|Lê Thị Hiếu|||2.9.5
+2.9.6|2.8.5|Trụ||||2.9.6
+2.9.7|2.8.5|Ruộng||||2.9.7
+2.9.8|2.8.13|Cò (Dát)|Lê Thị Dát|||2.9.8
+2.9.9|2.8.13|Dật (Tiếu)|Lê Thị Bếp (Dị)|||2.9.9
+2.9.10|2.8.6|Bếp|Trương Thị Trấp|||2.9.10
+2.9.11|2.8.7|Liệu||||2.9.11
+2.9.10b|2.8.7|Đá||||2.9.10
+2.9.11b|2.8.7|Sanh||||2.9.11
+2.9.12|2.8.7|Dưỡng||||2.9.12
+2.9.13|2.8.8|Ty|Th. t. Nhồng|||2.9.13
+2.9.14|2.8.8|Huân|Nguyễn Thị Sách|||2.9.14
+2.9.15|2.8.8|Ngọ|Phan Thị Bẹn|||2.9.15
+2.9.16|2.8.10|Lại|Nguyễn Thị Liên|||2.9.16
+2.9.17|2.8.10|Đắc|Nguyễn Thị Phú|||2.9.17
+2.9.18|2.8.18|Diện||||2.9.18
+2.9.19|2.8.18|Sau||||2.9.19
+2.9.20|2.8.19|Ngọ|Phan Thị Ngọ|||2.9.20
+2.9.21|2.8.15|Liêu||||2.9.21
+2.9.22|2.8.15|Quyên||||2.9.22
+2.9.23|2.8.15|Hòa||||2.9.23
+2.9.24|2.8.15|Thừa||||2.9.24
+2.9.25|2.8.15|Tường||||2.9.25
+2.9.26|2.8.15|Tây||||2.9.26
+2.9.27|2.8.15|Bông|Lê Thị Nguyệt|||2.9.27
+2.9.28|2.8.20|Thừa|Trương Thị Nga; Nguyễn Thị Quyên|||2.9.28
+2.9.29|2.8.20|Cửu||||2.9.29
+2.9.30|2.8.20|Từng||||2.9.30
+2.9.31|2.8.20|Lắm||||2.9.31
+2.9.32|2.8.20|Chim|Huỳnh Thị Tồn|||2.9.32
+2.9.33|2.8.21|Chơn|Đoàn Thị Hà|||2.9.33
+2.9.34|2.8.21|Dương||||2.9.34
+2.10.1|2.9.1|Thành|||Đại học sĩ.|2.10.1
+2.10.2|2.9.1|Đinh||||2.10.2
+2.10.3|2.9.1|Tín||||2.10.3
+2.10.4|2.9.1|Khóa|Trương Thị Dung|1883–1963||2.10.4
+2.10.5|2.9.1|Đức||||2.10.5
+2.10.6|2.9.2|Tiến||||2.10.6
+2.10.7|2.9.2|Y||||2.10.7
+2.10.8|2.9.3|Nhuận||||2.10.8
+2.10.9|2.9.3|Nhị|Lê Thị Nhị|||2.10.9
+2.10.10|2.9.3|Nguyễn Thị Nhi|||Lấy chồng ở An Tự.|2.10.10
+2.10.11|2.9.3|Nguyễn Thị Tụy|||Tên gọi theo chồng, ở xóm Rừng.|2.10.11
+2.10.12|2.9.3|Nguyễn Thị Thơ|||Tên gọi theo chồng, ông Hương Thơ ở Giáp Năm.|2.10.12
+2.10.13|2.9.3|Hiệt|Lê Thị Hậu||Tú tài nho.|2.10.13
+2.10.14|2.9.3|Nguyễn Thị Tư|Người Hoa kiều|||2.10.14
+2.11.1|2.10.3|Cô Hai Tín||||2.11.1
+2.11.2|2.10.3|Trinh||||2.11.2
+2.11.3|2.10.3|Kiệt|Bà Hai Nhì||Ông cố của cháu Tâm, theo thư ông Nguyễn Hữu Lễ.|2.11.3
+2.11.4|2.10.4|Sanh|Nguyễn Thị Quá (1913–1997)|1911–2000||2.11.4
+2.11.5|2.10.4|Phong||||2.11.5
+k1|2.10.4|Nguyễn Thị Nẫm|||Theo gia phả của ông Nguyễn Hữu Lễ.|
+k2|2.10.4|Nguyễn Thị Hoài|||Theo gia phả của ông Nguyễn Hữu Lễ.|
+2.11.6|2.10.4|Trí||||2.11.6
+k3|2.10.4|Nguyễn Thị Tri|||Theo gia phả của ông Nguyễn Hữu Lễ.|
+2.11.7|2.10.4|Trì||||2.11.7
+2.11.8|2.10.8|Lem|Lê Thị Trả|||2.11.8
+2.11.9|2.10.8|Nguyễn Thị Bôi|Huỳnh Vân|||2.11.9
+2.11.10|2.10.8|Nguyễn Thị Tam|Nguyễn Bá Tam|||2.11.10
+2.11.11|2.10.9|Lâu|Lê Thị Sài|||2.11.11
+2.11.12|2.10.9|Lương|Nguyễn Thị Thiều|||2.11.12
+2.11.13|2.10.9|Tương|Nguyễn Thị Tạo|||2.11.13
+2.11.14|2.10.9|Đương||||2.11.14
+2.11.15|2.10.9|Khiêm|Nguyễn Thị Luân|||2.11.15
+2.11.16|2.10.9|Nguyễn Thị Niềm|Trương Công Thước|||2.11.16
+2.11.17|2.10.9|Nguyễn Thị Bé|Dương Tân|||2.11.17
+2.11.18|2.10.13|Kiệu|Lê Thị Ất (1904–1983)|1900–1983|Lương y, mở tiệm thuốc An Hòa Đường ở Hòa Mỹ, Hòa Minh, Hòa Vang (nay quận Liên Chiểu).|2.11.18
+2.11.19|2.10.13|Xiềng|Trường Thị Hàng|||2.11.19
+2.11.20|2.10.13|Nguyễn Thị Bốn||||2.11.20
+2.11.21|2.10.13|Nhu|Hà Thị Truyện|||2.11.21
+2.11.22|2.10.13|Nghĩa|||Làm xếp ga tại Quy Nhơn nên thường gọi là ông xếp ga.|2.11.22
+2.11.23|2.10.13|Nguyễn Thị Hý||||2.11.23
+2.11.24|2.10.13|Hước|||Liệt sĩ, mộ tại nghĩa trang liệt sĩ Điện Bàn.|2.11.24
+2.11.25|2.10.13|Nguyễn Thị Xước||||2.11.25
+2.11.26|2.10.13|Phước|Lê Thị Hồng Thủy|1923–2015|Cán bộ Bộ Ngoại thương, sống tại Hà Nội.|2.11.26
+2.12.1|2.11.18|Tôn|Nguyễn Thị Thời||Liệt sĩ.|2.12.1
+2.12.2|2.11.18|Nguyễn Thị Tiếu||1927–1933|Mất khi còn nhỏ.|2.12.2
+2.12.3|2.11.18|Nguyễn Thị Hỷ|Phan Tấn Thí|1931–2011||2.12.3
+2.12.4|2.11.18|Hoan|Phan Thị Cơ|1933–|Trước 1975 Phó giám đốc Trung tâm Giáo dục Nguyễn Hiền; sau 1975 giáo viên THPT Phan Châu Trinh.|2.12.4
+2.12.5|2.11.18|Lung|Phan Thị Thông|1936–2008|Trước 1975 xã phó hành chính xã Hòa Minh; sau 1975 lương y.|2.12.5
+2.12.6|2.11.18|Nguyễn Thị Cúc|Ông Chót, người Thanh Khê|–1997|Công tác phụ nữ phường An Khê.|2.12.6
+2.12.7|2.11.18|Nguyễn Thị Hải||1943–1943|Mất khi còn nhỏ.|2.12.7
+2.12.8|2.11.19|Sèng||–2011||2.12.8
+2.12.9|2.11.22|Nguyễn Thị Miên|Nguyễn Công Ái|1934–2009||2.12.9
+2.12.10|2.11.22|Nguyễn Thị Lành|Nguyễn Phú Bình||Định cư tại Mỹ; ngành y tế.|2.12.10
+2.12.11|2.11.22|Minh|Bùi Thị Tuyết Phương||Trước 1975 Đại úy Hải quân; sống tại Đồng Nai.|2.12.11
+2.12.12|2.11.26|Nguyễn Hồng Sơn|Bà Dung||Sống tại Hà Nội.|2.12.12
+2.12.13|2.11.26|Nguyễn Thị Thanh Hải|Phạm Chung Hà||Công tác tại Viện Pasteur Hà Nội.|2.12.13
+2.12.14|2.11.26|Nguyễn Hồng Quang|Đặng Phương Nga|1970–|Tiến sĩ vật lý, làm việc tại Na Uy.|2.12.14
+2.12.15|2.11.3|Tùy|Bà Phương||Ba của cháu Tâm, theo thư ông Nguyễn Hữu Lễ.|2.12.15
+2.12.16|2.11.3|Nghĩa||1950–2000||2.12.16
+2.12.17|2.11.3|Nguyễn Thị Hiệp|||Giáo viên.|2.12.17
+2.12.18|2.11.3|Nguyễn Thị Thời||||2.12.18
+2.12.19|2.11.3|Hòa||||2.12.19
+2.12.20|2.11.3|Nguyễn Thị Liên||||2.12.20
+tam|2.12.15|Tâm|||Người nhận thư gia phả của ông Nguyễn Hữu Lễ năm 2022. Con cháu xin bổ sung tiếp.|
+s1|2.11.4|Nghiêm|Nguyễn Thị Kiêm|||
+s2|2.11.4|Trang|Trần Thị Thanh Vân|||
+s3|2.11.4|Lịch|Bùi Thị Hạnh Nhơn|||
+s4|2.11.4|Sử|Triệu Thị Mỹ Vân|||
+s5|2.11.4|Lễ|Trần Thị Thiên Hương||Người sưu tầm và lập các bản gia phả năm 2022.|
+s1a|s1|Nguyện||||
+s1b|s1|Hiền||||
+s1c|s1|Nguyễn Thị Xuân Phương||||
+s1d|s1|Quyền||||
+s1e|s1|Nguyễn Thị Phương Mai||||
+s1f|s1|Chánh||||
+s2a|s2|Trọng||||
+s2b|s2|Nguyễn Thị Vân Anh||||
+s3a|s3|Nguyễn Thị Thanh Thủy||||
+s3b|s3|Nguyễn Thị Thanh Trúc||||
+s3c|s3|Thạch||||
+s3d|s3|Nguyễn Thị Thanh Thảo||||
+s3e|s3|Tâm||||
+s4a|s4|Nguyễn Thị Quỳnh My||||
+s4b|s4|Thiên Ân||||
+s5a|s5|Nghĩa||||
+2.13.1|2.12.1|Nguyễn Thị Hường|Ông Hà||Giáo viên.|2.13.1
+2.13.2|2.12.4|Nguyễn Thị Hiền|Nguyễn Hùng Tráng|1955–2008|Định cư và an táng tại Canada.|2.13.2
+2.13.3|2.12.4|Nguyễn Thị Hạnh|Trần Thiêm|1957–|Nhân viên kế toán.|2.13.3
+2.13.4|2.12.4|Hân|Phan Thị Liên Hiệp|1959–|Giảng viên; người lập trang Tộc Nguyễn Hữu (Thanh Quýt).|2.13.4
+2.13.5|2.12.4|Nguyễn Thị Hằng|Huỳnh Hữu Thăng|1962–|Chuyên viên ngành ngoại thương.|2.13.5
+2.13.6|2.12.4|Nguyễn Thị Huy|Trương Công Sơn|1964–|Giáo viên.|2.13.6
+2.13.7|2.12.4|Nguyễn Thị Huyền|Phan Văn Nghiệp|1966–||2.13.7
+2.13.8|2.12.4|Nguyễn Thị Hoài||1968–1999|Giáo viên THPT Phan Châu Trinh, Đà Nẵng.|2.13.8
+2.13.9|2.12.4|Hữu|Bà Yến, người Bến Tre|1972–|Bác sĩ chuyên khoa 2.|2.13.9
+2.13.10|2.12.4|Nguyễn Hữu Thị Hảo Hảo|Nguyễn Phước Cử|1973–|Luật sư, thẩm phán.|2.13.10
+2.13.11|2.12.5|Nguyễn Thị Hoa|Ông Phát|1959–||2.13.11
+2.13.12|2.12.5|Thái|Phạm Thị Trị|1960–||2.13.12
+2.13.13|2.12.5|Nguyễn Thị Thu|Ông Sơn|1962–||2.13.13
+2.13.14|2.12.5|Hùng|Phạm Thị Thu Hường|1964–|Giáo viên.|2.13.14
+2.13.15|2.12.5|Dũng|Đinh Thị Tâm|1964–|Giáo viên.|2.13.15
+2.13.21|2.12.5|Nguyễn Thị Thương|Ông Đạt|1965–||2.13.21
+2.13.18|2.12.5|Nguyễn Thị Diệp|Ông Khoa|1966–|Sống tại Hội An.|2.13.18
+2.13.16|2.12.5|Nhân|Đinh Thị Hằng|1971–||2.13.16
+2.13.19|2.12.5|Nguyễn Thị Ái|Trần Nguyên Long|1973–||2.13.19
+2.13.20|2.12.5|Nguyễn Thị Thúy||1974–||2.13.20
+2.13.17|2.12.5|Lộc|Đặng Thị Hồng Hải|1977–||2.13.17
+2.14.2|2.13.4|Nguyễn Thị Hồng Phúc||1987–|Thạc sĩ hóa học.|2.14.2
+2.14.1|2.13.4|Nam Phúc||1991–|Thạc sĩ kinh tế.|2.14.1
+2.14.4|2.13.9|Nguyễn Thị Yến Nhi||1998–||2.14.4
+2.14.3|2.13.9|Nguyễn||2000–||2.14.3
+2.14.5|2.13.12|Trí||1992–||2.14.5
+2.14.6|2.13.12|Nguyễn Thị Phương Thảo||1995–||2.14.6
+2.14.7|2.13.14|Hùng Vỹ||2005–||2.14.7
+2.14.8|2.13.14|Khánh Hưng||2011–||2.14.8
+2.14.9|2.13.15|Minh Quân||2005–||2.14.9
+2.14.10|2.13.15|Nguyễn Đinh Uyên Nhi||2007–||2.14.10
+2.14.11|2.13.16|Đông Ngân||||2.14.11`;
+const T={
+vi:{brand:'Tộc Nguyễn Hữu',navTree:'Cây gia phả',navDir:'Danh bạ',navPeople:'Danh nhân',navOrigin:'Nguồn gốc',navSrc:'Tài liệu',
+h1:'Gia phả tộc Nguyễn Hữu',lead:'Từ Tiền tổ Nguyễn Bặc, Định Quốc Công thời nhà Đinh, qua Hậu tổ Nguyễn Trãi và Chiêu Vũ hầu Nguyễn Hữu Dật, đến phái nhì Nguyễn Hữu Tòng ở Thanh Quýt, Quảng Nam, và con cháu ngày nay.',cta:'Thêm thông tin của bạn',
+sGen:'đời được ghi chép',sPeople:'người trong gia phả',sYears:'năm từ Nguyễn Bặc',sInfo:'người có thông tin liên lạc',
+figcap:'Mỗi chấm là một đời trong dòng trực hệ. Chấm lớn là những đời có năm sinh trong tài liệu; các chấm khác đặt ước lượng.',
+treeH:'Cây gia phả',treeIntro:'Bấm vào một ô để xem chi tiết. Bấm nút dưới ô để mở các con (+) hoặc thu gọn (−). Kéo để di chuyển, dùng − và + để thu nhỏ, phóng to. Ô viền đậm là dòng trực hệ đến ông Nguyễn Hữu Tùy; chấm nhỏ ở góc ô nghĩa là người đó có thông tin liên lạc.',
+search:'Tìm tên, gõ không dấu cũng được',startFrom:'Xem từ',bPath:'Dòng trực hệ',bAll:'Mở tất cả',bClose:'Thu gọn',gen:'Đời',kids:'con',
+dirH:'Danh bạ gia đình',dirIntro:'Những người đã thêm địa chỉ, điện thoại hay mạng xã hội để bà con liên lạc với nhau. Mọi người được xem trang này đều thấy các thông tin này.',dirSearch:'Tìm trong danh bạ: tên, thành phố…',
+peopleH:'Danh nhân trong dòng họ',peopleIntro:'Tóm lược theo Wikipedia tiếng Việt và bài “Dòng họ Nguyễn Hữu” của ông Nguyễn Hữu Am, đời 29.',onTree:'Xem trên cây gia phả',
+originH:'Nguồn gốc và những lần thiên cư',originIntro:'Tổ tông dòng Nguyễn Hữu gốc ở Ninh Bình. Sau vụ án Lệ Chi Viên năm 1442, con cháu Nguyễn Trãi phải mai danh ẩn tích; dòng ta nối từ người con còn sống sót là Nguyễn Công Duẩn.',
+notesH:'Ghi chú khi đối chiếu',notesEnd:'Ai biết thêm tên, năm sinh, vợ chồng hay con cháu, xin bấm “Thêm thông tin của bạn” hoặc báo người quản lý trang.',srcH:'Tài liệu gốc',
+foot:'Gia phả tộc Nguyễn Hữu, tổng hợp từ tài liệu do ông Nguyễn Hữu Lễ sưu tầm, năm 2026.',toTop:'Về đầu trang',
+fGen:'Đời',fYears:'Năm',wife:'Vợ',husband:'Chồng',father:'Cha',children:'Con',code:'Mã phái nhì',founder:' (Tiền tổ)',contactH:'Thông tin liên lạc',noContact:'Chưa có. Nếu đây là bạn hoặc người thân của bạn, hãy thêm vào.',updated:'Cập nhật',editInfo:'Sửa thông tin',addInfo:'Thêm thông tin',addChild:'Thêm con',del:'Xóa người này',lineage:'Dòng dõi',childOf:'con ông',newTag:'mới thêm',close:'Đóng',
+age:(b,a)=>`sinh ${b}, khoảng ${a} tuổi`,
+cAddr:'Địa chỉ',cMap:'Xem bản đồ',cCity:'Nơi ở',cPhone:'Điện thoại',cZalo:'Zalo',cEmail:'Email',cFb:'Facebook',cIg:'Instagram',cWeb:'Trang khác',cJob:'Nghề nghiệp',cAbout:'Ghi chú',cSpouse:'Vợ hoặc chồng',cBirth:'Năm sinh',cDeath:'Năm mất (nếu có)',cName:'Họ và tên',cGender:'Giới tính',male:'Nam',female:'Nữ',
+noneYet:'Chưa có ai thêm thông tin liên lạc. Hãy là người đầu tiên: bấm “Thêm thông tin của bạn”.',noFound:'Không tìm thấy.',details:'Xem chi tiết',
+loading:'Đang tải thông tin liên lạc…',signIn:'Đăng nhập claude.ai để xem và thêm thông tin liên lạc của gia đình. Cây gia phả vẫn xem được bình thường.',viewOnly:'Bạn đang ở chế độ chỉ xem. Bạn vẫn điền được thông tin; trang sẽ tạo một đoạn để bạn gửi cho người quản lý trang.',slow:'Chưa kết nối được dữ liệu liên lạc. Thông tin có thể chưa đầy đủ.',failed:'Không tải được thông tin liên lạc lúc này.',
+s1H:'Thêm thông tin của bạn',s1P:'Bước 1: tìm tên của bạn trong gia phả. Gõ không dấu cũng được.',yourName:'Tên của bạn',type2:'Gõ ít nhất 2 chữ.',notIn:'Tên tôi chưa có trong cây',
+s2H:'Bạn là con của ai?',s2P:'Tìm tên cha (hoặc mẹ, nếu mẹ là người họ Nguyễn Hữu). Bạn sẽ được thêm vào làm con của người đó.',parentName:'Tên cha hoặc mẹ',s2N:'Nếu cha mẹ cũng chưa có tên, hãy thêm cha mẹ trước, rồi thêm bạn sau.',
+editP:'Điền những gì bạn muốn chia sẻ; ô nào không muốn thì để trống.',addH:n=>`Thêm con của ${n}`,addP:g=>`Người mới sẽ ở đời ${g}.`,consent:'Tôi là người này, hoặc đã được người này đồng ý cho đăng. Tôi hiểu mọi người xem trang gia phả đều thấy thông tin này.',save:'Lưu',saving:'Đang lưu…',cancel:'Hủy',
+eConsent:'Vui lòng đánh dấu ô đồng ý.',eBirth:'Năm sinh không hợp lệ.',eDeath:'Năm mất không hợp lệ.',eWeb:'Link trang khác phải bắt đầu bằng https://',eName:'Vui lòng nhập họ và tên đầy đủ.',eQuota:'Kho dữ liệu đã đầy, xin báo người quản lý trang.',eSave:'Chưa lưu được, vui lòng thử lại.',
+cpH:'Gửi cho người quản lý trang',cpP:'Tài khoản của bạn chỉ được xem, chưa lưu trực tiếp được. Bấm “Sao chép” rồi gửi đoạn dưới đây cho người quản lý trang để được thêm vào.',copy:'Sao chép',copied:'Đã sao chép.',copyManual:'Hãy chọn đoạn chữ và sao chép thủ công.',done:'Xong',
+delH:n=>`Xóa ${n}?`,delP:'Người này và thông tin liên lạc sẽ bị xóa khỏi gia phả.',delKids:'Người này còn con trong cây. Hãy xóa các con trước.',delFail:'Chưa xóa được, vui lòng thử lại.',
+eras:['Đinh–Tiền Lê','Lý','Trần','Lê','Nguyễn','Hiện đại'],now:'Nay'},
+en:{brand:'Nguyễn Hữu Family',navTree:'Family tree',navDir:'Directory',navPeople:'Notable ancestors',navOrigin:'Origins',navSrc:'Sources',
+h1:'The Nguyễn Hữu family tree',lead:'From the founding ancestor Nguyễn Bặc, Duke of Định Quốc under the Đinh dynasty, through Nguyễn Trãi and Lord Nguyễn Hữu Dật, to the second branch of Nguyễn Hữu Tòng in Thanh Quýt, Quảng Nam, and the family today.',cta:'Add your information',
+sGen:'generations recorded',sPeople:'people in the tree',sYears:'years since Nguyễn Bặc',sInfo:'people with contact details',
+figcap:'Each dot is one generation of the direct line. Large dots have a recorded birth year; the others are placed by estimate.',
+treeH:'Family tree',treeIntro:'Click a box to see details. Use the button under a box to show children (+) or hide them (−). Drag to move around; use − and + to zoom. Boxes with a heavy outline are the direct line to Nguyễn Hữu Tùy; a small dot in the corner means that person has contact details.',
+search:'Search a name, accents optional',startFrom:'Start from',bPath:'Direct line',bAll:'Expand all',bClose:'Collapse',gen:'Gen.',kids:'children',
+dirH:'Family directory',dirIntro:'Relatives who have shared an address, phone or social media so family can reach each other. Everyone who can open this page can see these details.',dirSearch:'Search the directory: name, city…',
+peopleH:'Notable ancestors',peopleIntro:'Summarised from Vietnamese Wikipedia and “Dòng họ Nguyễn Hữu” by Nguyễn Hữu Am, generation 29.',onTree:'Show in the tree',
+originH:'Origins and migrations',originIntro:'The Nguyễn Hữu line began in Ninh Bình. After the Lệ Chi Viên case of 1442 Nguyễn Trãi’s descendants had to hide their identity; our line continues through his surviving son Nguyễn Công Duẩn.',
+notesH:'Notes on the sources',notesEnd:'If you know more names, birth years, spouses or descendants, click “Add your information” or tell the page manager.',srcH:'Original documents',
+foot:'Nguyễn Hữu family tree, compiled from documents collected by Nguyễn Hữu Lễ, 2026.',toTop:'Back to top',
+fGen:'Generation',fYears:'Years',wife:'Wife',husband:'Husband',father:'Father',children:'Children',code:'Branch code',founder:' (founder)',contactH:'Contact',noContact:'None yet. If this is you or your relative, please add it.',updated:'Updated',editInfo:'Edit details',addInfo:'Add details',addChild:'Add a child',del:'Remove this person',lineage:'Lineage',childOf:'child of',newTag:'newly added',close:'Close',
+age:(b,a)=>`born ${b}, about ${a} years old`,
+cAddr:'Home address',cMap:'Open map',cCity:'City, country',cPhone:'Phone',cZalo:'Zalo',cEmail:'Email',cFb:'Facebook',cIg:'Instagram',cWeb:'Other link',cJob:'Occupation',cAbout:'Notes',cSpouse:'Spouse',cBirth:'Birth year',cDeath:'Year of passing (if any)',cName:'Full name',cGender:'Gender',male:'Male',female:'Female',
+noneYet:'No one has added contact details yet. Be the first: click “Add your information”.',noFound:'Nothing found.',details:'View details',
+loading:'Loading contact details…',signIn:'Sign in to claude.ai to see and add family contact details. The tree works without signing in.',viewOnly:'You have view-only access. You can still fill in the form; the page will make a text for you to send to the page manager.',slow:'Contact details can’t be reached yet and may be incomplete.',failed:'Contact details could not be loaded right now.',
+s1H:'Add your information',s1P:'Step 1: find your name in the tree. Accents are optional.',yourName:'Your name',type2:'Type at least 2 letters.',notIn:'My name is not in the tree',
+s2H:'Whose child are you?',s2P:'Find your father (or your mother, if she is the Nguyễn Hữu side). You will be added as their child.',parentName:'Father’s or mother’s name',s2N:'If your parents are not in the tree either, add them first, then add yourself.',
+editP:'Fill in only what you want to share; leave the rest blank.',addH:n=>`Add a child of ${n}`,addP:g=>`The new person will be in generation ${g}.`,consent:'I am this person, or I have their permission to post this. I understand everyone who can see the family tree will see it.',save:'Save',saving:'Saving…',cancel:'Cancel',
+eConsent:'Please tick the consent box.',eBirth:'Birth year is not valid.',eDeath:'Year of passing is not valid.',eWeb:'The other link must start with https://',eName:'Please enter a full name.',eQuota:'The storage is full; please tell the page manager.',eSave:'Could not save; please try again.',
+cpH:'Send to the page manager',cpP:'Your account can only view, so it can’t save directly. Click “Copy” and send the text below to the page manager to have it added.',copy:'Copy',copied:'Copied.',copyManual:'Select the text and copy it by hand.',done:'Done',
+delH:n=>`Remove ${n}?`,delP:'This person and their contact details will be removed from the tree.',delKids:'This person still has children in the tree. Remove the children first.',delFail:'Could not remove; please try again.',
+eras:['Đinh–Early Lê','Lý','Trần','Lê','Nguyễn','Modern'],now:'Now'}};
+const NOTE_EN={b1:'Duke of Định Quốc, founding minister of the Đinh dynasty. Founding ancestor (generation 1) of the Nguyễn Hữu line.',b2:'Commander (Đô Kiểm Hiệu). Moved to Gia Miêu, Thanh Hóa.',b3:'Duke of Tạ Quốc',b4:'Left Admiral (Tả Đô Đốc)',b5:'Prince Hoài Đạo Hiếu Vũ; married Princess Ngọa Thiềm of the Trần dynasty.',b5a:'Commander (Đô Chỉ Huy Sứ)',b6:'Inspector (Đô Hiệu Kiểm)',b7:'General of the Left; Grand General Pacifying the South.',b8:'Inspector of the Right; killed for opposing Hồ Quý Ly.',b9:'Prince Du Cần; moved to Nhị Khê village.',b10:'Chief Justice (Đại Lý Tự Khanh), also known as Nguyễn Phi Khanh.',b11:'Marquis Quan Phục. Later founder (generation 11). UNESCO-honoured figure of world culture.',b12:'Duke of Hoằng Quốc; the son who survived the Lệ Chi Viên case.',b13:'Duke of Trình Quốc. His sixth daughter became Queen Trường Lạc, wife of King Lê Thánh Tông.',vl:'Prince Nghĩa Quân; his line became the Nguyễn lords.',vl1:'Marquis An Hòa',vl2:'Marquis Khanh Đại',vl4:'Left no heir.',b14:'Duke of Hằng Quốc',b15:'Marquis Tùng Nhơn. Followed Nguyễn Kim south in the 16th century. His daughter Nguyễn Thị Lựu married Lord Nguyễn Hoàng.',b17:'In 1609 followed Lord Nguyễn Hoàng to Thuận Hóa and settled in Phong Lộc, Quảng Bình.',b18:'Marquis Chiêu Vũ, great general of the Nguyễn lords in the Trịnh–Nguyễn war. Posthumously made Duke of Chiêu.',hao:'Marquis Hào Lương, general and author of the Nôm verse tale Song Tinh Bất Dạ.',dong:'From the family tree by Nguyễn Hữu Lễ.',canh:'Marquis Lễ Thành; organised the Đồng Nai – Gia Định region in 1698.',c25:'Regent minister, Grand Tutor, Duke of Vĩnh Lại, Viceroy of Tonkin under Emperor Đồng Khánh.','2.2':'High general of the imperial guard. Head of the second branch; his tomb is in Thanh Quýt.','2.5.5':'Honoured village elder.','2.6.1':'Village official, honoured elder.','2.7.12':'Dựng or Dũng.','2.10.1':'Grand scholar.','2.10.10':'Married into An Tự.','2.10.11':'Known by her husband’s name, lived in xóm Rừng.','2.10.12':'Known by her husband’s name, Mr Hương Thơ of Giáp Năm.','2.10.13':'Confucian scholar (tú tài).','2.11.3':'Great-grandfather of Tâm, per Nguyễn Hữu Lễ’s letter.',k1:'From the family tree by Nguyễn Hữu Lễ.',k2:'From the family tree by Nguyễn Hữu Lễ.',k3:'From the family tree by Nguyễn Hữu Lễ.','2.11.18':'Traditional doctor; ran the An Hòa Đường herbal shop in Hòa Minh, Hòa Vang (now Liên Chiểu).','2.11.22':'Station master in Quy Nhơn.','2.11.24':'Fallen soldier, buried at the Điện Bàn war cemetery.','2.11.26':'Official at the Ministry of Foreign Trade, lived in Hanoi.','2.12.1':'Fallen soldier.','2.12.2':'Died as a child.','2.12.4':'Before 1975 deputy director of the Nguyễn Hiền education centre; later a teacher at Phan Châu Trinh high school.','2.12.5':'Before 1975 commune official in Hòa Minh; later a traditional doctor.','2.12.6':'Women’s association, An Khê ward.','2.12.7':'Died as a child.','2.12.10':'Lives in the USA; works in health care.','2.12.11':'Navy captain before 1975; lives in Đồng Nai.','2.12.12':'Lives in Hanoi.','2.12.13':'Works at the Pasteur Institute, Hanoi.','2.12.14':'PhD in physics, works in Norway.','2.12.15':'Father of Tâm, per Nguyễn Hữu Lễ’s letter.','2.12.17':'Teacher.',tam:'Recipient of Nguyễn Hữu Lễ’s family-tree letter in 2022. Descendants, please add yourselves.',s5:'Collected the documents and drew the family trees in 2022.','2.13.1':'Teacher.','2.13.2':'Settled and buried in Canada.','2.13.3':'Accountant.','2.13.4':'Lecturer; created the Tộc Nguyễn Hữu (Thanh Quýt) website.','2.13.5':'Foreign trade specialist.','2.13.6':'Teacher.','2.13.8':'Teacher at Phan Châu Trinh high school, Đà Nẵng.','2.13.9':'Medical specialist.','2.13.10':'Lawyer and judge.','2.13.14':'Teacher.','2.13.15':'Teacher.','2.13.18':'Lives in Hội An.','2.14.1':'Master’s in economics.','2.14.2':'Master’s in chemistry.'};
+const PEOPLE=[
+ ['b1','Nguyễn Bặc','924–979',1,{vi:'Định Quốc Công, khai quốc công thần nhà Đinh, giúp Đinh Bộ Lĩnh dẹp loạn 12 sứ quân và đứng đầu các công thần năm 968. Năm 979 khởi binh chống Lê Hoàn để giữ nhà Đinh, bị bắt và bị giết. Các gia phả họ Nguyễn tôn ngài làm thủy tổ; lăng ở Gia Viễn, Ninh Bình.',en:'Duke of Định Quốc and founding minister of the Đinh dynasty, he helped Đinh Bộ Lĩnh end the Twelve Warlords period and led the court from 968. In 979 he rose against Lê Hoàn to defend the Đinh house and was captured and killed. Nguyễn family records honour him as their founder; his tomb is in Gia Viễn, Ninh Bình.'}],
+ ['b11','Nguyễn Trãi','1380–1442',11,{vi:'Con Nguyễn Phi Khanh, mưu sĩ của Lê Lợi trong khởi nghĩa Lam Sơn, tác giả Bình Ngô đại cáo, Ức Trai thi tập, Quốc âm thi tập. Mất trong vụ án Lệ Chi Viên. Năm 1980 được vinh danh là danh nhân văn hóa thế giới.',en:'Son of Nguyễn Phi Khanh and strategist to Lê Lợi in the Lam Sơn uprising; author of the Great Proclamation upon the Pacification of the Wu and much poetry in Chinese and Vietnamese. He died in the Lệ Chi Viên case. In 1980 he was honoured as a figure of world culture.'}],
+ ['b18','Nguyễn Hữu Dật','1603–1681',18,{vi:'Chiêu Vũ hầu. Năm 1627 dùng kế ly gián khiến chúa Trịnh rút quân; cùng Đào Duy Từ đắp lũy Thầy, lũy Trường Dục; đại thắng năm 1648; giữ lũy Trấn Ninh năm 1672. Nổi tiếng nhân hậu, dân lập đền thờ gọi là Bụt Tát.',en:'Marquis Chiêu Vũ. In 1627 his ruse made the Trịnh army withdraw; with Đào Duy Từ he built the Thầy and Trường Dục walls; won a great victory in 1648 and held the Trấn Ninh wall in 1672. Known for his kindness, local people built a shrine to him.'}],
+ ['hao','Nguyễn Hữu Hào','1642–1713',19,{vi:'Hào Lương Hầu, con trưởng Nguyễn Hữu Dật. Danh tướng và thi hào với truyện Nôm Song Tinh Bất Dạ; được truy tặng Đôn Hậu Quận Công.',en:'Marquis Hào Lương, eldest son of Nguyễn Hữu Dật. A general and poet, author of the Nôm verse tale Song Tinh Bất Dạ; posthumously made Duke Đôn Hậu.'}],
+ ['canh','Nguyễn Hữu Cảnh','1650–1700',19,{vi:'Lễ Thành Hầu. Năm 1698 kinh lược đất Đồng Nai, lập phủ Gia Định, đặt nền hành chính cho Sài Gòn và miền Nam.',en:'Marquis Lễ Thành. In 1698 he organised the Đồng Nai region and founded Gia Định prefecture, laying the administrative foundation of Saigon and the south.'}],
+ ['c25','Nguyễn Hữu Độ','1813–1888',25,{vi:'Phụ chánh đại thần, Thái sư Vĩnh Lại Quận Công, Bắc Kỳ kinh lược sứ triều Đồng Khánh. Người dạy “Nhà có phổ như nước có sử”.',en:'Regent minister, Grand Tutor and Duke of Vĩnh Lại, Viceroy of Tonkin under Emperor Đồng Khánh. He taught: “A family has its register as a nation has its history.”'}]];
+const ROUTE=[['Đại Hữu, Ninh Bình',{vi:'Quê gốc thời Nguyễn Bặc (thế kỷ 10); lăng ngài ở Gia Viễn.',en:'Home of Nguyễn Bặc (10th century); his tomb is in Gia Viễn.'}],['Gia Miêu, Thanh Hóa',{vi:'Nguyễn Đệ dời về Gia Miêu, huyện Tống Sơn; từ đường “Khởi Nguyễn Đường”.',en:'Nguyễn Đệ moved to Gia Miêu, Tống Sơn; the “Khởi Nguyễn Đường” ancestral hall.'}],['Chí Ngại, Hải Dương',{vi:'Nhiều đời sinh sống ở Chí Linh.',en:'Home for several generations in Chí Linh.'}],['Nhị Khê, Hà Đông',{vi:'Thời Nguyễn Minh Du, ông nội Nguyễn Trãi (thế kỷ 14).',en:'From Nguyễn Minh Du, Nguyễn Trãi’s grandfather (14th century).'}],['Thăng Long',{vi:'Nơi sinh Nguyễn Hữu Dật năm 1603.',en:'Birthplace of Nguyễn Hữu Dật in 1603.'}],['Phong Lộc, Quảng Bình',{vi:'Năm 1609 Nguyễn Triều Văn theo chúa Nguyễn Hoàng vào Thuận Hóa.',en:'In 1609 Nguyễn Triều Văn followed Lord Nguyễn Hoàng south.'}],['Thanh Quýt, Quảng Nam',{vi:'Phái nhì Nguyễn Hữu Tòng lập nghiệp; lăng mộ còn ở đây.',en:'The second branch of Nguyễn Hữu Tòng settled here; his tomb remains.'}],['Sài Gòn & hải ngoại',{vi:'Năm 1698 Nguyễn Hữu Cảnh mở cõi Gia Định; sau 1975 con cháu định cư ở Mỹ, Canada, Úc, Pháp.',en:'Nguyễn Hữu Cảnh opened Gia Định in 1698; after 1975 the family settled in the USA, Canada, Australia and France.'}]];
+const QUOTES=[{vi:'“Nhà có phổ như nước có sử.”',en:'“A family has its register as a nation has its history.”',by:{vi:'Vĩnh Quốc Công Nguyễn Hữu Độ (1813–1888), đời 25',en:'Nguyễn Hữu Độ (1813–1888), generation 25'}},{vi:'“Tộc phổ, gia phả làm ra để ghi rõ thế, thứ, hệ thống, sự tích và hành vi của các đấng tiền nhân, lưu lại về sau cho con cháu.”',en:'“A family register records the order, lineage, deeds and conduct of our forebears, to be handed down to their descendants.”',by:{vi:'Ông Nguyễn Hữu Đồng, đời 28',en:'Nguyễn Hữu Đồng, generation 28'}}];
+const NOTES=[{vi:'Trang Phái nhì ghi ông Nguyễn Hữu Tùy và các em là con ông Nguyễn Hữu Tín. Gia phả ông Nguyễn Hữu Lễ (2022) ghi là con ông Nguyễn Hữu Kiệt, cháu ông Tín. Trang này theo bản của ông Lễ.',en:'The Phái Nhì website lists Nguyễn Hữu Tùy and his siblings as children of Nguyễn Hữu Tín. Nguyễn Hữu Lễ’s 2022 tree lists them as children of Nguyễn Hữu Kiệt, Tín’s son. This page follows Mr Lễ.'},{vi:'Gia phả nhánh ông Tín không có hai đời Nguyễn Hữu Ý và Nguyễn Hữu Châu; bản nhánh ông Khóa và trang Phái nhì đều có, nên được giữ lại.',en:'The Tín branch chart omits Nguyễn Hữu Ý and Nguyễn Hữu Châu; the Khóa chart and the Phái Nhì website include them, so they are kept.'},{vi:'Con gái ông Khóa là Nẫm, Hoài, Tri chỉ có trong gia phả ông Lễ.',en:'Khóa’s daughters Nẫm, Hoài and Tri appear only in Mr Lễ’s chart.'},{vi:'Năm sinh mất Nguyễn Bặc: Wikipedia 924–979, bản ông Lễ 924–974, trang ông Nguyễn Hữu Am 904–979.',en:'Nguyễn Bặc’s dates: Wikipedia 924–979, Mr Lễ 924–974, Nguyễn Hữu Am 904–979.'},{vi:'Ông Nam Phúc và bà Hồng Phúc ghi “Cha: 2.12.4” nhưng ở đời 2.14, nên có lẽ là con ông Nguyễn Hữu Hân (2.13.4).',en:'Nam Phúc and Hồng Phúc are listed as “father 2.12.4” but in generation 2.14, so they are most likely children of Nguyễn Hữu Hân (2.13.4).'},{vi:'Gia phả cũ do ngài Nguyễn Hữu Độ chép, sau Nguyễn Trãi ghi Nguyễn Sùng, Nghĩa, Doãn; sử liệu cho thấy người nối dõi là Nguyễn Công Duẩn.',en:'The old register copied by Nguyễn Hữu Độ lists Nguyễn Sùng, Nghĩa and Doãn after Nguyễn Trãi; historical sources show the heir was Nguyễn Công Duẩn.'}];
+const SRCS=[{vi:'Thư ông Nguyễn Hữu Lễ gửi cháu Tâm (3/5/2022), kèm các bản gia phả Nguyễn Bặc đến Nguyễn Hữu Dật, Dật đến Khóa, Dật đến Tùy.',en:'Letter from Nguyễn Hữu Lễ to Tâm (3 May 2022) with family charts: Nguyễn Bặc to Nguyễn Hữu Dật, Dật to Khóa, Dật to Tùy.'},{vi:'Tộc Nguyễn Hữu (Thanh Quýt), trang “Phái nhì” của ông Nguyễn Hữu Hân',en:'Tộc Nguyễn Hữu (Thanh Quýt), “Phái nhì” page by Nguyễn Hữu Hân',u:'https://tocnguyenhuuthanhquyt.wordpress.com/2010/11/18/phainhi/'},{vi:'Phả hệ toàn gia tộc Nguyễn Hữu, vietnamgiapha.com',en:'Nguyễn Hữu clan tree, vietnamgiapha.com',u:'http://www.vietnamgiapha.com/XemPhaHe/5221/'},{vi:'“Dòng họ Nguyễn Hữu”, ông Nguyễn Hữu Am',en:'“Dòng họ Nguyễn Hữu” by Nguyễn Hữu Am',u:'http://nguyen-huu.blogspot.com/'},{vi:'Wikipedia: Nguyễn Bặc',en:'Wikipedia: Nguyễn Bặc',u:'https://vi.wikipedia.org/wiki/Nguy%E1%BB%85n_B%E1%BA%B7c'},{vi:'Wikipedia: Nguyễn Hữu Dật',en:'Wikipedia: Nguyễn Hữu Dật',u:'https://vi.wikipedia.org/wiki/Nguy%E1%BB%85n_H%E1%BB%AFu_D%E1%BA%ADt'}];
+const ROOTS=[['b1','Nguyễn Bặc',1],['b11','Nguyễn Trãi',11],['b18','Nguyễn Hữu Dật',18],['2.2','Nguyễn Hữu Tòng',20],['2.9.1','Nguyễn Hữu Quới',27]];
+
+let L='vi';
+try{const s=localStorage.getItem('gp-lang');if(s==='en'||s==='vi')L=s}catch(_){}
+const t=k=>T[L][k]??T.vi[k];
+
+const BASE=[];
+for(const line of RAW.split('\n')){const [id,pa,nm,sp,yr,note,code]=line.split('|');BASE.push({id,pa,nm,sp,yr,note,code})}
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fold=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[đĐ]/g,'d').toLowerCase();
+const NOW=new Date().getFullYear();
+let P={},ORDER=[],ADDED=[],PROF={};
+const key=id=>String(id).replace(/[^A-Za-z0-9_-]/g,'_');
+function build(){
+ P={};ORDER=[];
+ for(const b of BASE){const full=/^(Nguyễn|Cô )/.test(b.nm)?b.nm:'Nguyễn Hữu '+b.nm;P[b.id]={id:b.id,pa:b.pa,name:full,sp:b.sp,yr:b.yr,note:b.note,code:b.code,kids:[]};ORDER.push(b.id)}
+ let rest=ADDED.slice(),guard=0;
+ while(rest.length&&guard++<20){const next=[];for(const a of rest){if(P[a.parent]&&!P[a.id]){P[a.id]={id:a.id,pa:a.parent,name:a.name,sp:a.spouse||'',yr:a.birthYear?a.birthYear+'–'+(a.deathYear||''):'',note:'',code:'',kids:[],added:true,gender:a.gender};ORDER.push(a.id)}else if(!P[a.id])next.push(a)}rest=next}
+ for(const id of ORDER){const n=P[id];if(n.pa&&P[n.pa])P[n.pa].kids.push(id)}
+ (function g(id,d){P[id].gen=d;for(const k of P[id].kids)g(k,d+1)})('b1',1);
+}
+build();
+const anc=id=>{const a=[];let p=P[id]?.pa;while(p&&P[p]){a.unshift(p);p=P[p].pa}return a};
+const isF=n=>n.gender?n.gender==='nu':/ Thị |^Cô /.test(n.name);
+const short=n=>n.name.replace(/^Nguyễn Hữu /,'');
+const noteOf=n=>L==='en'?(NOTE_EN[n.id]||''):n.note;
+const prof=id=>PROF[key(id)]||null;
+const CF=['addr','city','phone','email','fb','ig','zalo','web'];
+const hasInfo=id=>{const p=prof(id);return !!p&&CF.some(f=>p[f])};
+const PATH=new Set([...anc('tam'),'tam']);
+const DEFAULT=()=>new Set([...anc('tam'),'2.12.15']);
+let open=DEFAULT(),sel='2.12.15',root='2.9.1',zoom=1,db=null,canWrite=null,canAdmin=false,dbState='loading';
+// ===== photos =====
+Object.assign(T.vi,{navPhotos:'Ảnh',phH:'Ảnh gia đình',phIntro:'Ảnh họp mặt, ảnh cũ của ông bà. Bấm vào ảnh để xem ai là ai; người được gắn tên có vòng tròn đánh dấu khuôn mặt, và khuôn mặt đó sẽ hiện cạnh tên họ trong cây gia phả.',upload:'Tải ảnh lên',phSearch:'Tìm ảnh theo chú thích hoặc tên người…',noPhotos:'Chưa có ảnh nào.',noPhotosEd:'Chưa có ảnh nào. Bấm “Tải ảnh lên” để đăng ảnh đầu tiên.',onlyEditors:'Chỉ người được mời làm Editor mới tải ảnh lên được; ai có quyền sửa dữ liệu thì gắn tên được.',tagged:n=>n?`${n} người được gắn tên`:'Chưa gắn tên ai',
+upH:'Đăng ảnh mới',caption:'Chú thích',capPh:'Ví dụ: Họp mặt gia đình Tết 2019',when:'Thời gian',whenPh:'Ví dụ: Tết 2019',where:'Địa điểm',wherePh:'Ví dụ: Đà Nẵng',upConsent:'Mọi người trong ảnh đồng ý cho đăng lên trang gia phả.',uploading:'Đang tải ảnh lên…',eUpload:'Chưa tải ảnh lên được, vui lòng thử lại.',eBig:'Ảnh quá lớn.',eType:'Chỉ nhận ảnh JPG, PNG, WebP hoặc GIF.',eQuotaA:'Bộ nhớ ảnh đã đầy.',chooseFile:'Chọn ảnh',
+tagMode:'Gắn tên',tagDone:'Xong gắn tên',tagHint:'Bấm vào khuôn mặt trong ảnh để gắn tên.',whoIs:'Đây là ai?',size:'Cỡ vòng tròn',showNames:'Hiện tên',hideNames:'Ẩn tên',inPhoto:'Trong ảnh',removeTag:'Bỏ gắn tên',delPhoto:'Xóa ảnh',delPhotoQ:'Xóa ảnh này? Ảnh và mọi tên đã gắn sẽ bị xóa hẳn.',editCap:'Sửa chú thích',photosOf:n=>`Ảnh (${n})`,prev:'Ảnh trước',next:'Ảnh sau',imgMissing:'Không tải được ảnh này.',eTag:'Chưa lưu được, vui lòng thử lại.'});
+Object.assign(T.en,{navPhotos:'Photos',phH:'Family photos',phIntro:'Reunion photos and old pictures of our elders. Click a photo to see who is who; tagged people have a circle on their face, and that face appears next to their name in the family tree.',upload:'Upload a photo',phSearch:'Search photos by caption or name…',noPhotos:'No photos yet.',noPhotosEd:'No photos yet. Click “Upload a photo” to post the first one.',onlyEditors:'Only people invited as Editors can upload photos; anyone who can change data can tag names.',tagged:n=>n?`${n} people tagged`:'No one tagged yet',
+upH:'Post a new photo',caption:'Caption',capPh:'e.g. Family reunion, Tết 2019',when:'When',whenPh:'e.g. Tết 2019',where:'Where',wherePh:'e.g. Đà Nẵng',upConsent:'Everyone in the photo agrees to have it posted on the family tree.',uploading:'Uploading…',eUpload:'Could not upload; please try again.',eBig:'The photo is too large.',eType:'Only JPG, PNG, WebP or GIF photos.',eQuotaA:'Photo storage is full.',chooseFile:'Choose photo',
+tagMode:'Tag people',tagDone:'Done tagging',tagHint:'Click a face in the photo to tag it.',whoIs:'Who is this?',size:'Circle size',showNames:'Show names',hideNames:'Hide names',inPhoto:'In this photo',removeTag:'Remove tag',delPhoto:'Delete photo',delPhotoQ:'Delete this photo? The photo and all its tags will be removed for good.',editCap:'Edit caption',photosOf:n=>`Photos (${n})`,prev:'Previous photo',next:'Next photo',imgMissing:'This photo could not be loaded.',eTag:'Could not save; please try again.'});
+let PHOTOS=[],assetsNS=null,URLS={},pv={id:null,tag:false,pending:null,names:true,focus:null};
+const okId=s=>/^(pending|approved)\/[A-Za-z0-9_-]{1,80}\.(jpg|png|webp|gif)$/.test(String(s||''));
+const srcOf=a=>URLS[a]||(okId(a)&&SB?SB.storage.from('photos').getPublicUrl(a).data.publicUrl:'');
+const photoById=id=>PHOTOS.find(p=>p.id===id);
+function facesOf(pid){const r=[];for(const ph of PHOTOS)for(const tg of ph.tags)if(tg.p===pid)r.push({ph,tg});return r}
+function cropStyle(ph,tg){
+ const a=(ph.h&&ph.w)?ph.h/ph.w:1,w=Math.min(.9,Math.max(.02,tg.r*2.4)),h=Math.min(1,w/a);
+ const px=w>=1?0:Math.min(1,Math.max(0,(tg.x-w/2)/(1-w)))*100,py=h>=1?0:Math.min(1,Math.max(0,(tg.y-h/2)/(1-h)))*100;
+ return `background-image:url('${srcOf(ph.asset)}');background-size:${(100/w).toFixed(2)}% auto;background-position:${px.toFixed(2)}% ${py.toFixed(2)}%`;
+}
+function faceHTML(pid,cls='av'){const f=facesOf(pid);if(!f.length)return '';const {ph,tg}=f[f.length-1];return `<span class="${cls}" style="${esc(cropStyle(ph,tg))}" aria-hidden="true"></span>`}
+function photosOfPanel(pid){
+ const f=facesOf(pid);if(!f.length)return '';
+ return `<div class="contact"><h4>${esc(T[L].photosOf(f.length))}</h4><div class="facegrid">${f.map(({ph,tg})=>`<button class="facebtn" data-ph="${esc(ph.id)}" data-pfocus="${esc(pid)}" title="${esc(ph.caption||'')}"><span class="av lg" style="${esc(cropStyle(ph,tg))}"></span></button>`).join('')}</div></div>`;
+}
+const gal=document.getElementById('gal'),gq=document.getElementById('gq'),phNote=document.getElementById('phNote'),upBtn=document.getElementById('upBtn'),fileIn=document.getElementById('fileIn');
+function renderGal(){
+ upBtn.hidden=!db;phNote.hidden=true;
+ const v=fold(gq.value.trim());
+ const list=PHOTOS.filter(ph=>!v||fold([ph.caption,ph.when,ph.where,...ph.tags.map(x=>P[x.p]?.name||'')].join(' ')).includes(v));
+ if(!list.length){gal.innerHTML=db?`<p class="muted">${v?t('noFound'):t('noPhotosEd')}</p>`:'';return}
+ gal.innerHTML=list.map(ph=>`<button class="ph" data-ph="${esc(ph.id)}"><span class="phimg"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" loading="lazy"></span><span class="phcap"><b>${esc(ph.caption||'')}</b><span class="muted">${esc([ph.when,ph.where].filter(Boolean).join(' · '))}</span><span class="muted">${esc(T[L].tagged(ph.tags.length))}</span></span></button>`).join('');
+}
+gq.addEventListener('input',renderGal);
+
+// viewer
+const pvd=document.getElementById('pv'),pvb=document.getElementById('pvBody');
+function openPhoto(id,focus){if(pv.dirty&&!isAdmin){const o=photoById(pv.id);if(o)submit('tags',o.id,{tags:o.tags}).catch(()=>{})}pv={id,tag:false,pending:null,names:true,focus:focus||null};drawPV();if(!pvd.open)pvd.showModal()}
+function drawPV(){
+ const ph=photoById(pv.id);if(!ph){pvd.open&&pvd.close();return}
+ const a=(ph.h&&ph.w)?ph.h/ph.w:.75,canTag=!!db,idx=PHOTOS.indexOf(ph);
+ const mk=(tg,i,pend)=>{const n=P[tg.p],lab=n?short(n):'?';return `<div class="mk${pend?' pend':''}${pv.focus&&tg.p===pv.focus?' foc':''}" style="left:${((tg.x-tg.r)*100).toFixed(2)}%;top:${((tg.y-tg.r/a)*100).toFixed(2)}%;width:${(tg.r*200).toFixed(2)}%" data-mk="${i}">${pv.names&&!pend?`<span class="mkl">${esc(lab)}</span>`:''}</div>`};
+ let h=`<button class="x2" data-pvclose="1" aria-label="${t('close')}">✕</button><div class="pvgrid"><div class="pvimgw"><div class="pvimg${pv.tag?' tagging':''}" id="pvimg" style="aspect-ratio:${ph.w||4}/${ph.h||3}"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" id="pvpic">${ph.tags.map((tg,i)=>mk(tg,i)).join('')}${pv.pending?mk(pv.pending,-1,true):''}</div>`;
+ h+=`<div class="acts"><button class="btn" data-pvnav="-1" ${idx<=0?'disabled':''} aria-label="${t('prev')}">‹</button><button class="btn" data-pvnav="1" ${idx>=PHOTOS.length-1?'disabled':''} aria-label="${t('next')}">›</button><button class="btn" data-pvnames="1">${pv.names?t('hideNames'):t('showNames')}</button>${canTag?`<button class="btn main" data-pvtag="1">${pv.tag?t('tagDone'):t('tagMode')}</button>`:''}</div></div><div class="pvside">`;
+ h+=`<h3>${esc(ph.caption||'')}</h3><p class="muted">${esc([ph.when,ph.where].filter(Boolean).join(' · '))}</p>`;
+ if(pv.msg)h+=`<p class="hint">${esc(pv.msg)}</p>`;
+ if(pv.tag&&!pv.pending)h+=`<p class="hint">${t('tagHint')}</p>${isAdmin?'':`<p class="muted">${t('tagLocal')}</p>`}`;
+ if(pv.pending)h+=`<div class="fg"><label class="w">${t('whoIs')}<input id="tq" type="search" autocomplete="off"></label><label class="w">${t('size')}<input id="tr" type="range" min="0.02" max="0.2" step="0.005" value="${pv.pending.r}"></label></div><div class="pick" id="tl"><p class="muted" style="padding:10px 14px;margin:0">${t('type2')}</p></div><div class="acts"><button class="btn" data-pvcancel="1">${t('cancel')}</button></div><div class="err" id="terr"></div>`;
+ h+=`<h4 style="margin:16px 0 8px">${t('inPhoto')}</h4><div class="tags">${ph.tags.map((tg,i)=>{const n=P[tg.p];return `<div class="trow"><span class="av" style="${esc(cropStyle(ph,tg))}"></span><button class="chip" data-pvgo="${esc(tg.p)}">${esc(n?n.name:'?')}</button>${pv.tag?`<button class="btn sm" data-untag="${i}" aria-label="${t('removeTag')}">✕</button>`:''}</div>`}).join('')||`<p class="muted">${esc(T[L].tagged(0))}</p>`}</div>`;
+ if(canAdmin)h+=`<div class="acts" style="margin-top:18px"><button class="btn" data-pvcap="1">${t('editCap')}</button><button class="btn" data-pvdel="1">${t('delPhoto')}</button></div>`;
+ h+='</div></div>';
+ pvb.innerHTML=h;
+ const pic=document.getElementById('pvpic');pic.onerror=()=>{pic.replaceWith(Object.assign(document.createElement('p'),{className:'muted',textContent:t('imgMissing')}))};
+ document.getElementById('pvimg').onclick=e=>{
+  if(!pv.tag||e.target.closest('.mk:not(.pend)'))return;
+  const r=e.currentTarget.getBoundingClientRect();
+  pv.pending={p:'',x:+((e.clientX-r.left)/r.width).toFixed(4),y:+((e.clientY-r.top)/r.height).toFixed(4),r:pv.pending?.r||.06};drawPV();document.getElementById('tq')?.focus();
+ };
+ const tq=document.getElementById('tq');
+ if(tq){const tl=document.getElementById('tl');tq.oninput=()=>{tl.innerHTML=pickList(tq.value,'data-tagp')};
+  document.getElementById('tr').oninput=e=>{pv.pending.r=+e.target.value;const m=pvb.querySelector('.mk.pend');if(m){m.style.left=((pv.pending.x-pv.pending.r)*100)+'%';m.style.top=((pv.pending.y-pv.pending.r/a)*100)+'%';m.style.width=(pv.pending.r*200)+'%'}}}
+}
+async function saveTags(ph,tags){
+ if(!isAdmin){ph.tags=tags;pv.dirty=true;pv.msg='';return true}
+ const {error}=await SB.from('photos').update({tags}).eq('id',ph.id);
+ if(error){const er=document.getElementById('terr');if(er)er.textContent=t('eTag');return false}
+ ph.tags=tags;return true
+}
+pvd.addEventListener('click',async e=>{
+ if(e.target===pvd){pvd.close();return}
+ const ph=photoById(pv.id);if(!ph)return;
+ if(e.target.closest('[data-pvclose]')){pvd.close();return}
+ const nv=e.target.closest('[data-pvnav]');if(nv){const i=PHOTOS.indexOf(ph)+(+nv.dataset.pvnav);if(PHOTOS[i])openPhoto(PHOTOS[i].id);return}
+ if(e.target.closest('[data-pvnames]')){pv.names=!pv.names;drawPV();return}
+ if(e.target.closest('[data-pvtag]')){if(pv.tag&&pv.dirty&&!isAdmin){try{await submit('tags',ph.id,{tags:ph.tags});pv.msg=t('tagSent')}catch(_){pv.msg=t('eTag')}pv.dirty=false}pv.tag=!pv.tag;pv.pending=null;drawPV();return}
+ if(e.target.closest('[data-pvcancel]')){pv.pending=null;drawPV();return}
+ const tp=e.target.closest('[data-tagp]');if(tp&&pv.pending){const tags=ph.tags.concat({p:tp.dataset.tagp,x:pv.pending.x,y:pv.pending.y,r:pv.pending.r});if(await saveTags(ph,tags)){pv.pending=null;drawPV();refresh();renderGal()}return}
+ const ut=e.target.closest('[data-untag]');if(ut){const tags=ph.tags.filter((_,i)=>i!==+ut.dataset.untag);if(await saveTags(ph,tags)){drawPV();refresh();renderGal()}return}
+ const g=e.target.closest('[data-pvgo]');if(g&&prd.open){pvd.close();go(g.dataset.pvgo,false);openProfile(g.dataset.pvgo);return}
+ if(g){pvd.close();document.getElementById('cay').scrollIntoView({behavior:'smooth'});go(g.dataset.pvgo);return}
+ if(e.target.closest('[data-pvcap]')){photoForm(ph);return}
+ if(e.target.closest('[data-pvdel]')){
+  pvb.querySelector('.pvside').innerHTML=`<p>${t('delPhotoQ')}</p><div class="acts"><button class="btn main" data-pvdelyes="1">${t('delPhoto')}</button><button class="btn" data-pvcancel="1">${t('cancel')}</button></div><p class="err" id="terr"></p>`;return}
+ if(e.target.closest('[data-pvdelyes]')){try{const r=await SB.from('photos').delete().eq('id',ph.id);if(r.error)throw r.error;try{await SB.storage.from('photos').remove([ph.asset])}catch(_){}PHOTOS=PHOTOS.filter(x=>x!==ph);pvd.close();refresh();renderGal()}catch(_){document.getElementById('terr').textContent=t('eTag')}return}
+});
+
+
+// ===== profile =====
+Object.assign(T.vi,{viewTree:'Xem trên cây',openProf:'Xem hồ sơ',photosH:'Ảnh có người này',noPhotosOf:'Chưa có ảnh nào gắn tên người này.',noPhotosHint:'Đăng ảnh ở mục Ảnh rồi gắn tên để ảnh hiện ở đây.'});
+Object.assign(T.en,{viewTree:'Show in tree',openProf:'Open profile',photosH:'Photos of this person',noPhotosOf:'No photos are tagged with this person yet.',noPhotosHint:'Post a photo in the Photos section and tag them to show it here.'});
+const prd=document.getElementById('prof'),prb=document.getElementById('profBody');let prId=null;
+function openProfile(id){if(!P[id])return;prId=id;drawProfile();if(!prd.open)prd.showModal();prb.scrollTop=0}
+function drawProfile(){
+ const n=P[prId];if(!n){prd.open&&prd.close();return}
+ const p=prof(prId)||{},a=anc(prId),faces=facesOf(prId),age=ageOf(n),sp=n.sp||p.spouse,c=contactRows(prId);
+ const pc=id=>`<button class="chip" data-pp="${esc(id)}">${esc(P[id].name)}</button>`;
+ const face=faceHTML(prId,'av xxl')||`<span class="av xxl ini" aria-hidden="true">${esc((short(n).trim()[0]||'?').toUpperCase())}</span>`;
+ let h=`<button class="x2" data-pclose="1" aria-label="${t('close')}">✕</button><div class="phead">${face}<div><h3>${esc(n.name)}</h3><p class="muted" style="margin:6px 0 0">${t('fGen')} ${n.gen}${n.gen===1?t('founder'):''}${age?' · '+esc(age):''}${n.added?' · '+t('newTag'):''}</p></div></div>`;
+ h+=`<div class="pcols"><div><dl class="kv">`;
+ if(sp)h+=`<dt>${isF(n)?t('husband'):t('wife')}</dt><dd>${esc(sp)}</dd>`;
+ if(n.pa)h+=`<dt>${t('father')}</dt><dd>${pc(n.pa)}</dd>`;
+ if(n.kids.length)h+=`<dt>${t('children')}</dt><dd class="chips">${n.kids.map(pc).join('')}</dd>`;
+ if(n.code)h+=`<dt>${t('code')}</dt><dd>${esc(n.code)}</dd>`;
+ h+='</dl>';
+ const no=noteOf(n);if(no)h+=`<p class="note">${esc(no)}</p>`;
+ if(a.length)h+=`<div class="chain">${t('lineage')}: ${a.length>6?'… ':''}${a.slice(-6).map(i=>`<button data-pp="${esc(i)}">${esc(short(P[i]))}</button>`).join(' › ')} › ${esc(short(n))}</div>`;
+ h+=`</div><div class="contact" style="margin-top:0;border-top:0;padding-top:0"><h4>${t('contactH')}</h4>${c?`<dl class="kv">${c}</dl>`:`<p class="muted">${t('noContact')}</p>`}${p.updatedAt?`<p class="muted">${t('updated')} ${esc(String(p.updatedAt).slice(0,10))}</p>`:''}</div></div>`;
+ h+=`<div class="acts"><button class="btn main" data-edit="${esc(prId)}">${c?t('editInfo'):t('addInfo')}</button><button class="btn" data-add="${esc(prId)}">${t('addChild')}</button><button class="btn" data-ptree="${esc(prId)}">${t('viewTree')}</button>${n.added&&canAdmin?`<button class="btn" data-del="${esc(prId)}">${t('del')}</button>`:''}</div>`;
+ h+=`<h4 class="ph4">${t('photosH')}${faces.length?` (${faces.length})`:''}</h4>`;
+ if(faces.length){
+  h+=`<div class="pgrid">${faces.map(({ph,tg})=>{const ar=(ph.h&&ph.w)?ph.h/ph.w:.75;return `<button class="pth" data-ph="${esc(ph.id)}" data-pfocus="${esc(prId)}"><span class="pthi" style="aspect-ratio:${ph.w||4}/${ph.h||3}"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" loading="lazy"><span class="ring" style="left:${((tg.x-tg.r)*100).toFixed(2)}%;top:${((tg.y-tg.r/ar)*100).toFixed(2)}%;width:${(tg.r*200).toFixed(2)}%"></span></span><span class="pthc"><b>${esc(ph.caption||'')}</b><span class="muted">${esc([ph.when,ph.where].filter(Boolean).join(' · '))}</span></span></button>`}).join('')}</div>`;
+ }else h+=`<p class="muted">${t('noPhotosOf')} ${t('noPhotosHint')}</p>`;
+ prb.innerHTML=h;
+}
+prd.addEventListener('click',e=>{
+ if(e.target===prd||e.target.closest('[data-pclose]')){prd.close();return}
+ const pp=e.target.closest('[data-pp]');if(pp){e.stopPropagation();go(pp.dataset.pp,false);openProfile(pp.dataset.pp);return}
+ const pt=e.target.closest('[data-ptree]');if(pt){e.stopPropagation();prd.close();document.getElementById('cay').scrollIntoView({behavior:'smooth'});go(pt.dataset.ptree,true)}
+});
+
+// upload
+upBtn.onclick=()=>{fileIn.value='';fileIn.click()};
+fileIn.onchange=()=>{const f=fileIn.files&&fileIn.files[0];if(f)photoForm(null,f)};
+function photoForm(ph,file){
+ const prev=file?URL.createObjectURL(file):srcOf(ph.asset);
+ body.innerHTML=`${X()}<h3>${ph?t('editCap'):t('upH')}</h3><img src="${esc(prev)}" alt="" style="width:100%;max-height:260px;object-fit:contain;border-radius:8px;background:var(--soft);margin-top:10px"><form id="uf" novalidate><div class="fg"><label class="w">${t('caption')}<input id="u-cap" value="${esc(ph?.caption||'')}" placeholder="${esc(t('capPh'))}"></label><label>${t('when')}<input id="u-when" value="${esc(ph?.when||'')}" placeholder="${esc(t('whenPh'))}"></label><label>${t('where')}<input id="u-where" value="${esc(ph?.where||'')}" placeholder="${esc(t('wherePh'))}"></label></div>${ph?'':`<label class="ok"><input type="checkbox" id="u-ok"> <span>${t('upConsent')}</span></label>`}<div class="err" id="uerr"></div><div class="acts"><button class="btn main" type="submit">${ph?t('save'):t('upload')}</button><button class="btn" type="button" data-close="1">${t('cancel')}</button></div></form>`;
+ if(!dlg.open)dlg.showModal();
+ document.getElementById('uf').onsubmit=async e=>{
+  e.preventDefault();const err=document.getElementById('uerr'),btn=e.target.querySelector('[type=submit]');err.textContent='';
+  const meta={caption:val('u-cap').slice(0,200),when:val('u-when').slice(0,80),where:val('u-where').slice(0,120)};
+  if(ph){try{const r=await SB.from('photos').update({caption:meta.caption,when_text:meta.when,where_text:meta.where}).eq('id',ph.id);if(r.error)throw r.error;Object.assign(ph,meta);close();renderGal();if(pvd.open)drawPV()}catch(_){err.textContent=t('eSave')}return}
+  if(!document.getElementById('u-ok').checked){err.textContent=t('eConsent');return}
+  if(!/^image\/(jpeg|png|webp|gif)$/.test(file.type)){err.textContent=t('eType');return}
+  btn.disabled=true;btn.textContent=t('uploading');
+  try{
+   const {blob,w,h}=await shrink(file);
+   const ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif'}[blob.type]||'jpg';
+   const path=(isAdmin?'approved/':'pending/')+rid()+'.'+ext;
+   const up=await SB.storage.from('photos').upload(path,blob,{contentType:blob.type,upsert:false});if(up.error)throw up.error;
+   URLS[path]=URL.createObjectURL(blob);
+   if(isAdmin){
+    const id='p'+rid(),row={id,path,w,h,caption:meta.caption,when_text:meta.when,where_text:meta.where,tags:[]};
+    const r=await SB.from('photos').insert(row);if(r.error)throw r.error;
+    PHOTOS.unshift(rowToPhoto({...row,created_at:new Date().toISOString()}));close();renderGal();openPhoto(id);pv.tag=true;drawPV();
+   }else{
+    await submit('photo',null,{path,w,h,...meta});
+    body.innerHTML=`${X()}<h3>${t('sentH')}</h3><p>${t('photoSentP')}</p><div class="acts"><button class="btn main" data-close="1">${t('done')}</button></div>`;
+   }
+  }catch(x){btn.disabled=false;btn.textContent=t('upload');const m=String(x&&(x.message||x.statusCode)||'');err.textContent=/size|413|large/i.test(m)?t('eBig'):/mime|type/i.test(m)?t('eType'):t('eUpload')}
+ };
+}
+function shrink(file){
+ return new Promise((res,rej)=>{const img=new Image(),u=URL.createObjectURL(file);
+  img.onload=()=>{const M=2000,s=Math.min(1,M/Math.max(img.naturalWidth,img.naturalHeight)),w=Math.round(img.naturalWidth*s),h=Math.round(img.naturalHeight*s);
+   if(s===1&&file.size<6e6&&file.type!=='image/gif'){URL.revokeObjectURL(u);res({blob:file,w,h});return}
+   const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(u);
+   c.toBlob(b=>b?res({blob:b,w,h}):rej({code:'invalid_request'}),'image/jpeg',.88)};
+  img.onerror=()=>{URL.revokeObjectURL(u);rej({code:'unsupported_type'})};img.src=u});
+}
+document.addEventListener('click',e=>{
+ const p=e.target.closest('[data-ph]');if(p&&!pvd.contains(p)){e.stopPropagation();openPhoto(p.dataset.ph,p.dataset.pfocus)}
+},true);
+
+
+// static text
+function applyText(){
+ document.documentElement.lang=L;
+ document.querySelectorAll('[data-i]').forEach(e=>{e.textContent=t(e.dataset.i)});
+ document.getElementById('lvi').setAttribute('aria-pressed',L==='vi');document.getElementById('len').setAttribute('aria-pressed',L==='en');
+ document.getElementById('q').placeholder=t('search');document.getElementById('gq').placeholder=t('phSearch');document.getElementById('dq').placeholder=t('dirSearch');
+ document.getElementById('root').innerHTML=ROOTS.map(([id,n,g])=>`<option value="${id}"${id===root?' selected':''}>${esc(n)} · ${t('gen')} ${g}</option>`).join('');
+ document.getElementById('people').innerHTML=PEOPLE.map(([id,n,y,g,b])=>`<article class="card"><h3>${esc(n)}</h3><div class="y">${y} · ${t('gen')} ${g}</div><p>${esc(b[L])}</p><button class="chip" data-s="${id}" data-jump="1">${t('onTree')}</button></article>`).join('');
+ document.getElementById('route').innerHTML=ROUTE.map(([p,d])=>`<li><b>${esc(p)}</b><span>${esc(d[L])}</span></li>`).join('');
+ document.getElementById('quotes').innerHTML=QUOTES.map(q=>`<blockquote>${esc(q[L])}<footer>${esc(q.by[L])}</footer></blockquote>`).join('');
+ document.getElementById('notes').innerHTML=NOTES.map(n=>`<li>${esc(n[L])}</li>`).join('');
+ document.getElementById('srcs').innerHTML=SRCS.map(s=>`<li>${s.u?`<a href="${s.u}">${esc(s[L])}</a>`:esc(s[L])}</li>`).join('');
+ document.getElementById('fig').setAttribute('aria-label',t('figcap'));
+}
+function setLang(l){L=l;try{localStorage.setItem('gp-lang',l)}catch(_){}applyText();refresh();draw();if(pvd.open)drawPV()}
+document.getElementById('lvi').onclick=()=>setLang('vi');document.getElementById('len').onclick=()=>setLang('en');
+
+const statsEl=document.getElementById('stats');
+function stats(){
+ const maxGen=Math.max(...ORDER.map(i=>P[i].gen)),wi=ORDER.filter(hasInfo).length;
+ statsEl.innerHTML=[[maxGen,t('sGen')],[ORDER.length,t('sPeople')],wi?[wi,t('sInfo')]:[NOW-924,t('sYears')]].map(([b,s])=>`<div><b>${b}</b><span>${esc(s)}</span></div>`).join('');
+}
+function ageOf(n){
+ const p=prof(n.id)||{};const by=parseInt(p.birthYear)||parseInt((n.yr||'').split('–')[0]);const dy=parseInt(p.deathYear)||parseInt((n.yr||'').split('–')[1]);
+ if(!by)return '';if(dy)return `${by}–${dy}`;return T[L].age(by,NOW-by);
+}
+const httpsUrl=(v,base)=>{v=String(v||'').trim();if(!v)return '';if(/^https:\/\//i.test(v))return v;if(/^http:/i.test(v))return '';return base?base+encodeURIComponent(v.replace(/^@/,'')):''};
+function contactRows(id){
+ const p=prof(id);if(!p)return '';const r=[];
+ if(p.addr)r.push([t('cAddr'),`${esc(p.addr)}<br><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.addr)}">${t('cMap')}</a>`]);
+ if(p.city)r.push([t('cCity'),esc(p.city)]);
+ if(p.phone)r.push([t('cPhone'),`<a href="tel:${esc(p.phone.replace(/[^\d+]/g,''))}">${esc(p.phone)}</a>`]);
+ if(p.zalo)r.push(['Zalo',esc(p.zalo)]);
+ if(p.email)r.push(['Email',`<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>`]);
+ const fb=httpsUrl(p.fb,'https://www.facebook.com/');if(fb)r.push(['Facebook',`<a href="${esc(fb)}">${esc(p.fb)}</a>`]);
+ const ig=httpsUrl(p.ig,'https://www.instagram.com/');if(ig)r.push(['Instagram',`<a href="${esc(ig)}">${esc(p.ig)}</a>`]);
+ const w=httpsUrl(p.web,'');if(w)r.push([t('cWeb'),`<a href="${esc(w)}">${esc(p.web)}</a>`]);
+ if(p.job)r.push([t('cJob'),esc(p.job)]);
+ if(p.about)r.push([t('cAbout'),esc(p.about)]);
+ return r.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('');
+}
+
+// chart
+const cw=document.getElementById('cw'),chart=document.getElementById('chart');
+function li(id){
+ const n=P[id],o=open.has(id)&&n.kids.length;
+ let h=`<li><div class="node"><button class="box${PATH.has(id)?' dl':''}${sel===id?' on':''}" data-open="${esc(id)}" data-box="${esc(id)}" title="${esc(n.name)}">${hasInfo(id)?'<span class="ci" aria-hidden="true"></span>':''}${faceHTML(id,'av bx')}${esc(short(n))}<small>${t('gen')} ${n.gen}${n.yr?' · '+esc(n.yr):''}</small>${n.added?`<span class="nw">${t('newTag')}</span>`:''}</button>`;
+ if(n.kids.length)h+=`<button class="tgl" data-t="${esc(id)}" aria-expanded="${!!o}" aria-label="${o?t('bClose'):n.kids.length+' '+t('kids')}">${o?'−':'+'+n.kids.length}</button>`;
+ h+='</div>';
+ if(o)h+=`<ul>${n.kids.map(li).join('')}</ul>`;
+ return h+'</li>';
+}
+const render=()=>{chart.innerHTML=`<ul>${li(root)}</ul>`;chart.style.zoom=zoom};
+function center(id,smooth){
+ const el=chart.querySelector(`[data-box="${CSS.escape(id)}"]`);if(!el)return;
+ const r=el.getBoundingClientRect(),w=cw.getBoundingClientRect();
+ cw.scrollTo({left:cw.scrollLeft+r.left-w.left-w.width/2+r.width/2,top:cw.scrollTop+r.top-w.top-w.height/3,behavior:smooth?'smooth':'auto'});
+}
+function rootFor(id){const a=[...anc(id),id];if(a.includes(root))return root;let best='b1';for(const [r] of ROOTS)if(a.includes(r))best=r;return best}
+const panel=document.getElementById('panel');
+const chip=id=>`<button class="chip" data-s="${esc(id)}">${esc(P[id].name)}</button>`;
+function showPanel(id){
+ const n=P[id];if(!n)return;const a=anc(id),p=prof(id)||{};
+ let h=`<button class="x" id="px" aria-label="${t('close')}">✕</button>${faceHTML(id,'av xl')}<h3>${esc(n.name)}</h3><dl class="kv"><dt>${t('fGen')}</dt><dd>${n.gen}${n.gen===1?t('founder'):''}</dd>`;
+ const age=ageOf(n);if(age)h+=`<dt>${t('fYears')}</dt><dd>${esc(age)}</dd>`;
+ const sp=n.sp||p.spouse;if(sp)h+=`<dt>${isF(n)?t('husband'):t('wife')}</dt><dd>${esc(sp)}</dd>`;
+ if(n.pa)h+=`<dt>${t('father')}</dt><dd>${chip(n.pa)}</dd>`;
+ if(n.kids.length)h+=`<dt>${t('children')}</dt><dd class="chips">${n.kids.map(chip).join('')}</dd>`;
+ if(n.code)h+=`<dt>${t('code')}</dt><dd>${esc(n.code)}</dd>`;
+ h+='</dl>';
+ const no=noteOf(n);if(no)h+=`<p class="note">${esc(no)}</p>`;
+ h+=photosOfPanel(id);
+ const c=contactRows(id);
+ h+=`<div class="contact"><h4>${t('contactH')}</h4>${c?`<dl class="kv">${c}</dl>`:`<p class="muted">${t('noContact')}</p>`}${p.updatedAt?`<p class="muted">${t('updated')} ${esc(String(p.updatedAt).slice(0,10))}</p>`:''}`;
+ h+=`<div class="acts"><button class="btn main" data-open="${esc(id)}">${t('openProf')}</button><button class="btn" data-edit="${esc(id)}">${c?t('editInfo'):t('addInfo')}</button><button class="btn" data-add="${esc(id)}">${t('addChild')}</button>${n.added&&canAdmin?`<button class="btn" data-del="${esc(id)}">${t('del')}</button>`:''}</div></div>`;
+ if(a.length)h+=`<div class="chain">${t('lineage')}: ${a.length>6?'… ':''}${a.slice(-6).map(i=>`<button data-s="${esc(i)}">${esc(short(P[i]))}</button>`).join(' › ')} › ${esc(short(n))}</div>`;
+ panel.innerHTML=h;document.getElementById('px').onclick=()=>panel.classList.remove('on');
+}
+function go(id,smooth=true){
+ if(!P[id])return;
+ const r=rootFor(id);if(r!==root){root=r;document.getElementById('root').value=r}
+ for(const a of anc(id))open.add(a);
+ sel=id;render();showPanel(id);panel.classList.add('on');center(id,smooth);
+}
+document.getElementById('root').onchange=e=>{root=e.target.value;render();cw.scrollTo({top:0,left:0});const el=chart.querySelector(`[data-box="${CSS.escape(root)}"]`);if(el)center(root,false)};
+document.getElementById('zIn').onclick=()=>{zoom=Math.min(1.5,+(zoom+.15).toFixed(2));render();sel&&center(sel,false)};
+document.getElementById('zOut').onclick=()=>{zoom=Math.max(.45,+(zoom-.15).toFixed(2));render();sel&&center(sel,false)};
+// drag to pan
+let drag=null;
+cw.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||e.target.closest('button'))return;drag={x:e.clientX,y:e.clientY,l:cw.scrollLeft,t:cw.scrollTop};cw.classList.add('drag');cw.setPointerCapture(e.pointerId)});
+cw.addEventListener('pointermove',e=>{if(!drag)return;cw.scrollLeft=drag.l-(e.clientX-drag.x);cw.scrollTop=drag.t-(e.clientY-drag.y)});
+const endDrag=()=>{drag=null;cw.classList.remove('drag')};
+cw.addEventListener('pointerup',endDrag);cw.addEventListener('pointercancel',endDrag);
+
+// directory
+const dir=document.getElementById('dir'),dq=document.getElementById('dq'),dbStatus=document.getElementById('dbStatus');
+function renderDir(){
+ dbStatus.hidden=!dbState;if(dbState)dbStatus.textContent=t(dbState);
+ const v=fold(dq.value.trim());
+ const ids=ORDER.filter(hasInfo).filter(i=>!v||fold(P[i].name+' '+(prof(i).city||'')+' '+(prof(i).addr||'')).includes(v));
+ if(!ids.length){dir.innerHTML=db?`<p class="muted">${v?t('noFound'):t('noneYet')}</p>`:'';return}
+ dir.innerHTML=ids.map(i=>{const n=P[i],p=prof(i),age=ageOf(n),pa=n.pa?short(P[n.pa]):'';
+  return `<article class="pc">${faceHTML(i,'av lg')}<h3>${esc(n.name)}</h3><div class="meta">${t('gen')} ${n.gen}${pa?' · '+t('childOf')+' '+esc(pa):''}${age?' · '+esc(age):''}</div>${p.city?`<div class="ln">${esc(p.city)}</div>`:''}${p.phone?`<div class="ln">${esc(p.phone)}</div>`:''}${p.email?`<div class="ln">${esc(p.email)}</div>`:''}<div class="acts"><button class="btn" data-open="${esc(i)}">${t('details')}</button></div></article>`}).join('');
+}
+dq.addEventListener('input',renderDir);
+function refresh(){build();stats();render();renderDir();renderGal();if(sel&&P[sel])showPanel(sel);if(prd.open)drawProfile()}
+
+// dialog
+const dlg=document.getElementById('dlg'),body=document.getElementById('dlgBody');
+const close=()=>dlg.open&&dlg.close();
+const X=()=>`<button class="x2" data-close="1" aria-label="${t('close')}">✕</button>`;
+const pickList=(v,attr)=>{const f=fold(v.trim());if(f.length<2)return `<p class="muted" style="padding:10px 14px;margin:0">${t('type2')}</p>`;
+ const m=ORDER.filter(i=>fold(P[i].name).includes(f)).slice(0,40);
+ return m.length?m.map(i=>`<button ${attr}="${esc(i)}">${esc(P[i].name)} <small>${t('gen')} ${P[i].gen}${P[i].pa?' · '+t('childOf')+' '+esc(short(P[P[i].pa])):''}</small></button>`).join(''):`<p class="muted" style="padding:10px 14px;margin:0">${t('noFound')}</p>`};
+function stepPick(h,p,label,attr,extra){
+ body.innerHTML=`${X()}<h3>${h}</h3><p class="muted">${p}</p><div class="fg"><label class="w">${label}<input id="fq" type="search" autocomplete="off"></label></div><div class="pick" id="fl"><p class="muted" style="padding:10px 14px;margin:0">${t('type2')}</p></div>${extra}`;
+ const fq=document.getElementById('fq'),fl=document.getElementById('fl');fq.oninput=()=>{fl.innerHTML=pickList(fq.value,attr)};
+ if(!dlg.open)dlg.showModal();fq.focus();
+}
+const stepFind=()=>stepPick(t('s1H'),t('s1P'),t('yourName'),'data-pickme',`<div class="acts"><button class="btn" data-notin="1">${t('notIn')}</button></div>`);
+const stepParent=()=>stepPick(t('s2H'),t('s2P'),t('parentName'),'data-add',`<p class="muted">${t('s2N')}</p>`);
+const F=(id,k,val,type='text',w=false)=>`<label${w?' class="w"':''}>${t(k)}<input id="${id}" type="${type}" value="${esc(val||'')}" autocomplete="off"></label>`;
+function form(mode,id){
+ const n=P[id],p=mode==='edit'?(prof(id)||{}):{};
+ let h=X()+(mode==='edit'?`<h3>${esc(n.name)}</h3><p class="muted">${t('gen')} ${n.gen}. ${t('editP')}</p>`:`<h3>${esc(T[L].addH(n.name))}</h3><p class="muted">${esc(T[L].addP(n.gen+1))}</p>`)+`<form id="pf" novalidate><div class="fg">`;
+ if(mode==='add')h+=F('f-name','cName','Nguyễn Hữu ','text',true)+`<label>${t('cGender')}<select id="f-gender"><option value="nam">${t('male')}</option><option value="nu">${t('female')}</option></select></label>`+F('f-spouse','cSpouse','');
+ else if(!n.sp)h+=F('f-spouse','cSpouse',p.spouse,'text',true);
+ h+=F('f-birth','cBirth',p.birthYear,'number')+F('f-death','cDeath',p.deathYear,'number')+F('f-addr','cAddr',p.addr,'text',true)+F('f-city','cCity',p.city)+F('f-phone','cPhone',p.phone,'tel')+F('f-email','cEmail',p.email,'email')+F('f-zalo','cZalo',p.zalo)+F('f-fb','cFb',p.fb)+F('f-ig','cIg',p.ig)+F('f-web','cWeb',p.web,'url',true)+F('f-job','cJob',p.job,'text',true);
+ h+=`<label class="w">${t('cAbout')}<textarea id="f-about">${esc(p.about||'')}</textarea></label></div><label class="ok"><input type="checkbox" id="f-ok"> <span>${t('consent')}</span></label><div class="err" id="ferr"></div><div class="acts"><button class="btn main" type="submit">${t('save')}</button><button class="btn" type="button" data-close="1">${t('cancel')}</button></div></form>`;
+ body.innerHTML=h;if(!dlg.open)dlg.showModal();
+ document.getElementById('pf').onsubmit=e=>{e.preventDefault();save(mode,id)};
+}
+const val=i=>{const e=document.getElementById(i);return e?e.value.trim():''};
+async function save(mode,id){
+ const err=document.getElementById('ferr');err.textContent='';
+ if(!document.getElementById('f-ok').checked){err.textContent=t('eConsent');return}
+ const by=val('f-birth'),dy=val('f-death');
+ if(by&&(+by<1800||+by>NOW)){err.textContent=t('eBirth');return}
+ if(dy&&(+dy<1800||+dy>NOW||(by&&+dy<+by))){err.textContent=t('eDeath');return}
+ const pr={birthYear:by,deathYear:dy,addr:val('f-addr'),city:val('f-city'),phone:val('f-phone'),email:val('f-email'),zalo:val('f-zalo'),fb:val('f-fb'),ig:val('f-ig'),web:val('f-web'),job:val('f-job'),about:val('f-about'),spouse:val('f-spouse'),updatedAt:new Date().toISOString()};
+ if(pr.web&&!/^https:\/\//i.test(pr.web)){err.textContent=t('eWeb');return}
+ let person=null,pid=id;
+ if(mode==='add'){const nm=val('f-name').replace(/\s+/g,' ');if(nm.split(' ').length<2){err.textContent=t('eName');return}
+  pid='a'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  person={id:pid,parent:id,name:nm,gender:val('f-gender'),spouse:pr.spouse,birthYear:by,deathYear:dy,createdAt:pr.updatedAt}}
+ if(!db){copyStep(id,person,pr);return}
+ const btn=body.querySelector('[type=submit]');btn.disabled=true;btn.textContent=t('saving');
+ try{
+  if(isAdmin){
+   if(person){const r=await SB.from('people').insert(personRow(person));if(r.error)throw r.error}
+   const r=await SB.from('profiles').upsert({person_id:pid,data:cleanProf(pr),updated_at:pr.updatedAt});if(r.error)throw r.error;
+   await loadAll();close();go(pid);
+  }else{
+   await submit(person?'person':'profile',id,person?{person,profile:pr}:{profile:pr});
+   body.innerHTML=`${X()}<h3>${t('sentH')}</h3><p>${t('sentP')}</p><div class="acts"><button class="btn main" data-close="1">${t('done')}</button></div>`;
+  }
+ }catch(e){
+  btn.disabled=false;btn.textContent=t('save');err.textContent=t('eSave');
+ }
+}
+function copyStep(id,person,pr){
+ const n=P[id],Ls=['GIA PHẢ NGUYỄN HỮU – THÔNG TIN BỔ SUNG / UPDATE'];
+ if(person){Ls.push('Thêm người / New person: '+person.name+(person.gender==='nu'?' (nữ)':' (nam)'));Ls.push('Con của / Child of: '+n.name+' (đời '+n.gen+', mã '+id+')')}
+ else Ls.push('Người / Person: '+n.name+' (đời '+n.gen+', mã '+id+')');
+ const lab={spouse:'cSpouse',birthYear:'cBirth',deathYear:'cDeath',addr:'cAddr',city:'cCity',phone:'cPhone',email:'cEmail',zalo:'cZalo',fb:'cFb',ig:'cIg',web:'cWeb',job:'cJob',about:'cAbout'};
+ for(const k in lab)if(pr[k])Ls.push(t(lab[k])+': '+pr[k]);
+ Ls.push(L==='en'?'Sender confirms permission to post.':'Người gửi xác nhận đã được đồng ý đăng.');
+ body.innerHTML=`${X()}<h3>${t('cpH')}</h3><p class="muted">${t('cpP')}</p><textarea class="copy" id="ct" readonly></textarea><div class="acts"><button class="btn main" id="cbtn">${t('copy')}</button><button class="btn" data-close="1">${t('done')}</button></div><p class="muted" id="cmsg"></p>`;
+ const ct=document.getElementById('ct');ct.value=Ls.join('\n');
+ document.getElementById('cbtn').onclick=async()=>{try{await navigator.clipboard.writeText(ct.value);document.getElementById('cmsg').textContent=t('copied')}catch(_){ct.select();document.getElementById('cmsg').textContent=t('copyManual')}};
+}
+function del(id){
+ const n=P[id];if(!n||!n.added||!db)return;
+ if(n.kids.length){body.innerHTML=`<p>${t('delKids')}</p><div class="acts"><button class="btn" data-close="1">${t('close')}</button></div>`;if(!dlg.open)dlg.showModal();return}
+ body.innerHTML=`<h3>${esc(T[L].delH(n.name))}</h3><p class="muted" id="dmsg">${t('delP')}</p><div class="acts"><button class="btn main" id="dyes">${t('del')}</button><button class="btn" data-close="1">${t('cancel')}</button></div>`;
+ if(!dlg.open)dlg.showModal();
+ document.getElementById('dyes').onclick=async()=>{try{let r=await SB.from('people').delete().eq('id',id);if(r.error)throw r.error;r=await SB.from('profiles').delete().eq('person_id',id);if(r.error)throw r.error;ADDED=ADDED.filter(a=>a.id!==id);delete PROF[key(id)];const pa=n.pa;close();refresh();go(pa)}catch(_){document.getElementById('dmsg').textContent=t('delFail')}};
+}
+dlg.addEventListener('click',e=>{if(e.target===dlg)close()});
+
+// clicks
+document.addEventListener('click',e=>{
+ const tg=e.target.closest('[data-t]');
+ if(tg){const id=tg.dataset.t;open.has(id)?open.delete(id):open.add(id);render();center(id,false);return}
+ if(e.target.closest('[data-close]')){close();return}
+ if(e.target.closest('[data-start]')){stepFind();return}
+ if(e.target.closest('[data-notin]')){stepParent();return}
+ const pm=e.target.closest('[data-pickme]');if(pm){form('edit',pm.dataset.pickme);return}
+ const ed=e.target.closest('[data-edit]');if(ed){form('edit',ed.dataset.edit);return}
+ const ad=e.target.closest('[data-add]');if(ad){form('add',ad.dataset.add);return}
+ const dl=e.target.closest('[data-del]');if(dl){del(dl.dataset.del);return}
+ const op=e.target.closest('[data-open]');if(op){const id=op.dataset.open;go(id,true);openProfile(id);return}
+ const s=e.target.closest('[data-s]');
+ if(s){if(s.dataset.jump)document.getElementById('cay').scrollIntoView({behavior:'smooth'});go(s.dataset.s,true)}
+});
+document.getElementById('bPath').onclick=()=>{open=DEFAULT();root='2.9.1';document.getElementById('root').value=root;go('2.12.15')};
+document.getElementById('bAll').onclick=()=>{open=new Set(ORDER.filter(i=>P[i].kids.length));render();sel&&center(sel,false)};
+document.getElementById('bClose').onclick=()=>{open=new Set(anc('tam'));render();center(sel&&chart.querySelector(`[data-box="${CSS.escape(sel)}"]`)?sel:root,false)};
+
+// search
+const q=document.getElementById('q'),hits=document.getElementById('hits');
+q.addEventListener('input',()=>{
+ const v=fold(q.value.trim());if(v.length<2){hits.hidden=true;return}
+ const m=ORDER.filter(i=>fold(P[i].name).includes(v)||fold(P[i].sp||'').includes(v)).slice(0,30);
+ hits.innerHTML=m.length?m.map(i=>`<button data-open="${esc(i)}">${esc(P[i].name)} <small>${t('gen')} ${P[i].gen}${P[i].pa?' · '+t('childOf')+' '+esc(short(P[P[i].pa])):''}</small></button>`).join(''):`<div style="padding:10px 14px" class="muted">${t('noFound')}</div>`;
+ hits.hidden=false;
+});
+hits.addEventListener('click',()=>{hits.hidden=true});
+q.addEventListener('keydown',e=>{if(e.key==='Escape')hits.hidden=true;if(e.key==='Enter'){const b=hits.querySelector('button');b&&b.click()}});
+document.addEventListener('click',e=>{if(!e.target.closest('.search'))hits.hidden=true});
+
+// timeline figure
+const fig=document.getElementById('fig');
+const known={1:924,11:1380,18:1603,28:1883,29:1911};
+const est=g=>{const ks=Object.keys(known).map(Number).sort((a,b)=>a-b);if(known[g])return known[g];for(let i=0;i<ks.length-1;i++)if(g>ks[i]&&g<ks[i+1])return known[ks[i]]+(g-ks[i])*(known[ks[i+1]]-known[ks[i]])/(ks[i+1]-ks[i]);return 1911+(g-29)*28};
+const ERAS=[[968,1009,0],[1009,1225,1],[1225,1400,2],[1400,1428,-1],[1428,1789,3],[1789,1802,-1],[1802,1945,4],[1945,2030,5]];
+const LABELS=[[1,'Nguyễn Bặc',924,0],[11,'Nguyễn Trãi',1380,1],[18,'Nguyễn Hữu Dật',1603,0],[28,'Nguyễn Hữu Khóa',1883,1]];
+function draw(){
+ const line=[...anc('tam'),'tam'].map(i=>P[i]);
+ const W=fig.clientWidth,H=fig.clientHeight,x0=900,x1=2030,X=y=>10+(y-x0)/(x1-x0)*(W-20),cy=H*.45,small=W<560;
+ let s='';
+ ERAS.forEach(([a,b,k],i)=>{const xa=X(a),xb=X(b),tx=k>=0?T[L].eras[k]:'';s+=`<rect x="${xa}" y="${H-30}" width="${Math.max(0,xb-xa-2)}" height="24" fill="var(--soft)" stroke="var(--line)"/>`;if(tx&&(xb-xa)>tx.length*7.5+10)s+=`<text x="${(xa+xb)/2}" y="${H-13}" text-anchor="middle" font-size="13" fill="var(--mute)">${esc(tx)}</text>`});
+ s+=`<line x1="${X(924)}" x2="${X(2026)}" y1="${cy}" y2="${cy}" stroke="var(--ink)" stroke-width="2"/>`;
+ line.forEach(n=>{const k=known[n.gen];s+=`<circle cx="${X(est(n.gen))}" cy="${cy}" r="${k?7:3.5}" fill="${k?'var(--ink)':'var(--bg)'}" stroke="var(--ink)" stroke-width="2"><title>${t('gen')} ${n.gen}: ${esc(n.name)}</title></circle>`});
+ LABELS.forEach(([g,n,y,down])=>{const x=X(y),a=x<90?'start':(x>W-110?'end':'middle'),ty=down?cy+30:cy-(small?18:34);
+  s+=`<text x="${x}" y="${ty}" text-anchor="${a}" font-size="${small?13:14}" fill="var(--ink)" font-weight="600">${small?y:n}</text>`;
+  if(!small)s+=`<text x="${x}" y="${ty+16}" text-anchor="${a}" font-size="13" fill="var(--mute)">${y} · ${t('gen')} ${g}</text>`});
+ s+=`<text x="${X(2026)}" y="${cy-20}" text-anchor="end" font-size="14" font-weight="600" fill="var(--ink)">${t('now')}</text>`;
+ fig.innerHTML=`<svg viewBox="0 0 ${W} ${H}" aria-hidden="true">${s}</svg>`;
+}
+const ro=new ResizeObserver(draw);ro.observe(fig);
+
+applyText();stats();render();renderDir();renderGal();showPanel(sel);
+requestAnimationFrame(()=>center('2.12.15',false));
+
+// ===== Supabase data layer =====
+Object.assign(T.vi,{notConfigured:'Trang chưa được nối với nơi lưu dữ liệu.',sentH:'Đã gửi!',sentP:'Cảm ơn bạn. Thông tin sẽ hiện lên trang sau khi người quản lý duyệt.',photoSentP:'Cảm ơn bạn. Ảnh sẽ hiện lên sau khi người quản lý duyệt; sau đó bạn có thể gắn tên người trong ảnh.',tagSent:'Đã gửi các tên vừa gắn. Chúng sẽ hiện cho mọi người sau khi người quản lý duyệt.',tagLocal:'Tên bạn gắn sẽ được gửi khi bấm “Xong gắn tên”.',
+admin:'Quản lý',adminH:'Đăng nhập quản lý',adminP:'Chỉ người quản lý trang cần đăng nhập để duyệt thông tin. Bà con không cần tài khoản.',email:'Email',password:'Mật khẩu',signin:'Đăng nhập',signout:'Đăng xuất',eLogin:'Sai email hoặc mật khẩu.',eNotAdmin:'Tài khoản này không phải người quản lý.',
+qH:'Chờ duyệt',qEmpty:'Không có gì chờ duyệt.',approve:'Duyệt',reject:'Từ chối',kProfile:'Thông tin liên lạc',kPerson:'Thêm người mới',kPhoto:'Ảnh mới',kTags:'Gắn tên trong ảnh',forP:'Cho',childOfP:'Con của',sentAt:'Gửi lúc',eAct:'Chưa thực hiện được, thử lại.',adminOn:'Bạn đang đăng nhập quản lý: thông tin bạn nhập được lưu ngay, không cần duyệt.'});
+Object.assign(T.en,{notConfigured:'This page is not connected to its data store yet.',sentH:'Sent!',sentP:'Thank you. Your information will appear once the page manager approves it.',photoSentP:'Thank you. The photo will appear once the page manager approves it; then you can tag the people in it.',tagSent:'Your tags were sent. Everyone will see them once the page manager approves them.',tagLocal:'Your tags are sent when you click “Done tagging”.',
+admin:'Manage',adminH:'Manager sign-in',adminP:'Only the page manager signs in, to approve submissions. Relatives don’t need an account.',email:'Email',password:'Password',signin:'Sign in',signout:'Sign out',eLogin:'Wrong email or password.',eNotAdmin:'This account is not a page manager.',
+qH:'Waiting for approval',qEmpty:'Nothing is waiting.',approve:'Approve',reject:'Reject',kProfile:'Contact details',kPerson:'New person',kPhoto:'New photo',kTags:'Name tags',forP:'For',childOfP:'Child of',sentAt:'Sent',eAct:'Could not do that; try again.',adminOn:'You are signed in as manager: what you enter is saved at once, without approval.'});
+const CFG=window.GP_CONFIG||{};let SB=null,isAdmin=false,QUEUE=[];
+const num=(v,lo,hi)=>{v=+v;return isFinite(v)?Math.min(hi,Math.max(lo,v)):lo};
+const rid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const PF=['birthYear','deathYear','addr','city','phone','email','zalo','fb','ig','web','job','about','spouse','updatedAt'];
+const cleanProf=x=>{const c={};x=x||{};for(const k of PF)if(x[k]!=null&&x[k]!=='')c[k]=String(x[k]).slice(0,500);return c};
+const cleanTags=a=>(Array.isArray(a)?a:[]).filter(g=>g&&typeof g.p==='string').slice(0,200).map(g=>({p:g.p.slice(0,40),x:num(g.x,0,1),y:num(g.y,0,1),r:num(g.r,.01,.3)}));
+const rowToPhoto=x=>({id:String(x.id),asset:okId(x.path)?x.path:'',w:num(x.w,1,20000),h:num(x.h,1,20000),caption:String(x.caption||'').slice(0,200),when:String(x.when_text||'').slice(0,80),where:String(x.where_text||'').slice(0,120),uploadedAt:String(x.created_at||''),tags:cleanTags(x.tags)});
+const personRow=p=>({id:p.id,parent:p.parent,name:p.name,gender:p.gender,spouse:p.spouse||'',birth_year:p.birthYear||'',death_year:p.deathYear||''});
+async function loadAll(){
+ const [a,b,c]=await Promise.all([SB.from('people').select('*'),SB.from('profiles').select('*'),SB.from('photos').select('*').order('created_at',{ascending:false})]);
+ const er=a.error||b.error||c.error;if(er)throw er;
+ ADDED=(a.data||[]).map(x=>({id:String(x.id),parent:String(x.parent||''),name:String(x.name||'').slice(0,80),gender:x.gender==='nu'?'nu':'nam',spouse:String(x.spouse||'').slice(0,120),birthYear:String(x.birth_year||''),deathYear:String(x.death_year||'')})).filter(z=>z.name&&z.parent);
+ const o={};for(const r of (b.data||[]))o[key(r.person_id)]=cleanProf(r.data);PROF=o;
+ PHOTOS=(c.data||[]).map(rowToPhoto).filter(p=>p.asset);
+ dbState='';refresh();if(pvd.open&&!pv.pending)drawPV();
+}
+async function submit(kind,target,payload){const {error}=await SB.from('submissions').insert({kind,target,payload});if(error)throw error}
+
+// admin
+const qSec=document.getElementById('duyet'),qList=document.getElementById('qlist');
+async function checkAdmin(){
+ const {data}=await SB.auth.getSession();const u=data&&data.session&&data.session.user;isAdmin=false;
+ if(u){const r=await SB.from('admins').select('user_id').eq('user_id',u.id);isAdmin=!!(r.data&&r.data.length)}
+ canAdmin=isAdmin;qSec.hidden=!isAdmin;if(isAdmin)loadQueue();renderGal();if(sel&&P[sel])showPanel(sel);if(prd.open)drawProfile();
+}
+async function loadQueue(){
+ const {data,error}=await SB.from('submissions').select('*').order('created_at',{ascending:true});
+ QUEUE=error?[]:(data||[]);renderQueue();
+}
+function renderQueue(){
+ document.getElementById('qh').textContent=`${t('qH')} (${QUEUE.length})`;
+ document.getElementById('adminNote').textContent=t('adminOn');
+ if(!QUEUE.length){qList.innerHTML=`<p class="muted">${t('qEmpty')}</p>`;return}
+ const lab={spouse:'cSpouse',birthYear:'cBirth',deathYear:'cDeath',addr:'cAddr',city:'cCity',phone:'cPhone',email:'cEmail',zalo:'cZalo',fb:'cFb',ig:'cIg',web:'cWeb',job:'cJob',about:'cAbout'};
+ const fields=pr=>{pr=cleanProf(pr);return Object.keys(lab).filter(k=>pr[k]).map(k=>`<div class="ln"><span class="muted">${t(lab[k])}:</span> ${esc(pr[k])}</div>`).join('')};
+ const nm=id=>P[id]?esc(P[id].name):esc(id||'?');
+ qList.innerHTML=QUEUE.map(s=>{const p=s.payload||{};let b='',k='';
+  if(s.kind==='profile'){k=t('kProfile');b=`<div class="ln"><b>${t('forP')}: ${nm(s.target)}</b></div>`+fields(p.profile)}
+  else if(s.kind==='person'){const q=p.person||{};k=t('kPerson');b=`<div class="ln"><b>${esc(q.name||'')}</b> (${q.gender==='nu'?t('female'):t('male')})</div><div class="ln">${t('childOfP')}: ${nm(s.target)}</div>`+fields(p.profile)}
+  else if(s.kind==='photo'){k=t('kPhoto');b=`${okId(p.path)?`<img class="qimg" src="${esc(srcOf(p.path))}" alt="">`:''}<div class="ln"><b>${esc(p.caption||'')}</b></div><div class="ln muted">${esc([p.when,p.where].filter(Boolean).join(' · '))}</div>`}
+  else if(s.kind==='tags'){const ph=photoById(s.target);k=t('kTags');b=`${ph?`<img class="qimg" src="${esc(srcOf(ph.asset))}" alt="">`:''}<div class="ln">${cleanTags(p.tags).map(g=>nm(g.p)).join(', ')||'—'}</div>`}
+  return `<article class="pc"><div class="meta"><b>${esc(k)}</b> · ${t('sentAt')} ${esc(String(s.created_at||'').slice(0,16).replace('T',' '))}</div>${b}<div class="acts"><button class="btn main" data-qok="${esc(s.id)}">${t('approve')}</button><button class="btn" data-qno="${esc(s.id)}">${t('reject')}</button></div><p class="err" data-qerr="${esc(s.id)}"></p></article>`}).join('');
+}
+async function approve(s){
+ const p=s.payload||{};let r;
+ if(s.kind==='profile'){if(!P[s.target])throw new Error('target');r=await SB.from('profiles').upsert({person_id:s.target,data:cleanProf(p.profile),updated_at:new Date().toISOString()});if(r.error)throw r.error}
+ else if(s.kind==='person'){const q=p.person||{};if(!P[s.target])throw new Error('parent');const row=personRow({id:okPid(q.id)?q.id:'a'+rid(),parent:s.target,name:String(q.name||'').slice(0,80),gender:q.gender==='nu'?'nu':'nam',spouse:String(q.spouse||'').slice(0,120),birthYear:String(q.birthYear||''),deathYear:String(q.deathYear||'')});
+  r=await SB.from('people').upsert(row);if(r.error)throw r.error;const pr=cleanProf(p.profile);if(Object.keys(pr).length){r=await SB.from('profiles').upsert({person_id:row.id,data:pr,updated_at:new Date().toISOString()});if(r.error)throw r.error}}
+ else if(s.kind==='photo'){if(!okId(p.path))throw new Error('path');r=await SB.from('photos').insert({id:'p'+rid(),path:p.path,w:num(p.w,1,20000),h:num(p.h,1,20000),caption:String(p.caption||'').slice(0,200),when_text:String(p.when||'').slice(0,80),where_text:String(p.where||'').slice(0,120),tags:[]});if(r.error)throw r.error}
+ else if(s.kind==='tags'){r=await SB.from('photos').update({tags:cleanTags(p.tags)}).eq('id',s.target);if(r.error)throw r.error}
+ r=await SB.from('submissions').delete().eq('id',s.id);if(r.error)throw r.error;
+}
+const okPid=s=>/^a[a-z0-9]{6,30}$/.test(String(s||''));
+qList.addEventListener('click',async e=>{
+ const ok=e.target.closest('[data-qok]'),no=e.target.closest('[data-qno]');if(!ok&&!no)return;
+ const id=(ok||no).dataset[ok?'qok':'qno'],s=QUEUE.find(x=>String(x.id)===id);if(!s)return;
+ const b=ok||no;b.disabled=true;
+ try{
+  if(ok)await approve(s);
+  else{const r=await SB.from('submissions').delete().eq('id',s.id);if(r.error)throw r.error;if(s.kind==='photo'&&okId(s.payload&&s.payload.path))await SB.storage.from('photos').remove([s.payload.path])}
+  await loadQueue();await loadAll();
+ }catch(_){b.disabled=false;const pe=qList.querySelector(`[data-qerr="${CSS.escape(id)}"]`);if(pe)pe.textContent=t('eAct')}
+});
+function adminLogin(){
+ if(isAdmin){qSec.scrollIntoView({behavior:'smooth'});return}
+ body.innerHTML=`${X()}<h3>${t('adminH')}</h3><p class="muted">${t('adminP')}</p><form id="lf" novalidate><div class="fg"><label class="w">${t('email')}<input id="l-email" type="email" autocomplete="username"></label><label class="w">${t('password')}<input id="l-pass" type="password" autocomplete="current-password"></label></div><div class="err" id="lerr"></div><div class="acts"><button class="btn main" type="submit">${t('signin')}</button></div></form>`;
+ if(!dlg.open)dlg.showModal();
+ document.getElementById('lf').onsubmit=async e=>{e.preventDefault();const err=document.getElementById('lerr');err.textContent='';
+  if(!SB){err.textContent=t('notConfigured');return}
+  const {error}=await SB.auth.signInWithPassword({email:val('l-email'),password:document.getElementById('l-pass').value});
+  if(error){err.textContent=t('eLogin');return}
+  await checkAdmin();if(!isAdmin){await SB.auth.signOut();err.textContent=t('eNotAdmin');return}
+  close();qSec.scrollIntoView({behavior:'smooth'})};
+}
+document.getElementById('adminBtn').onclick=adminLogin;
+document.getElementById('signOut').onclick=async()=>{await SB.auth.signOut();isAdmin=false;canAdmin=false;qSec.hidden=true;renderGal();if(sel&&P[sel])showPanel(sel)};
+pvd.addEventListener('close',()=>{if(pv.dirty&&!isAdmin){const ph=photoById(pv.id);pv.dirty=false;if(ph)submit('tags',ph.id,{tags:ph.tags}).catch(()=>{})}});
+
+(async()=>{
+ if(!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(CFG.url||'')||!/^[A-Za-z0-9._-]{20,}$/.test(CFG.key||'')||!window.supabase){dbState='notConfigured';renderDir();renderGal();return}
+ SB=window.supabase.createClient(CFG.url,CFG.key);db=SB;canWrite=true;assetsNS=true;
+ try{await checkAdmin()}catch(_){}
+ try{await loadAll()}catch(_){dbState='failed';renderDir();renderGal()}
+})();
+
+}
+</script>
+</body>
+</html>
