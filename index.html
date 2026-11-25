@@ -192,6 +192,12 @@ dialog.pvd{width:min(1180px,calc(100vw - 24px))}
 .mk.ai:hover{border-style:solid}
 .mk.ai .mkl{background:#fff;color:#111;border:1px solid #111}
 .aistat{margin:6px 0 0}
+.dup{border:1px dashed var(--ink);border-radius:8px;padding:10px;margin:8px 0;font-size:14px}
+.dup:empty{display:none}
+.dup .pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.dup .pair figure{margin:0}.dup .pair img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;background:var(--soft)}
+.dup .pair figcaption{font-size:12px;color:var(--mute);margin-top:4px}
+#dupList{display:grid;gap:12px;margin-top:10px}
 .upgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px;margin-top:10px;max-height:260px;overflow:auto}
 .upgrid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;background:var(--soft)}
 .qph{position:relative;margin-bottom:8px}.qph img{width:100%;display:block;border-radius:6px}
@@ -282,6 +288,8 @@ dialog.prd{width:min(900px,calc(100vw - 24px))}
   <p class="muted" id="adminNote"></p>
   <div class="acts" style="margin:0 0 16px"><button class="btn" id="aiTrain" data-i="aiTrain"></button></div>
   <p class="muted aistat" id="aiStat"></p>
+  <div class="acts" style="margin:14px 0 0"><button class="btn" id="dupScan" data-i="dupScan"></button></div>
+  <p class="muted aistat" id="dupStat"></p><div id="dupList"></div>
   <div class="dir" id="qlist"></div>
  </div>
 </section>
@@ -1136,6 +1144,14 @@ Object.assign(T.vi,{whoIsPh:'Đây là ai? Gõ tên…',circleSize:'Kéo khung �
 tagHint:'Chạm vào khuôn mặt của một người để gắn tên, như trên Facebook. Gắn bao nhiêu người cũng được.'});
 Object.assign(T.en,{whoIsPh:'Who is this? Type a name…',circleSize:'Drag to move, drag a corner to resize',smaller:'Smaller box',bigger:'Bigger box',
 tagHint:'Tap someone’s face to tag them, like on Facebook. Tag as many people as you like.'});
+Object.assign(T.vi,{dupScan:'Tìm ảnh trùng trong thư viện',dupScanning:(i,n)=>`Đang so sánh ảnh ${i}/${n}…`,dupNone:'Không thấy ảnh nào bị trùng.',dupFound:n=>`Tìm thấy ${n} cặp ảnh có thể trùng nhau.`,
+dupPair:p=>`Hai ảnh này giống nhau ${p}%`,dupMergeLib:'Gộp làm một (giữ ảnh rõ hơn)',dupNot:'Không phải trùng',
+dupLib:p=>`Ảnh này có thể đã có trên trang (giống ${p}%)`,dupNew:'Ảnh mới gửi',dupOld:'Ảnh đã có',dupHelp:'Gộp: giữ một ảnh (bản rõ hơn), gom tên người đã gắn ở cả hai ảnh, và điền chú thích còn thiếu.',
+dupMerge:'Gộp vào ảnh đã có',dupKeepBoth:'Vẫn thêm thành ảnh riêng',dupQueue:'Có một ảnh khác đang chờ duyệt giống ảnh này.'});
+Object.assign(T.en,{dupScan:'Find duplicate photos in the library',dupScanning:(i,n)=>`Comparing photo ${i}/${n}…`,dupNone:'No duplicate photos found.',dupFound:n=>`Found ${n} possible duplicate pair${n>1?'s':''}.`,
+dupPair:p=>`These two photos are ${p}% alike`,dupMergeLib:'Merge into one (keep the sharper copy)',dupNot:'Not a duplicate',
+dupLib:p=>`This photo may already be on the site (${p}% alike)`,dupNew:'New photo',dupOld:'Already on the site',dupHelp:'Merge keeps one photo (the sharper copy), combines the name tags from both, and fills in any missing caption.',
+dupMerge:'Merge into existing photo',dupKeepBoth:'Add as a separate photo anyway',dupQueue:'Another photo waiting for approval looks the same as this one.'});
 applyText();
 const CFG=window.GP_CONFIG||{};let SB=null,isAdmin=false,QUEUE=[];
 const num=(v,lo,hi)=>{v=+v;return isFinite(v)?Math.min(hi,Math.max(lo,v)):lo};
@@ -1143,7 +1159,7 @@ const rid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 const PF=['birthYear','deathYear','addr','city','phone','email','zalo','fb','ig','web','job','about','spouse','updatedAt'];
 const cleanProf=x=>{const c={};x=x||{};for(const k of PF)if(x[k]!=null&&x[k]!=='')c[k]=String(x[k]).slice(0,500);return c};
 const cleanTags=a=>(Array.isArray(a)?a:[]).filter(g=>g&&((typeof g.p==='string'&&g.p)||(typeof g.n==='string'&&g.n.trim()))).slice(0,200).map(g=>{const o={p:String(g.p||'').slice(0,40),x:num(g.x,0,1),y:num(g.y,0,1),r:num(g.r,.01,.5)};if(!o.p)o.n=String(g.n).trim().slice(0,60);return o});
-const rowToPhoto=x=>({id:String(x.id),asset:okId(x.path)?x.path:'',w:num(x.w,1,20000),h:num(x.h,1,20000),caption:String(x.caption||'').slice(0,200),when:String(x.when_text||'').slice(0,80),where:String(x.where_text||'').slice(0,120),uploadedAt:String(x.created_at||''),tags:cleanTags(x.tags)});
+const rowToPhoto=x=>({phash:/^[0-9a-f]{16}$/.test(String(x.phash||''))?String(x.phash):'',id:String(x.id),asset:okId(x.path)?x.path:'',w:num(x.w,1,20000),h:num(x.h,1,20000),caption:String(x.caption||'').slice(0,200),when:String(x.when_text||'').slice(0,80),where:String(x.where_text||'').slice(0,120),uploadedAt:String(x.created_at||''),tags:cleanTags(x.tags)});
 const personRow=p=>({id:p.id,parent:p.parent,name:p.name,gender:p.gender,spouse:p.spouse||'',birth_year:p.birthYear||'',death_year:p.deathYear||''});
 async function loadAll(){
  const [a,b,c]=await Promise.all([SB.from('people').select('*'),SB.from('profiles').select('*'),SB.from('photos').select('*').order('created_at',{ascending:false})]);
@@ -1208,7 +1224,7 @@ async function finishDrafts(){
  const b=pvb.querySelector('[data-pvsend]');if(b){b.disabled=true;b.textContent=t('saving')}
  for(const d of DRAFTS.slice()){
   try{
-   if(isAdmin){const row={id:'p'+rid(),path:d.asset,w:d.w,h:d.h,caption:d.caption,when_text:d.when,where_text:d.where,tags:cleanTags(d.tags)};
+   if(isAdmin){const row={id:'p'+rid(),path:d.asset,w:d.w,h:d.h,caption:d.caption,when_text:d.when,where_text:d.where,tags:cleanTags(d.tags)};try{row.phash=await phashOf(srcOf(d.asset))}catch(_){}
     const r=await SB.from('photos').insert(row);if(r.error)throw r.error;
     const ph=rowToPhoto({...row,created_at:new Date().toISOString()});PHOTOS.unshift(ph);if(ph.tags.length)learnPhoto(ph).catch(()=>{})}
    else await submit('photo',null,{path:d.asset,w:d.w,h:d.h,caption:d.caption,when:d.when,where:d.where,tags:cleanTags(d.tags)});
@@ -1220,6 +1236,80 @@ async function finishDrafts(){
  if(!dlg.open)dlg.showModal();
  const rb=body.querySelector('[data-retrydrafts]');if(rb)rb.onclick=()=>{close();finishDrafts()};
 }
+
+// ===== ảnh trùng: "dấu vân ảnh" (dHash 64 bit), không đổi khi ảnh bị thu nhỏ hay nén lại =====
+const HASHES={};
+async function phashOf(src){
+ if(HASHES[src])return HASHES[src];
+ const img=await loadImg(src),c=document.createElement('canvas'),x=c.getContext('2d',{willReadFrequently:true});
+ c.width=36;c.height=32;x.imageSmoothingQuality='high';x.drawImage(img,0,0,36,32);
+ const c2=document.createElement('canvas'),x2=c2.getContext('2d',{willReadFrequently:true});c2.width=9;c2.height=8;x2.imageSmoothingQuality='high';x2.drawImage(c,0,0,9,8);
+ const d=x2.getImageData(0,0,9,8).data,g=i=>d[i]*.299+d[i+1]*.587+d[i+2]*.114;let bits='';
+ for(let y=0;y<8;y++)for(let i=0;i<8;i++){const q=(y*9+i)*4;bits+=g(q)>g(q+4)?'1':'0'}
+ let hx='';for(let i=0;i<64;i+=4)hx+=parseInt(bits.slice(i,i+4),2).toString(16);
+ return HASHES[src]=hx}
+const hamm=(a,b)=>{let n=0;for(let i=0;i<16;i++){let v=parseInt(a[i],16)^parseInt(b[i],16);while(v){n+=v&1;v>>=1}}return n};
+const sameShape=(a,b)=>Math.abs(a.w/a.h-b.w/b.h)<.04;
+const simPct=d=>Math.round((64-d)/64*100);
+async function hashPhoto(ph){if(ph.phash)return ph.phash;const h=await phashOf(srcOf(ph.asset));ph.phash=h;if(isAdmin)SB.from('photos').update({phash:h}).eq('id',ph.id).then(()=>{},()=>{});return h}
+function findDup(h,o,list){let best=null;for(const ph of list){if(!ph.phash||ph===o||!sameShape(o,ph))continue;const d=hamm(h,ph.phash);if(d<=10&&(!best||d<best.d))best={ph,d}}return best}
+function mergeTags(base,add){const out=base.slice();for(const g of add){if(out.some(o=>(g.p&&o.p===g.p)||(!g.p&&o.n&&o.n===g.n)))continue;out.push(g)}return out.slice(0,200)}
+// gộp ảnh "src" vào ảnh "dst" đã có: giữ ảnh rõ hơn, gộp tên gắn và chú thích
+async function mergeInto(dst,src){
+ const upd={tags:mergeTags(dst.tags,cleanTags(src.tags).filter(g=>P[g.p]||g.n))};
+ if(!dst.caption&&src.caption)upd.caption=String(src.caption).slice(0,200);
+ if(!dst.when&&src.when)upd.when_text=String(src.when).slice(0,80);
+ if(!dst.where&&src.where)upd.where_text=String(src.where).slice(0,120);
+ let drop=src.path;
+ if(okId(src.path)&&src.w*src.h>dst.w*dst.h*1.1){upd.path=src.path;upd.w=src.w;upd.h=src.h;drop=dst.asset}
+ const r=await SB.from('photos').update(upd).eq('id',dst.id);if(r.error)throw r.error;
+ return drop}
+async function afterMerge(id,drop){
+ if(drop)SB.storage.from('photos').remove([drop]).catch(()=>{});
+ await loadAll();const ph=photoById(id);if(ph&&ph.tags.length)learnPhoto(ph).catch(()=>{})}
+// trong hàng chờ: kiểm tra từng ảnh mới
+async function checkQueueDups(){
+ const items=QUEUE.filter(s=>s.kind==='photo'&&okId(s.payload&&s.payload.path));if(!items.length)return;
+ for(const ph of PHOTOS){try{await hashPhoto(ph)}catch(_){}}
+ const pend=[];
+ for(const s of items){const p=s.payload;try{const h=await phashOf(srcOf(p.path));pend.push({s,h,w:num(p.w,1,20000),h2:num(p.h,1,20000)})}catch(_){}}
+ for(const it of pend){
+  const el=qList.querySelector(`[data-dup="${CSS.escape(String(it.s.id))}"]`);if(!el)continue;
+  const o={w:it.w,h:it.h2},m=findDup(it.h,o,PHOTOS);
+  const other=pend.find(z=>z!==it&&sameShape(o,{w:z.w,h:z.h2})&&hamm(it.h,z.h)<=10);
+  let html='';
+  if(m)html+=`<b>${esc(T[L].dupLib(simPct(m.d)))}</b><div class="pair"><figure><img src="${esc(srcOf(it.s.payload.path))}" alt=""><figcaption>${t('dupNew')} · ${it.w}×${it.h2}</figcaption></figure><figure><img src="${esc(srcOf(m.ph.asset))}" alt=""><figcaption>${t('dupOld')} · ${m.ph.w}×${m.ph.h}${m.ph.caption?' · '+esc(m.ph.caption):''} · ${esc(T[L].tagged(m.ph.tags.length))}</figcaption></figure></div><p class="muted" style="margin:0 0 8px">${t('dupHelp')}</p><div class="acts"><button class="btn main" data-qmerge="${esc(String(it.s.id))}" data-into="${esc(m.ph.id)}">${t('dupMerge')}</button></div>`;
+  if(other)html+=`<p style="margin:${m?'10px':'0'} 0 0"><b>${t('dupQueue')}</b></p>`;
+  el.innerHTML=html;
+  if(m){const ok=qList.querySelector(`[data-qok="${CSS.escape(String(it.s.id))}"]`);if(ok){ok.textContent=t('dupKeepBoth');ok.classList.remove('main')}}
+ }
+}
+// trong thư viện: tìm các cặp ảnh trùng
+const skipKey='gp-notdup',skipped=()=>{try{return new Set(JSON.parse(localStorage.getItem(skipKey)||'[]'))}catch(_){return new Set()}};
+let DUPS=[];
+async function scanLibrary(){
+ const st=document.getElementById('dupStat'),list=document.getElementById('dupList'),b=document.getElementById('dupScan');b.disabled=true;list.innerHTML='';
+ let i=0;for(const ph of PHOTOS){i++;st.textContent=T[L].dupScanning(i,PHOTOS.length);try{await hashPhoto(ph)}catch(_){}}
+ const sk=skipped();DUPS=[];
+ for(let a=0;a<PHOTOS.length;a++)for(let c=a+1;c<PHOTOS.length;c++){const A=PHOTOS[a],B=PHOTOS[c];if(!A.phash||!B.phash||!sameShape(A,B))continue;const d=hamm(A.phash,B.phash),k=[A.id,B.id].sort().join('|');if(d<=10&&!sk.has(k))DUPS.push({A,B,d,k})}
+ b.disabled=false;renderDups()}
+function renderDups(){
+ const st=document.getElementById('dupStat'),list=document.getElementById('dupList');
+ st.textContent=DUPS.length?T[L].dupFound(DUPS.length):t('dupNone');
+ const fig=ph=>`<figure><img src="${esc(srcOf(ph.asset))}" alt=""><figcaption>${ph.w}×${ph.h}${ph.caption?' · '+esc(ph.caption):''} · ${esc(T[L].tagged(ph.tags.length))}</figcaption></figure>`;
+ list.innerHTML=DUPS.map((x,i)=>`<div class="dup"><b>${esc(T[L].dupPair(simPct(x.d)))}</b><div class="pair">${fig(x.A)}${fig(x.B)}</div><div class="acts"><button class="btn main" data-dmerge="${i}">${t('dupMergeLib')}</button><button class="btn" data-dskip="${i}">${t('dupNot')}</button></div><p class="err" data-derr="${i}"></p></div>`).join('')}
+document.getElementById('dupScan').onclick=()=>scanLibrary().catch(()=>{document.getElementById('dupScan').disabled=false;document.getElementById('dupStat').textContent=t('eAct')});
+document.getElementById('dupList').addEventListener('click',async e=>{
+ const m=e.target.closest('[data-dmerge]'),k=e.target.closest('[data-dskip]');if(!m&&!k)return;
+ const x=DUPS[+(m||k).dataset[m?'dmerge':'dskip']];if(!x)return;
+ if(k){const sk=skipped();sk.add(x.k);try{localStorage.setItem(skipKey,JSON.stringify([...sk]))}catch(_){}DUPS=DUPS.filter(z=>z!==x);renderDups();return}
+ m.disabled=true;
+ try{const keep=x.A.w*x.A.h>=x.B.w*x.B.h?x.A:x.B,gone=keep===x.A?x.B:x.A;
+  const drop=await mergeInto(keep,{path:gone.asset,w:gone.w,h:gone.h,caption:gone.caption,when:gone.when,where:gone.where,tags:gone.tags});
+  const r=await SB.from('photos').delete().eq('id',gone.id);if(r.error)throw r.error;
+  await afterMerge(keep.id,drop);DUPS=DUPS.filter(z=>z!==x&&z.A!==gone&&z.B!==gone);renderDups()}
+ catch(_){m.disabled=false;const pe=document.querySelector(`[data-derr="${+m.dataset.dmerge}"]`);if(pe)pe.textContent=t('eAct')}
+});
 
 // admin
 const qSec=document.getElementById('duyet'),qList=document.getElementById('qlist');
@@ -1244,21 +1334,28 @@ function renderQueue(){
  qList.innerHTML=QUEUE.map(s=>{const p=s.payload||{};let b='',k='';
   if(s.kind==='profile'){k=t('kProfile');b=`<div class="ln"><b>${t('forP')}: ${nm(s.target)}</b></div>`+fields(p.profile)}
   else if(s.kind==='person'){const q=p.person||{};k=t('kPerson');b=`<div class="ln"><b>${esc(q.name||'')}</b> (${q.gender==='nu'?t('female'):t('male')})</div><div class="ln">${t('childOfP')}: ${nm(s.target)}</div>`+fields(p.profile)}
-  else if(s.kind==='photo'){k=t('kPhoto');const tg=cleanTags(p.tags);b=`${okId(p.path)?qPhoto(srcOf(p.path),p.w,p.h,tg):''}${tg.length?`<div class="ln"><span class="muted">${t('kTags')}:</span> ${tg.map(g=>esc((P[g.p]?P[g.p].name:(g.n||'?')))).join(', ')}</div>`:''}<div class="ln"><b>${esc(p.caption||'')}</b></div><div class="ln muted">${esc([p.when,p.where].filter(Boolean).join(' · '))}</div>`}
+  else if(s.kind==='photo'){k=t('kPhoto');const tg=cleanTags(p.tags);b=`${okId(p.path)?qPhoto(srcOf(p.path),p.w,p.h,tg):''}<div class="dup" data-dup="${esc(String(s.id))}"></div>${tg.length?`<div class="ln"><span class="muted">${t('kTags')}:</span> ${tg.map(g=>esc((P[g.p]?P[g.p].name:(g.n||'?')))).join(', ')}</div>`:''}<div class="ln"><b>${esc(p.caption||'')}</b></div><div class="ln muted">${esc([p.when,p.where].filter(Boolean).join(' · '))}</div>`}
   else if(s.kind==='tags'){const ph=photoById(s.target);k=t('kTags');b=`${ph?qPhoto(srcOf(ph.asset),ph.w,ph.h,cleanTags(p.tags)):''}<div class="ln">${cleanTags(p.tags).map(g=>esc((P[g.p]?P[g.p].name:(g.n||'?')))).join(', ')||'—'}</div>`}
   return `<article class="pc"><div class="meta"><b>${esc(k)}</b> · ${t('sentAt')} ${esc(String(s.created_at||'').slice(0,16).replace('T',' '))}</div>${b}<div class="acts"><button class="btn main" data-qok="${esc(s.id)}">${t('approve')}</button><button class="btn" data-qno="${esc(s.id)}">${t('reject')}</button></div><p class="err" data-qerr="${esc(s.id)}"></p></article>`}).join('');
+ checkQueueDups().catch(()=>{});
 }
 async function approve(s){
  const p=s.payload||{};let r;
  if(s.kind==='profile'){if(!P[s.target])throw new Error('target');r=await SB.from('profiles').upsert({person_id:s.target,data:cleanProf(p.profile),updated_at:new Date().toISOString()});if(r.error)throw r.error}
  else if(s.kind==='person'){const q=p.person||{};if(!P[s.target])throw new Error('parent');const row=personRow({id:okPid(q.id)?q.id:'a'+rid(),parent:s.target,name:String(q.name||'').slice(0,80),gender:q.gender==='nu'?'nu':'nam',spouse:String(q.spouse||'').slice(0,120),birthYear:String(q.birthYear||''),deathYear:String(q.deathYear||'')});
   r=await SB.from('people').upsert(row);if(r.error)throw r.error;const pr=cleanProf(p.profile);if(Object.keys(pr).length){r=await SB.from('profiles').upsert({person_id:row.id,data:pr,updated_at:new Date().toISOString()});if(r.error)throw r.error}}
- else if(s.kind==='photo'){if(!okId(p.path))throw new Error('path');const row={id:'p'+rid(),path:p.path,w:num(p.w,1,20000),h:num(p.h,1,20000),caption:String(p.caption||'').slice(0,200),when_text:String(p.when||'').slice(0,80),where_text:String(p.where||'').slice(0,120),tags:cleanTags(p.tags).filter(g=>P[g.p]||g.n)};r=await SB.from('photos').insert(row);if(r.error)throw r.error;if(row.tags.length)learnPhoto(rowToPhoto(row)).catch(()=>{})}
+ else if(s.kind==='photo'){if(!okId(p.path))throw new Error('path');const row={id:'p'+rid(),path:p.path,w:num(p.w,1,20000),h:num(p.h,1,20000),caption:String(p.caption||'').slice(0,200),when_text:String(p.when||'').slice(0,80),where_text:String(p.where||'').slice(0,120),tags:cleanTags(p.tags).filter(g=>P[g.p]||g.n)};try{row.phash=await phashOf(srcOf(p.path))}catch(_){}r=await SB.from('photos').insert(row);if(r.error)throw r.error;if(row.tags.length)learnPhoto(rowToPhoto(row)).catch(()=>{})}
  else if(s.kind==='tags'){const tg=cleanTags(p.tags);r=await SB.from('photos').update({tags:tg}).eq('id',s.target);if(r.error)throw r.error;const ph=photoById(s.target);if(ph){ph.tags=tg;learnPhoto(ph).catch(()=>{})}}
  r=await SB.from('submissions').delete().eq('id',s.id);if(r.error)throw r.error;
 }
 const okPid=s=>/^a[a-z0-9]{6,30}$/.test(String(s||''));
 qList.addEventListener('click',async e=>{
+ const mg=e.target.closest('[data-qmerge]');
+ if(mg){const s=QUEUE.find(x=>String(x.id)===mg.dataset.qmerge),dst=photoById(mg.dataset.into);if(!s||!dst)return;mg.disabled=true;
+  try{const p=s.payload||{};const drop=await mergeInto(dst,{path:p.path,w:num(p.w,1,20000),h:num(p.h,1,20000),caption:p.caption,when:p.when,where:p.where,tags:p.tags});
+   const r=await SB.from('submissions').delete().eq('id',s.id);if(r.error)throw r.error;await loadQueue();await afterMerge(dst.id,drop)}
+  catch(_){mg.disabled=false;const pe=qList.querySelector(`[data-qerr="${CSS.escape(String(s.id))}"]`);if(pe)pe.textContent=t('eAct')}
+  return}
  const ok=e.target.closest('[data-qok]'),no=e.target.closest('[data-qno]');if(!ok&&!no)return;
  const id=(ok||no).dataset[ok?'qok':'qno'],s=QUEUE.find(x=>String(x.id)===id);if(!s)return;
  const b=ok||no;b.disabled=true;
