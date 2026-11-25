@@ -670,7 +670,7 @@ const gal=document.getElementById('gal'),gq=document.getElementById('gq'),phNote
 function renderGal(){
  upBtn.hidden=!db;phNote.hidden=true;
  const v=fold(gq.value.trim());
- const list=PHOTOS.filter(ph=>!v||fold([ph.caption,ph.when,ph.where,...ph.tags.map(x=>P[x.p]?.name||'')].join(' ')).includes(v));
+ const list=PHOTOS.filter(ph=>!v||fold([ph.caption,ph.when,ph.where,...ph.tags.map(x=>P[x.p]?.name||x.n||'')].join(' ')).includes(v));
  if(!list.length){gal.innerHTML=db?`<p class="muted">${v?t('noFound'):t('noPhotosEd')}</p>`:'';return}
  gal.innerHTML=list.map(ph=>`<button class="ph" data-ph="${esc(ph.id)}"><span class="phimg"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" loading="lazy"></span><span class="phcap"><b>${esc(ph.caption||'')}</b><span class="muted">${esc([ph.when,ph.where].filter(Boolean).join(' · '))}</span><span class="muted">${esc(T[L].tagged(ph.tags.length))}</span></span></button>`).join('');
 }
@@ -683,7 +683,7 @@ function drawPV(){
  const ph=photoById(pv.id);if(!ph){pvd.open&&pvd.close();return}
  if(!pv.pending)pv.cands=null;
  const a=(ph.h&&ph.w)?ph.h/ph.w:.75,canTag=!!db,LIST=ph.draft?DRAFTS:PHOTOS,idx=LIST.indexOf(ph);
- const mk=(tg,i,pend)=>{const n=P[tg.p],lab=n?short(n):'?';return `<div class="mk${pend?' pend':''}${pv.focus&&tg.p===pv.focus?' foc':''}" style="left:${((tg.x-tg.r)*100).toFixed(2)}%;top:${((tg.y-tg.r/a)*100).toFixed(2)}%;width:${(tg.r*200).toFixed(2)}%" data-mk="${i}">${pv.names&&!pend?`<span class="mkl">${esc(lab)}</span>`:''}</div>`};
+ const mk=(tg,i,pend)=>{const n=P[tg.p],lab=n?short(n):(tg.n||'?');return `<div class="mk${pend?' pend':''}${pv.focus&&tg.p===pv.focus?' foc':''}" style="left:${((tg.x-tg.r)*100).toFixed(2)}%;top:${((tg.y-tg.r/a)*100).toFixed(2)}%;width:${(tg.r*200).toFixed(2)}%" data-mk="${i}">${pv.names&&!pend?`<span class="mkl">${esc(lab)}</span>`:''}</div>`};
  let h=`<button class="x2" data-pvclose="1" aria-label="${t('close')}">✕</button><div class="pvgrid"><div class="pvimgw"><div class="pvimg${pv.tag?' tagging':''}" id="pvimg" style="aspect-ratio:${ph.w||4}/${ph.h||3}"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" id="pvpic">${ph.tags.map((tg,i)=>mk(tg,i)).join('')}${pv.pending?mk(pv.pending,-1,true):''}${(pv.faces||[]).map((f,i)=>covered(ph,f)||(pv.pending&&pv.pending.x===f.x&&pv.pending.y===f.y)?'':`<div class="mk ai" style="left:${((f.x-f.r)*100).toFixed(2)}%;top:${((f.y-f.r/a)*100).toFixed(2)}%;width:${(f.r*200).toFixed(2)}%" data-ai="${i}" role="button" aria-label="${esc(f.c[0]?P[f.c[0].p].name:t('whoIs'))}">${pv.names?`<span class="mkl">${f.c[0]?esc(short(P[f.c[0].p]))+'? '+f.c[0].s+'%':'?'}</span>`:''}</div>`).join('')}</div>`;
  h+=`<div class="acts"><button class="btn" data-pvnav="-1" ${idx<=0?'disabled':''} aria-label="${t('prev')}">‹</button><button class="btn" data-pvnav="1" ${idx>=LIST.length-1?'disabled':''} aria-label="${t('next')}">›</button><button class="btn" data-pvnames="1">${pv.names?t('hideNames'):t('showNames')}</button>${canTag?`<button class="btn" data-pvai="1" ${pv.ai?'disabled':''}>${t('aiBtn')}</button>`:''}${canTag?`<button class="btn main" data-pvtag="1">${pv.tag?t('tagDone'):t('tagMode')}</button>`:''}</div></div><div class="pvside">`;
  if(ph.draft)h+=`<h3>${esc(T[L].draftH(idx+1,DRAFTS.length))}</h3><p class="muted">${t(isAdmin?'draftHintA':'draftHint')}</p><div class="acts" style="margin:10px 0 14px"><button class="btn main" data-pvsend="1">${esc(T[L][isAdmin?'saveN':'sendN'](DRAFTS.length))}</button><button class="btn" data-pvdrop="1">${t('dropPhoto')}</button></div>`;
@@ -693,7 +693,7 @@ function drawPV(){
  if(pv.tag&&!pv.pending)h+=`<p class="hint">${t('tagHint')}</p>${isAdmin||ph.draft?'':`<p class="muted">${t('tagLocal')}</p>`}`;
  if(pv.pending&&pv.cands&&pv.cands.length)h+=`<p class="muted" style="margin:8px 0 4px">${t('aiSugg')}</p><div class="pick">${pv.cands.filter(c=>P[c.p]).map(c=>`<button data-tagp="${esc(c.p)}">${esc(P[c.p].name)} <small>${t('aiLike')} ${c.s}%</small></button>`).join('')}</div>`;
  if(pv.pending)h+=`<div class="fg"><label class="w">${t('whoIs')}<input id="tq" type="search" autocomplete="off"></label><label class="w">${t('size')}<input id="tr" type="range" min="0.02" max="0.2" step="0.005" value="${pv.pending.r}"></label></div><div class="pick" id="tl"><p class="muted" style="padding:10px 14px;margin:0">${t('type2')}</p></div><div class="acts"><button class="btn" data-pvcancel="1">${t('cancel')}</button></div><div class="err" id="terr"></div>`;
- h+=`<h4 style="margin:16px 0 8px">${t('inPhoto')}</h4><div class="tags">${ph.tags.map((tg,i)=>{const n=P[tg.p];return `<div class="trow"><span class="av" style="${esc(cropStyle(ph,tg))}"></span><button class="chip" data-pvgo="${esc(tg.p)}">${esc(n?n.name:'?')}</button>${pv.tag?`<button class="btn sm" data-untag="${i}" aria-label="${t('removeTag')}">✕</button>`:''}</div>`}).join('')||`<p class="muted">${esc(T[L].tagged(0))}</p>`}</div>`;
+ h+=`<h4 style="margin:16px 0 8px">${t('inPhoto')}${ph.tags.length?` (${ph.tags.length})`:''}</h4><div class="tags">${ph.tags.map((tg,i)=>{const n=P[tg.p];return `<div class="trow"><span class="av" style="${esc(cropStyle(ph,tg))}"></span>${n?`<button class="chip" data-pvgo="${esc(tg.p)}">${esc(n.name)}</button>`:`<span class="chip">${esc(tg.n||'?')}</span>`}${pv.tag?`<button class="btn sm" data-untag="${i}" aria-label="${t('removeTag')}">✕</button>`:''}</div>`}).join('')||`<p class="muted">${esc(T[L].tagged(0))}</p>`}</div>`;
  if(canAdmin&&!ph.draft)h+=`<div class="acts" style="margin-top:18px"><button class="btn" data-pvcap="1">${t('editCap')}</button><button class="btn" data-pvdel="1">${t('delPhoto')}</button></div>`;
  h+='</div></div>';
  pvb.innerHTML=h;
@@ -706,7 +706,8 @@ function drawPV(){
   pv.pending={p:'',x:+((e.clientX-r.left)/r.width).toFixed(4),y:+((e.clientY-r.top)/r.height).toFixed(4),r:pv.pending?.r||.06};drawPV();document.getElementById('tq')?.focus();
  };
  const tq=document.getElementById('tq');
- if(tq){const tl=document.getElementById('tl');tq.oninput=()=>{tl.innerHTML=pickList(tq.value,'data-tagp')};
+ if(tq){const tl=document.getElementById('tl');tq.oninput=()=>{const v=tq.value.trim();tl.innerHTML=pickList(tq.value,'data-tagp')+(v.length>=2?`<button data-tagn="${esc(v.slice(0,60))}">+ ${esc(T[L].tagFree(v.slice(0,60)))}</button>`:'')};
+  tq.onkeydown=ev=>{if(ev.key==='Enter'){ev.preventDefault();const b=tl.querySelector('button');if(b)b.click()}};
   document.getElementById('tr').oninput=e=>{pv.pending.r=+e.target.value;const m=pvb.querySelector('.mk.pend');if(m){m.style.left=((pv.pending.x-pv.pending.r)*100)+'%';m.style.top=((pv.pending.y-pv.pending.r/a)*100)+'%';m.style.width=(pv.pending.r*200)+'%'}}}
 }
 async function saveTags(ph,tags){
@@ -732,7 +733,7 @@ pvd.addEventListener('click',async e=>{
   pv.ai=false;if(!pv.pending)drawPV();return}
  if(e.target.closest('[data-pvtag]')){if(pv.tag&&pv.dirty&&!isAdmin){try{await submit('tags',ph.id,{tags:ph.tags});pv.msg=t('tagSent')}catch(_){pv.msg=t('eTag')}pv.dirty=false}pv.tag=!pv.tag;pv.pending=null;drawPV();return}
  if(e.target.closest('[data-pvcancel]')){pv.pending=null;drawPV();return}
- const tp=e.target.closest('[data-tagp]');if(tp&&pv.pending){const tags=ph.tags.concat({p:tp.dataset.tagp,x:pv.pending.x,y:pv.pending.y,r:pv.pending.r});if(await saveTags(ph,tags)){pv.pending=null;drawPV();refresh();renderGal()}return}
+ const tp=e.target.closest('[data-tagp],[data-tagn]');if(tp&&pv.pending){const tags=ph.tags.concat(tp.dataset.tagp!=null?{p:tp.dataset.tagp,x:pv.pending.x,y:pv.pending.y,r:pv.pending.r}:{p:'',n:tp.dataset.tagn,x:pv.pending.x,y:pv.pending.y,r:pv.pending.r});pv.msg=T[L].tagAdded(tp.dataset.tagp!=null?(P[tp.dataset.tagp]||{}).name:tp.dataset.tagn,tags.length);if(await saveTags(ph,tags)){pv.pending=null;drawPV();refresh();renderGal()}return}
  const ut=e.target.closest('[data-untag]');if(ut){const tags=ph.tags.filter((_,i)=>i!==+ut.dataset.untag);if(await saveTags(ph,tags)){drawPV();refresh();renderGal()}return}
  const g=e.target.closest('[data-pvgo]');if(g&&prd.open){pvd.close();go(g.dataset.pvgo,false);openProfile(g.dataset.pvgo);return}
  if(g){pvd.close();document.getElementById('cay').scrollIntoView({behavior:'smooth'});go(g.dataset.pvgo);return}
@@ -1080,13 +1081,17 @@ draftH:(i,n)=>`Photo ${i}/${n}: tag the people in it`,draftHint:'Click a face to
 draftHintA:'Click a face to name it, or press "Find faces (AI)". Use ‹ › to move between photos. When done, press Save.',
 sendN:n=>`Send ${n} photo${n>1?'s':''}`,saveN:n=>`Save ${n} photo${n>1?'s':''}`,dropPhoto:'Remove this photo',retry:'Try again',
 photosSentP:n=>`Sent ${n} photo${n>1?'s':''} with your tags. They will appear once the manager approves them.`,photosSavedP:n=>`Saved ${n} photo${n>1?'s':''}.`,sendFail:(n,m)=>`Sent ${n}, ${m} not sent yet. Press Try again.`});
+Object.assign(T.vi,{tagHint:'Bấm vào từng khuôn mặt để gắn tên. Gắn bao nhiêu người trong ảnh cũng được: gắn xong người này thì bấm tiếp khuôn mặt người khác.',
+tagFree:v=>`Gắn tên “${v}” (người chưa có trong gia phả)`,tagAdded:(n,c)=>`Đã gắn ${n}. Ảnh này có ${c} người được gắn tên; bấm khuôn mặt tiếp theo để gắn thêm.`});
+Object.assign(T.en,{tagHint:'Click each face to name it. Tag as many people as you like: after one, just click the next face.',
+tagFree:v=>`Tag as “${v}” (not in the family tree)`,tagAdded:(n,c)=>`Tagged ${n}. ${c} ${c===1?'person':'people'} tagged in this photo; click the next face to add more.`});
 applyText();
 const CFG=window.GP_CONFIG||{};let SB=null,isAdmin=false,QUEUE=[];
 const num=(v,lo,hi)=>{v=+v;return isFinite(v)?Math.min(hi,Math.max(lo,v)):lo};
 const rid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 const PF=['birthYear','deathYear','addr','city','phone','email','zalo','fb','ig','web','job','about','spouse','updatedAt'];
 const cleanProf=x=>{const c={};x=x||{};for(const k of PF)if(x[k]!=null&&x[k]!=='')c[k]=String(x[k]).slice(0,500);return c};
-const cleanTags=a=>(Array.isArray(a)?a:[]).filter(g=>g&&typeof g.p==='string').slice(0,200).map(g=>({p:g.p.slice(0,40),x:num(g.x,0,1),y:num(g.y,0,1),r:num(g.r,.01,.3)}));
+const cleanTags=a=>(Array.isArray(a)?a:[]).filter(g=>g&&((typeof g.p==='string'&&g.p)||(typeof g.n==='string'&&g.n.trim()))).slice(0,200).map(g=>{const o={p:String(g.p||'').slice(0,40),x:num(g.x,0,1),y:num(g.y,0,1),r:num(g.r,.01,.3)};if(!o.p)o.n=String(g.n).trim().slice(0,60);return o});
 const rowToPhoto=x=>({id:String(x.id),asset:okId(x.path)?x.path:'',w:num(x.w,1,20000),h:num(x.h,1,20000),caption:String(x.caption||'').slice(0,200),when:String(x.when_text||'').slice(0,80),where:String(x.where_text||'').slice(0,120),uploadedAt:String(x.created_at||''),tags:cleanTags(x.tags)});
 const personRow=p=>({id:p.id,parent:p.parent,name:p.name,gender:p.gender,spouse:p.spouse||'',birth_year:p.birthYear||'',death_year:p.deathYear||''});
 async function loadAll(){
@@ -1130,7 +1135,7 @@ async function learnPhoto(ph){
  const rows=[];
  if(ph.tags.length){
   const faces=await detectFaces(ph),a=(ph.h&&ph.w)?ph.h/ph.w:.75,seen=new Set();
-  for(const g of ph.tags){if(seen.has(g.p))continue;let best=null,bd=1e9;
+  for(const g of ph.tags){if(!P[g.p]||seen.has(g.p))continue;let best=null,bd=1e9;
    for(const f of faces){const dd=Math.hypot(f.x-g.x,(f.y-g.y)*a);if(dd<Math.max(f.r,g.r)*1.3&&dd<bd){bd=dd;best=f}}
    if(best){seen.add(g.p);rows.push({photo_id:ph.id,person_id:g.p,descriptor:Array.from(best.d,v=>+v.toFixed(5))})}}
  }
@@ -1177,7 +1182,7 @@ async function loadQueue(){
  QUEUE=error?[]:(data||[]);renderQueue();
 }
 function qPhoto(src,w,h,tags){w=num(w,1,20000);h=num(h,1,20000);const a=h/w;
- return `<div class="qph"><img src="${esc(src)}" alt="" loading="lazy">${tags.map(g=>`<div class="mk" style="left:${((g.x-g.r)*100).toFixed(2)}%;top:${((g.y-g.r/a)*100).toFixed(2)}%;width:${(g.r*200).toFixed(2)}%"><span class="mkl">${esc(P[g.p]?short(P[g.p]):'?')}</span></div>`).join('')}</div>`}
+ return `<div class="qph"><img src="${esc(src)}" alt="" loading="lazy">${tags.map(g=>`<div class="mk" style="left:${((g.x-g.r)*100).toFixed(2)}%;top:${((g.y-g.r/a)*100).toFixed(2)}%;width:${(g.r*200).toFixed(2)}%"><span class="mkl">${esc(P[g.p]?short(P[g.p]):(g.n||'?'))}</span></div>`).join('')}</div>`}
 function renderQueue(){
  document.getElementById('qh').textContent=`${t('qH')} (${QUEUE.length})`;
  document.getElementById('adminNote').textContent=t('adminOn');
@@ -1188,8 +1193,8 @@ function renderQueue(){
  qList.innerHTML=QUEUE.map(s=>{const p=s.payload||{};let b='',k='';
   if(s.kind==='profile'){k=t('kProfile');b=`<div class="ln"><b>${t('forP')}: ${nm(s.target)}</b></div>`+fields(p.profile)}
   else if(s.kind==='person'){const q=p.person||{};k=t('kPerson');b=`<div class="ln"><b>${esc(q.name||'')}</b> (${q.gender==='nu'?t('female'):t('male')})</div><div class="ln">${t('childOfP')}: ${nm(s.target)}</div>`+fields(p.profile)}
-  else if(s.kind==='photo'){k=t('kPhoto');const tg=cleanTags(p.tags);b=`${okId(p.path)?qPhoto(srcOf(p.path),p.w,p.h,tg):''}${tg.length?`<div class="ln"><span class="muted">${t('kTags')}:</span> ${tg.map(g=>nm(g.p)).join(', ')}</div>`:''}<div class="ln"><b>${esc(p.caption||'')}</b></div><div class="ln muted">${esc([p.when,p.where].filter(Boolean).join(' · '))}</div>`}
-  else if(s.kind==='tags'){const ph=photoById(s.target);k=t('kTags');b=`${ph?qPhoto(srcOf(ph.asset),ph.w,ph.h,cleanTags(p.tags)):''}<div class="ln">${cleanTags(p.tags).map(g=>nm(g.p)).join(', ')||'—'}</div>`}
+  else if(s.kind==='photo'){k=t('kPhoto');const tg=cleanTags(p.tags);b=`${okId(p.path)?qPhoto(srcOf(p.path),p.w,p.h,tg):''}${tg.length?`<div class="ln"><span class="muted">${t('kTags')}:</span> ${tg.map(g=>esc((P[g.p]?P[g.p].name:(g.n||'?')))).join(', ')}</div>`:''}<div class="ln"><b>${esc(p.caption||'')}</b></div><div class="ln muted">${esc([p.when,p.where].filter(Boolean).join(' · '))}</div>`}
+  else if(s.kind==='tags'){const ph=photoById(s.target);k=t('kTags');b=`${ph?qPhoto(srcOf(ph.asset),ph.w,ph.h,cleanTags(p.tags)):''}<div class="ln">${cleanTags(p.tags).map(g=>esc((P[g.p]?P[g.p].name:(g.n||'?')))).join(', ')||'—'}</div>`}
   return `<article class="pc"><div class="meta"><b>${esc(k)}</b> · ${t('sentAt')} ${esc(String(s.created_at||'').slice(0,16).replace('T',' '))}</div>${b}<div class="acts"><button class="btn main" data-qok="${esc(s.id)}">${t('approve')}</button><button class="btn" data-qno="${esc(s.id)}">${t('reject')}</button></div><p class="err" data-qerr="${esc(s.id)}"></p></article>`}).join('');
 }
 async function approve(s){
@@ -1197,7 +1202,7 @@ async function approve(s){
  if(s.kind==='profile'){if(!P[s.target])throw new Error('target');r=await SB.from('profiles').upsert({person_id:s.target,data:cleanProf(p.profile),updated_at:new Date().toISOString()});if(r.error)throw r.error}
  else if(s.kind==='person'){const q=p.person||{};if(!P[s.target])throw new Error('parent');const row=personRow({id:okPid(q.id)?q.id:'a'+rid(),parent:s.target,name:String(q.name||'').slice(0,80),gender:q.gender==='nu'?'nu':'nam',spouse:String(q.spouse||'').slice(0,120),birthYear:String(q.birthYear||''),deathYear:String(q.deathYear||'')});
   r=await SB.from('people').upsert(row);if(r.error)throw r.error;const pr=cleanProf(p.profile);if(Object.keys(pr).length){r=await SB.from('profiles').upsert({person_id:row.id,data:pr,updated_at:new Date().toISOString()});if(r.error)throw r.error}}
- else if(s.kind==='photo'){if(!okId(p.path))throw new Error('path');const row={id:'p'+rid(),path:p.path,w:num(p.w,1,20000),h:num(p.h,1,20000),caption:String(p.caption||'').slice(0,200),when_text:String(p.when||'').slice(0,80),where_text:String(p.where||'').slice(0,120),tags:cleanTags(p.tags).filter(g=>P[g.p])};r=await SB.from('photos').insert(row);if(r.error)throw r.error;if(row.tags.length)learnPhoto(rowToPhoto(row)).catch(()=>{})}
+ else if(s.kind==='photo'){if(!okId(p.path))throw new Error('path');const row={id:'p'+rid(),path:p.path,w:num(p.w,1,20000),h:num(p.h,1,20000),caption:String(p.caption||'').slice(0,200),when_text:String(p.when||'').slice(0,80),where_text:String(p.where||'').slice(0,120),tags:cleanTags(p.tags).filter(g=>P[g.p]||g.n)};r=await SB.from('photos').insert(row);if(r.error)throw r.error;if(row.tags.length)learnPhoto(rowToPhoto(row)).catch(()=>{})}
  else if(s.kind==='tags'){const tg=cleanTags(p.tags);r=await SB.from('photos').update({tags:tg}).eq('id',s.target);if(r.error)throw r.error;const ph=photoById(s.target);if(ph){ph.tags=tg;learnPhoto(ph).catch(()=>{})}}
  r=await SB.from('submissions').delete().eq('id',s.id);if(r.error)throw r.error;
 }
