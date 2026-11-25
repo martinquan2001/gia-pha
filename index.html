@@ -172,6 +172,10 @@ dialog.pvd{width:min(1180px,calc(100vw - 24px))}
 .pvimg.tagging{cursor:crosshair}
 .mk{position:absolute;aspect-ratio:1;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1.5px #000a,inset 0 0 0 1.5px #000a;pointer-events:auto}
 .mk.pend{border-style:dashed}
+.mk.ai{border:2px dashed #fff;border-radius:14px;cursor:pointer;background:#ffffff14}
+.mk.ai:hover{border-style:solid}
+.mk.ai .mkl{background:#fff;color:#111;border:1px solid #111}
+.aistat{margin:6px 0 0}
 .mk.foc{border-width:3px;box-shadow:0 0 0 3px #000,0 0 0 6px #fff}
 .mkl{position:absolute;top:calc(100% + 4px);left:50%;transform:translateX(-50%);background:#111;color:#fff;font-size:13px;padding:2px 8px;border-radius:999px;white-space:nowrap}
 .pvside h3{padding-right:44px}
@@ -256,6 +260,8 @@ dialog.prd{width:min(900px,calc(100vw - 24px))}
  <div class="wrap">
   <div class="tools" style="justify-content:space-between"><h2 id="qh"></h2><button class="btn" id="signOut" data-i="signout"></button></div>
   <p class="muted" id="adminNote"></p>
+  <div class="acts" style="margin:0 0 16px"><button class="btn" id="aiTrain" data-i="aiTrain"></button></div>
+  <p class="muted aistat" id="aiStat"></p>
   <div class="dir" id="qlist"></div>
  </div>
 </section>
@@ -670,13 +676,16 @@ const pvd=document.getElementById('pv'),pvb=document.getElementById('pvBody');
 function openPhoto(id,focus){if(pv.dirty&&!isAdmin){const o=photoById(pv.id);if(o)submit('tags',o.id,{tags:o.tags}).catch(()=>{})}pv={id,tag:false,pending:null,names:true,focus:focus||null};drawPV();if(!pvd.open)pvd.showModal()}
 function drawPV(){
  const ph=photoById(pv.id);if(!ph){pvd.open&&pvd.close();return}
+ if(!pv.pending)pv.cands=null;
  const a=(ph.h&&ph.w)?ph.h/ph.w:.75,canTag=!!db,idx=PHOTOS.indexOf(ph);
  const mk=(tg,i,pend)=>{const n=P[tg.p],lab=n?short(n):'?';return `<div class="mk${pend?' pend':''}${pv.focus&&tg.p===pv.focus?' foc':''}" style="left:${((tg.x-tg.r)*100).toFixed(2)}%;top:${((tg.y-tg.r/a)*100).toFixed(2)}%;width:${(tg.r*200).toFixed(2)}%" data-mk="${i}">${pv.names&&!pend?`<span class="mkl">${esc(lab)}</span>`:''}</div>`};
- let h=`<button class="x2" data-pvclose="1" aria-label="${t('close')}">✕</button><div class="pvgrid"><div class="pvimgw"><div class="pvimg${pv.tag?' tagging':''}" id="pvimg" style="aspect-ratio:${ph.w||4}/${ph.h||3}"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" id="pvpic">${ph.tags.map((tg,i)=>mk(tg,i)).join('')}${pv.pending?mk(pv.pending,-1,true):''}</div>`;
- h+=`<div class="acts"><button class="btn" data-pvnav="-1" ${idx<=0?'disabled':''} aria-label="${t('prev')}">‹</button><button class="btn" data-pvnav="1" ${idx>=PHOTOS.length-1?'disabled':''} aria-label="${t('next')}">›</button><button class="btn" data-pvnames="1">${pv.names?t('hideNames'):t('showNames')}</button>${canTag?`<button class="btn main" data-pvtag="1">${pv.tag?t('tagDone'):t('tagMode')}</button>`:''}</div></div><div class="pvside">`;
+ let h=`<button class="x2" data-pvclose="1" aria-label="${t('close')}">✕</button><div class="pvgrid"><div class="pvimgw"><div class="pvimg${pv.tag?' tagging':''}" id="pvimg" style="aspect-ratio:${ph.w||4}/${ph.h||3}"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" id="pvpic">${ph.tags.map((tg,i)=>mk(tg,i)).join('')}${pv.pending?mk(pv.pending,-1,true):''}${(pv.faces||[]).map((f,i)=>covered(ph,f)||(pv.pending&&pv.pending.x===f.x&&pv.pending.y===f.y)?'':`<div class="mk ai" style="left:${((f.x-f.r)*100).toFixed(2)}%;top:${((f.y-f.r/a)*100).toFixed(2)}%;width:${(f.r*200).toFixed(2)}%" data-ai="${i}" role="button" aria-label="${esc(f.c[0]?P[f.c[0].p].name:t('whoIs'))}">${pv.names?`<span class="mkl">${f.c[0]?esc(short(P[f.c[0].p]))+'? '+f.c[0].s+'%':'?'}</span>`:''}</div>`).join('')}</div>`;
+ h+=`<div class="acts"><button class="btn" data-pvnav="-1" ${idx<=0?'disabled':''} aria-label="${t('prev')}">‹</button><button class="btn" data-pvnav="1" ${idx>=PHOTOS.length-1?'disabled':''} aria-label="${t('next')}">›</button><button class="btn" data-pvnames="1">${pv.names?t('hideNames'):t('showNames')}</button>${canTag?`<button class="btn" data-pvai="1" ${pv.ai?'disabled':''}>${t('aiBtn')}</button>`:''}${canTag?`<button class="btn main" data-pvtag="1">${pv.tag?t('tagDone'):t('tagMode')}</button>`:''}</div></div><div class="pvside">`;
  h+=`<h3>${esc(ph.caption||'')}</h3><p class="muted">${esc([ph.when,ph.where].filter(Boolean).join(' · '))}</p>`;
  if(pv.msg)h+=`<p class="hint">${esc(pv.msg)}</p>`;
+ if(pv.aiMsg)h+=`<p class="hint">${esc(pv.aiMsg)}</p>`;
  if(pv.tag&&!pv.pending)h+=`<p class="hint">${t('tagHint')}</p>${isAdmin?'':`<p class="muted">${t('tagLocal')}</p>`}`;
+ if(pv.pending&&pv.cands&&pv.cands.length)h+=`<p class="muted" style="margin:8px 0 4px">${t('aiSugg')}</p><div class="pick">${pv.cands.filter(c=>P[c.p]).map(c=>`<button data-tagp="${esc(c.p)}">${esc(P[c.p].name)} <small>${t('aiLike')} ${c.s}%</small></button>`).join('')}</div>`;
  if(pv.pending)h+=`<div class="fg"><label class="w">${t('whoIs')}<input id="tq" type="search" autocomplete="off"></label><label class="w">${t('size')}<input id="tr" type="range" min="0.02" max="0.2" step="0.005" value="${pv.pending.r}"></label></div><div class="pick" id="tl"><p class="muted" style="padding:10px 14px;margin:0">${t('type2')}</p></div><div class="acts"><button class="btn" data-pvcancel="1">${t('cancel')}</button></div><div class="err" id="terr"></div>`;
  h+=`<h4 style="margin:16px 0 8px">${t('inPhoto')}</h4><div class="tags">${ph.tags.map((tg,i)=>{const n=P[tg.p];return `<div class="trow"><span class="av" style="${esc(cropStyle(ph,tg))}"></span><button class="chip" data-pvgo="${esc(tg.p)}">${esc(n?n.name:'?')}</button>${pv.tag?`<button class="btn sm" data-untag="${i}" aria-label="${t('removeTag')}">✕</button>`:''}</div>`}).join('')||`<p class="muted">${esc(T[L].tagged(0))}</p>`}</div>`;
  if(canAdmin)h+=`<div class="acts" style="margin-top:18px"><button class="btn" data-pvcap="1">${t('editCap')}</button><button class="btn" data-pvdel="1">${t('delPhoto')}</button></div>`;
@@ -684,6 +693,8 @@ function drawPV(){
  pvb.innerHTML=h;
  const pic=document.getElementById('pvpic');pic.onerror=()=>{pic.replaceWith(Object.assign(document.createElement('p'),{className:'muted',textContent:t('imgMissing')}))};
  document.getElementById('pvimg').onclick=e=>{
+  const af=e.target.closest('.mk.ai');
+  if(af){const f=pv.faces[+af.dataset.ai];if(!f)return;pv.tag=true;pv.pending={p:'',x:f.x,y:f.y,r:f.r};pv.cands=f.c;drawPV();document.getElementById('tq')?.focus();return}
   if(!pv.tag||e.target.closest('.mk:not(.pend)'))return;
   const r=e.currentTarget.getBoundingClientRect();
   pv.pending={p:'',x:+((e.clientX-r.left)/r.width).toFixed(4),y:+((e.clientY-r.top)/r.height).toFixed(4),r:pv.pending?.r||.06};drawPV();document.getElementById('tq')?.focus();
@@ -696,7 +707,7 @@ async function saveTags(ph,tags){
  if(!isAdmin){ph.tags=tags;pv.dirty=true;pv.msg='';return true}
  const {error}=await SB.from('photos').update({tags}).eq('id',ph.id);
  if(error){const er=document.getElementById('terr');if(er)er.textContent=t('eTag');return false}
- ph.tags=tags;return true
+ ph.tags=tags;learnPhoto(ph).catch(()=>{});return true
 }
 pvd.addEventListener('click',async e=>{
  if(e.target===pvd){pvd.close();return}
@@ -704,6 +715,11 @@ pvd.addEventListener('click',async e=>{
  if(e.target.closest('[data-pvclose]')){pvd.close();return}
  const nv=e.target.closest('[data-pvnav]');if(nv){const i=PHOTOS.indexOf(ph)+(+nv.dataset.pvnav);if(PHOTOS[i])openPhoto(PHOTOS[i].id);return}
  if(e.target.closest('[data-pvnames]')){pv.names=!pv.names;drawPV();return}
+ if(e.target.closest('[data-pvai]')){const id=ph.id;pv.ai=true;pv.aiMsg=t('aiLoading');drawPV();
+  try{if(!FACES.length)await loadFaces();const fs=await detectFaces(ph);if(pv.id!==id)return;const ex=new Set(ph.tags.map(g=>g.p));
+   pv.faces=fs.map(f=>({x:f.x,y:f.y,r:f.r,c:candidates(f.d,ex)}));pv.aiMsg=fs.length?T[L].aiFound(fs.length,pv.faces.filter(f=>!covered(ph,f)).length):t('aiNone')}
+  catch(_){if(pv.id!==id)return;pv.aiMsg=t('aiErr')}
+  pv.ai=false;if(!pv.pending)drawPV();return}
  if(e.target.closest('[data-pvtag]')){if(pv.tag&&pv.dirty&&!isAdmin){try{await submit('tags',ph.id,{tags:ph.tags});pv.msg=t('tagSent')}catch(_){pv.msg=t('eTag')}pv.dirty=false}pv.tag=!pv.tag;pv.pending=null;drawPV();return}
  if(e.target.closest('[data-pvcancel]')){pv.pending=null;drawPV();return}
  const tp=e.target.closest('[data-tagp]');if(tp&&pv.pending){const tags=ph.tags.concat({p:tp.dataset.tagp,x:pv.pending.x,y:pv.pending.y,r:pv.pending.r});if(await saveTags(ph,tags)){pv.pending=null;drawPV();refresh();renderGal()}return}
@@ -1036,6 +1052,14 @@ qH:'Chờ duyệt',qEmpty:'Không có gì chờ duyệt.',approve:'Duyệt',reje
 Object.assign(T.en,{notConfigured:'This page is not connected to its data store yet.',sentH:'Sent!',sentP:'Thank you. Your information will appear once the page manager approves it.',photoSentP:'Thank you. The photo will appear once the page manager approves it; then you can tag the people in it.',tagSent:'Your tags were sent. Everyone will see them once the page manager approves them.',tagLocal:'Your tags are sent when you click “Done tagging”.',
 admin:'Manage',adminH:'Manager sign-in',adminP:'Only the page manager signs in, to approve submissions. Relatives don’t need an account.',email:'Email',password:'Password',signin:'Sign in',signout:'Sign out',eLogin:'Wrong email or password.',eNotAdmin:'This account is not a page manager.',
 qH:'Waiting for approval',qEmpty:'Nothing is waiting.',approve:'Approve',reject:'Reject',kProfile:'Contact details',kPerson:'New person',kPhoto:'New photo',kTags:'Name tags',forP:'For',childOfP:'Child of',sentAt:'Sent',eAct:'Could not do that; try again.',adminOn:'You are signed in as manager: what you enter is saved at once, without approval.'});
+Object.assign(T.vi,{aiBtn:'Nhận diện khuôn mặt (AI)',aiLoading:'AI đang tìm khuôn mặt… Lần đầu cần tải khoảng 14 MB, xin chờ một chút.',aiNone:'AI không tìm thấy khuôn mặt nào trong ảnh này.',
+aiFound:(n,o)=>`AI tìm thấy ${n} khuôn mặt${o?`, ${o} người chưa gắn tên`:', tất cả đã có tên'}.`+(o?' Bấm vào khung nét đứt để gắn tên. Nếu AI đã học khuôn mặt đó, tên gợi ý sẽ hiện ở trên.':''),
+aiErr:'Không chạy được AI nhận diện trên máy này.',aiSugg:'AI gợi ý',aiLike:'giống',aiTrain:'Dạy AI từ tất cả ảnh đã gắn tên',
+aiTraining:(i,n)=>`AI đang học ảnh ${i}/${n}…`,aiStat:(f,p)=>`AI đã học ${f} khuôn mặt của ${p} người. Mỗi lần bạn duyệt tên được gắn trong ảnh, AI tự học thêm.`});
+Object.assign(T.en,{aiBtn:'Find faces (AI)',aiLoading:'AI is looking for faces… The first time it downloads about 14 MB, please wait.',aiNone:'AI found no faces in this photo.',
+aiFound:(n,o)=>`AI found ${n} face${n>1?'s':''}${o?`, ${o} not yet named`:', all already named'}.`+(o?' Click a dashed box to name it. If AI has learned that face, its suggested name appears on top.':''),
+aiErr:'Face AI could not run on this device.',aiSugg:'AI suggests',aiLike:'match',aiTrain:'Teach AI from all tagged photos',
+aiTraining:(i,n)=>`AI is learning photo ${i}/${n}…`,aiStat:(f,p)=>`AI has learned ${f} face${f===1?'':'s'} of ${p} ${p===1?'person':'people'}. Each time you approve name tags in a photo, AI learns more.`});
 applyText();
 const CFG=window.GP_CONFIG||{};let SB=null,isAdmin=false,QUEUE=[];
 const num=(v,lo,hi)=>{v=+v;return isFinite(v)?Math.min(hi,Math.max(lo,v)):lo};
@@ -1052,15 +1076,62 @@ async function loadAll(){
  const o={};for(const r of (b.data||[]))o[key(r.person_id)]=cleanProf(r.data);PROF=o;
  PHOTOS=(c.data||[]).map(rowToPhoto).filter(p=>p.asset);
  dbState='';refresh();if(pvd.open&&!pv.pending)drawPV();
+ loadFaces().catch(()=>{});
 }
 async function submit(kind,target,payload){const {error}=await SB.from('submissions').insert({kind,target,payload});if(error)throw error}
+
+// ===== AI nhận diện khuôn mặt (chạy ngay trong trình duyệt, miễn phí) =====
+const FA_BASE='https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15';
+let FACES=[],aiReady=null;
+async function loadFaces(){const r=await SB.from('faces').select('person_id,photo_id,descriptor');
+ FACES=r.error?[]:(r.data||[]).filter(f=>Array.isArray(f.descriptor)&&f.descriptor.length===128).map(f=>({p:String(f.person_id),ph:String(f.photo_id),d:Float32Array.from(f.descriptor,Number)}));
+ if(isAdmin)aiStatus()}
+function loadAI(){
+ if(aiReady)return aiReady;
+ aiReady=(async()=>{
+  if(!window.faceapi)await new Promise((res,rej)=>{const sc=document.createElement('script');sc.src=FA_BASE+'/dist/face-api.js';sc.onload=res;sc.onerror=rej;document.head.appendChild(sc)});
+  const fa=window.faceapi,M=FA_BASE+'/model';
+  await fa.nets.ssdMobilenetv1.loadFromUri(M);await fa.nets.faceLandmark68Net.loadFromUri(M);await fa.nets.faceRecognitionNet.loadFromUri(M);
+  try{const c=document.createElement('canvas');c.width=c.height=160;await fa.detectAllFaces(c,new fa.SsdMobilenetv1Options({minConfidence:.5})).withFaceLandmarks().withFaceDescriptors()}catch(_){}
+  return fa})();
+ aiReady.catch(()=>{aiReady=null});return aiReady}
+const loadImg=src=>new Promise((res,rej)=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>res(i);i.onerror=rej;i.src=src});
+async function detectFaces(ph){
+ const fa=await loadAI(),img=await loadImg(srcOf(ph.asset)),W=img.naturalWidth,H=img.naturalHeight,a=H/W;
+ const res=await fa.detectAllFaces(img,new fa.SsdMobilenetv1Options({minConfidence:.5,maxResults:80})).withFaceLandmarks().withFaceDescriptors();
+ return res.map(f=>{const b=f.detection.box;return{x:+((b.x+b.width/2)/W).toFixed(4),y:+((b.y+b.height/2)/H).toFixed(4),r:+Math.min(.3,Math.max(.012,Math.max(b.width/W,b.height/W)/2*1.15)).toFixed(4),d:f.descriptor}})
+}
+const fdist=(a,b)=>{let q=0;for(let i=0;i<128;i++){const z=a[i]-b[i];q+=z*z}return Math.sqrt(q)};
+function candidates(d,ex){const best={};for(const f of FACES){if(!P[f.p]||ex.has(f.p))continue;const x=fdist(d,f.d);if(best[f.p]==null||x<best[f.p])best[f.p]=x}
+ return Object.entries(best).filter(e=>e[1]<.6).sort((a,b)=>a[1]-b[1]).slice(0,3).map(([p,x])=>({p,s:Math.round((1-x/1.2)*100)}))}
+const covered=(ph,f)=>{const a=(ph.h&&ph.w)?ph.h/ph.w:.75;return ph.tags.some(g=>Math.hypot(g.x-f.x,(g.y-f.y)*a)<Math.max(g.r,f.r))};
+async function learnPhoto(ph){
+ if(!isAdmin||!ph||!ph.asset)return 0;
+ const rows=[];
+ if(ph.tags.length){
+  const faces=await detectFaces(ph),a=(ph.h&&ph.w)?ph.h/ph.w:.75,seen=new Set();
+  for(const g of ph.tags){if(seen.has(g.p))continue;let best=null,bd=1e9;
+   for(const f of faces){const dd=Math.hypot(f.x-g.x,(f.y-g.y)*a);if(dd<Math.max(f.r,g.r)*1.3&&dd<bd){bd=dd;best=f}}
+   if(best){seen.add(g.p);rows.push({photo_id:ph.id,person_id:g.p,descriptor:Array.from(best.d,v=>+v.toFixed(5))})}}
+ }
+ let r=await SB.from('faces').delete().eq('photo_id',ph.id);if(r.error)throw r.error;
+ if(rows.length){r=await SB.from('faces').insert(rows);if(r.error)throw r.error}
+ FACES=FACES.filter(f=>f.ph!==ph.id).concat(rows.map(x=>({p:x.person_id,ph:x.photo_id,d:Float32Array.from(x.descriptor)})));
+ aiStatus();return rows.length
+}
+function aiStatus(){const el=document.getElementById('aiStat');if(el)el.textContent=T[L].aiStat(FACES.length,new Set(FACES.map(f=>f.p)).size)}
+document.getElementById('aiTrain').onclick=async e=>{
+ const b=e.currentTarget,el=document.getElementById('aiStat'),list=PHOTOS.filter(ph=>ph.tags.length);b.disabled=true;
+ try{let i=0;for(const ph of list){i++;el.textContent=T[L].aiTraining(i,list.length);await learnPhoto(ph)}aiStatus()}
+ catch(_){el.textContent=t('aiErr')}
+ b.disabled=false};
 
 // admin
 const qSec=document.getElementById('duyet'),qList=document.getElementById('qlist');
 async function checkAdmin(){
  const {data}=await SB.auth.getSession();const u=data&&data.session&&data.session.user;isAdmin=false;
  if(u){const r=await SB.from('admins').select('user_id').eq('user_id',u.id);isAdmin=!!(r.data&&r.data.length)}
- canAdmin=isAdmin;qSec.hidden=!isAdmin;if(isAdmin)loadQueue();renderGal();if(sel&&P[sel])showPanel(sel);if(prd.open)drawProfile();
+ canAdmin=isAdmin;qSec.hidden=!isAdmin;if(isAdmin){loadQueue();aiStatus()}renderGal();if(sel&&P[sel])showPanel(sel);if(prd.open)drawProfile();
 }
 async function loadQueue(){
  const {data,error}=await SB.from('submissions').select('*').order('created_at',{ascending:true});
@@ -1086,7 +1157,7 @@ async function approve(s){
  else if(s.kind==='person'){const q=p.person||{};if(!P[s.target])throw new Error('parent');const row=personRow({id:okPid(q.id)?q.id:'a'+rid(),parent:s.target,name:String(q.name||'').slice(0,80),gender:q.gender==='nu'?'nu':'nam',spouse:String(q.spouse||'').slice(0,120),birthYear:String(q.birthYear||''),deathYear:String(q.deathYear||'')});
   r=await SB.from('people').upsert(row);if(r.error)throw r.error;const pr=cleanProf(p.profile);if(Object.keys(pr).length){r=await SB.from('profiles').upsert({person_id:row.id,data:pr,updated_at:new Date().toISOString()});if(r.error)throw r.error}}
  else if(s.kind==='photo'){if(!okId(p.path))throw new Error('path');r=await SB.from('photos').insert({id:'p'+rid(),path:p.path,w:num(p.w,1,20000),h:num(p.h,1,20000),caption:String(p.caption||'').slice(0,200),when_text:String(p.when||'').slice(0,80),where_text:String(p.where||'').slice(0,120),tags:[]});if(r.error)throw r.error}
- else if(s.kind==='tags'){r=await SB.from('photos').update({tags:cleanTags(p.tags)}).eq('id',s.target);if(r.error)throw r.error}
+ else if(s.kind==='tags'){const tg=cleanTags(p.tags);r=await SB.from('photos').update({tags:tg}).eq('id',s.target);if(r.error)throw r.error;const ph=photoById(s.target);if(ph){ph.tags=tg;learnPhoto(ph).catch(()=>{})}}
  r=await SB.from('submissions').delete().eq('id',s.id);if(r.error)throw r.error;
 }
 const okPid=s=>/^a[a-z0-9]{6,30}$/.test(String(s||''));
