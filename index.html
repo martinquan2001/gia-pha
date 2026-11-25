@@ -173,6 +173,28 @@ textarea.copy{width:100%;min-height:180px;font:14px/1.5 ui-monospace,monospace;m
 .facegrid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .facebtn{border:0;background:none;padding:0;cursor:pointer;border-radius:50%}
 .gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-top:14px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;margin:4px 0 2px;background:var(--bg)}
+.seg button{border:0;background:none;border-radius:999px;padding:7px 18px;min-height:38px;cursor:pointer;font-weight:600;font-size:14px;color:var(--mute)}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.gal.people,.gal.album{display:block}
+.pgrid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:22px 14px}
+.pgrid2.fav{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid var(--line)}
+.pp{border:0;background:none;cursor:pointer;text-align:center;color:inherit;padding:0;font:inherit;position:relative}
+.pp .pf{display:block;width:100%;aspect-ratio:1;border-radius:50%;background-color:var(--soft);background-repeat:no-repeat;box-shadow:0 0 0 1px var(--line)}
+.pp:hover .pf{box-shadow:0 0 0 2px var(--ink)}
+.pp b{display:block;font-size:14px;margin-top:8px;line-height:1.25}
+.pp small{display:block;color:var(--mute);font-size:12px;margin-top:2px}
+.pp .hrt{position:absolute;top:4%;right:6%;width:26px;height:26px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-size:14px;box-shadow:0 1px 4px #0003}
+.pph{margin:0 0 12px;font-size:15px;color:var(--mute);font-weight:600}
+.alh{display:flex;align-items:center;gap:18px;margin:4px 0 18px;flex-wrap:wrap}
+.alh .pf{width:96px;height:96px;border-radius:50%;background-color:var(--soft);background-repeat:no-repeat;flex:none;box-shadow:0 0 0 1px var(--line)}
+.alh h3{margin:0;font-size:28px;line-height:1.15}
+.alh .acts{margin:8px 0 0}
+.back{border:0;background:none;padding:0;cursor:pointer;color:var(--ink);font:inherit;font-weight:600;margin-bottom:10px}
+.sqgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:3px}
+.sq{aspect-ratio:1;border:0;padding:0;cursor:pointer;background:var(--soft);overflow:hidden}
+.sq img{width:100%;height:100%;object-fit:cover;display:block}
+.sq:hover img{opacity:.85}
 .ph{display:flex;flex-direction:column;text-align:left;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:0;overflow:hidden;cursor:pointer}
 .ph:hover{border-color:var(--ink)}
 .phimg{display:block;aspect-ratio:4/3;background:var(--soft)}
@@ -314,6 +336,7 @@ dialog.prd{width:min(900px,calc(100vw - 24px))}
   <p class="intro" data-i="phIntro"></p>
   <div class="tools"><div class="search"><input id="gq" type="search" autocomplete="off"></div><button class="btn main" id="upBtn" data-i="upload" hidden></button><input type="file" id="fileIn" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden></div>
   <p class="muted" id="phNote" hidden></p>
+  <div class="seg" role="group" aria-label="View"><button data-gview="all" aria-pressed="true" data-i="gAll"></button><button data-gview="people" aria-pressed="false" data-i="gPeople"></button></div>
   <div class="gal" id="gal"></div>
  </div>
 </section>
@@ -714,9 +737,39 @@ function photosOfPanel(pid){
  return `<div class="contact"><h4>${esc(T[L].photosOf(f.length))}</h4><div class="facegrid">${f.map(({ph,tg})=>`<button class="facebtn" data-ph="${esc(ph.id)}" data-pfocus="${esc(pid)}" title="${esc(ph.caption||'')}"><span class="av lg" style="${esc(cropStyle(ph,tg))}"></span></button>`).join('')}</div></div>`;
 }
 const gal=document.getElementById('gal'),gq=document.getElementById('gq'),phNote=document.getElementById('phNote'),upBtn=document.getElementById('upBtn'),fileIn=document.getElementById('fileIn');
+let GVIEW='all',GAL=null;
+const FAVK='gp-favpeople',favs=()=>{try{return new Set(JSON.parse(localStorage.getItem(FAVK)||'[]'))}catch(_){return new Set()}};
+function peopleIndex(){
+ const m=new Map();
+ for(const ph of PHOTOS)for(const tg of ph.tags){const k=tg.p&&P[tg.p]?tg.p:(tg.n?'n:'+tg.n:'');if(!k)continue;
+  let e=m.get(k);if(!e){e={k,name:P[tg.p]?P[tg.p].name:tg.n,pid:P[tg.p]?tg.p:'',photos:[],best:null};m.set(k,e)}
+  if(!e.photos.includes(ph))e.photos.push(ph);if(!e.best||tg.r>e.best.tg.r)e.best={ph,tg}}
+ return [...m.values()].sort((a,b)=>b.photos.length-a.photos.length||a.name.localeCompare(b.name,'vi'))}
+const ppName=e=>e.pid?short(P[e.pid]):e.name;
+function renderPeople(v){
+ const all=peopleIndex().filter(e=>!v||fold(e.name).includes(v)),fv=favs();
+ if(!all.length){gal.innerHTML=`<p class="muted">${PHOTOS.length?(v?t('noFound'):t('gNoPeople')):t('noPhotosEd')}</p>`;return}
+ const tile=e=>`<button class="pp" data-pal="${esc(e.k)}" title="${esc(e.name)}"><span class="pf" style="${esc(cropStyle(e.best.ph,e.best.tg))}"></span>${fv.has(e.k)?'<span class="hrt" aria-hidden="true">♥</span>':''}<b>${esc(ppName(e))}</b><small>${esc(T[L].gCount(e.photos.length))}</small></button>`;
+ const F=all.filter(e=>fv.has(e.k)),R=all.filter(e=>!fv.has(e.k));
+ gal.innerHTML=(F.length?`<p class="pph">${t('gFavs')}</p><div class="pgrid2 fav">${F.map(tile).join('')}</div>`:'')+`<p class="pph">${esc(T[L].gPeopleN(all.length))}</p><div class="pgrid2">${R.map(tile).join('')}</div>`;
+}
+function renderAlbum(k){
+ const e=peopleIndex().find(x=>x.k===k);if(!e){GAL=null;renderPeople('');return}
+ const fv=favs().has(k),ph=e.photos.slice().sort((a,b)=>String(b.uploadedAt).localeCompare(String(a.uploadedAt)));
+ gal.innerHTML=`<button class="back" data-pal="">‹ ${t('gPeople')}</button><div class="alh"><span class="pf" style="${esc(cropStyle(e.best.ph,e.best.tg))}"></span><div><h3>${esc(e.name)}</h3><p class="muted" style="margin:4px 0 0">${esc(T[L].gCount(e.photos.length))}${e.pid&&P[e.pid].isSp?' · '+esc(spOfTxt(P[e.pid])):e.pid?' · '+t('gen')+' '+P[e.pid].gen:''}</p><div class="acts"><button class="btn${fv?' main':''}" data-pfav="${esc(k)}" aria-pressed="${fv}">${fv?'♥ '+t('gFaved'):'♡ '+t('gFav')}</button>${e.pid?`<button class="btn" data-open="${esc(e.pid)}">${t('gProfile')}</button>`:''}</div></div></div><div class="sqgrid">${ph.map(x=>`<button class="sq" data-ph="${esc(x.id)}"${e.pid?` data-pfocus="${esc(e.pid)}"`:''} title="${esc(x.caption||'')}"><img src="${esc(srcOf(x.asset))}" alt="${esc(x.caption||'')}" loading="lazy"></button>`).join('')}</div>`;
+}
+gq.addEventListener('input',()=>{GAL=null});
+document.addEventListener('click',e=>{
+ const gv=e.target.closest('[data-gview]');if(gv){GVIEW=gv.dataset.gview;GAL=null;document.querySelectorAll('[data-gview]').forEach(b=>b.setAttribute('aria-pressed',String(b===gv)));renderGal();return}
+ const pa=e.target.closest('[data-pal]');if(pa){GAL=pa.dataset.pal||null;renderGal();document.getElementById('anh').scrollIntoView({behavior:'smooth'});return}
+ const pf=e.target.closest('[data-pfav]');if(pf){const k=pf.dataset.pfav,f=favs();f.has(k)?f.delete(k):f.add(k);try{localStorage.setItem(FAVK,JSON.stringify([...f]))}catch(_){}renderGal();return}
+});
 function renderGal(){
  upBtn.hidden=!db;phNote.hidden=true;
  const v=fold(gq.value.trim());
+ gal.className='gal'+(GVIEW==='people'?(GAL?' album':' people'):'');
+ gq.placeholder=GVIEW==='people'?t('gFindP'):t('phSearch');
+ if(GVIEW==='people'){if(GAL)renderAlbum(GAL);else renderPeople(v);return}
  const list=PHOTOS.filter(ph=>!v||fold([ph.caption,ph.when,ph.where,...ph.tags.map(x=>P[x.p]?.name||x.n||'')].join(' ')).includes(v));
  if(!list.length){gal.innerHTML=db?`<p class="muted">${v?t('noFound'):t('noPhotosEd')}</p>`:'';return}
  gal.innerHTML=list.map(ph=>`<button class="ph" data-ph="${esc(ph.id)}"><span class="phimg"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" loading="lazy"></span><span class="phcap"><b>${esc(ph.caption||'')}</b><span class="muted">${esc([ph.when,ph.where].filter(Boolean).join(' · '))}</span><span class="muted">${esc(T[L].tagged(ph.tags.length))}</span></span></button>`).join('');
@@ -1208,6 +1261,10 @@ rdLoading:'Loading the Vietnamese text reader (about 6 MB the first time)…',rd
 rdGot:x=>`Found: ${x}. The boxes just filled in are highlighted; please check them.`,rdNone:'No dates or addresses found. You can correct the text in the box and press Read again.',rdApprox:'estimated from age',rdFound:x=>`Found: ${x}.`,
 rdOther:(a,b)=>`Note: the name on the document is “${a}”, not the person you are editing (${b}).`,
 obitWho:'Who is this in the family tree?',obitNoMatch:'This name is not in the family tree yet. Type to search, or add a new person.',obitSearch:'Search the family tree',obitNew:'Not in the family tree yet, add as new'});
+Object.assign(T.vi,{gAll:'Ảnh',gPeople:'Mọi người',gPeopleN:n=>`${n} người`,gCount:n=>`${n} ảnh`,gFavs:'Yêu thích',gFav:'Yêu thích',gFaved:'Đã yêu thích',gProfile:'Xem hồ sơ',gFindP:'Tìm người…',
+gNoPeople:'Chưa ai được gắn tên trong ảnh. Mở một ảnh và chạm vào khuôn mặt để gắn tên.'});
+Object.assign(T.en,{gAll:'Photos',gPeople:'People',gPeopleN:n=>`${n} ${n===1?'person':'people'}`,gCount:n=>`${n} photo${n===1?'':'s'}`,gFavs:'Favourites',gFav:'Favourite',gFaved:'Favourited',gProfile:'View profile',gFindP:'Find a person…',
+gNoPeople:'Nobody has been tagged yet. Open a photo and tap a face to tag someone.'});
 applyText();
 const CFG=window.GP_CONFIG||{};let SB=null,isAdmin=false,QUEUE=[];
 const num=(v,lo,hi)=>{v=+v;return isFinite(v)?Math.min(hi,Math.max(lo,v)):lo};
