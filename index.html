@@ -153,6 +153,12 @@ dialog::backdrop{background:#0008}
 .fg input,.fg select,.fg textarea{width:100%;margin-top:4px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
 .fg textarea{min-height:70px;resize:vertical}
 .ok{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin-top:14px}
+.reader{border:1px dashed var(--ink);border-radius:10px;padding:12px 14px;margin:12px 0 4px}
+.reader summary{cursor:pointer;font-weight:600}
+.reader textarea{width:100%;min-height:90px;margin-top:8px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);font:14px/1.45 Inter,system-ui,sans-serif;resize:vertical}
+.reader .rdimg{max-width:100%;max-height:180px;border-radius:6px;margin-top:8px;display:block}
+.aifill{outline:2px solid var(--ink);outline-offset:1px;background:var(--soft)!important}
+.cta2{margin-left:8px}
 .ok input{width:20px;height:20px;margin-top:2px;flex:none}
 .err{font-size:14px;min-height:20px;margin-top:8px;font-weight:600}
 .pick{max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:8px;margin-top:10px}
@@ -252,7 +258,7 @@ dialog.prd{width:min(900px,calc(100vw - 24px))}
 <section class="band">
  <div class="wrap">
   <div class="hero">
-   <div><h1 data-i="h1"></h1><p data-i="lead"></p><button class="cta" data-start="1" data-i="cta"></button></div>
+   <div><h1 data-i="h1"></h1><p data-i="lead"></p><button class="cta" data-start="1" data-i="cta"></button><button class="cta cta2 btn" data-obit="1" data-i="obitBtn"></button></div>
    <div class="stats" id="stats"></div>
   </div>
   <div class="fig" id="fig" role="img"></div>
@@ -1024,13 +1030,15 @@ const stepParent=()=>stepPick(t('s2H'),t('s2P'),t('parentName'),'data-add',`<p c
 const F=(id,k,val,type='text',w=false)=>`<label${w?' class="w"':''}>${t(k)}<input id="${id}" type="${type}" value="${esc(val||'')}" autocomplete="off"></label>`;
 function form(mode,id){
  const n=P[id],p=mode==='edit'?(prof(id)||{}):{};
- let h=X()+(mode==='edit'?`<h3>${esc(n.name)}</h3><p class="muted">${n.isSp?esc(spOfTxt(n))+'.':t('gen')+' '+n.gen+'.'} ${t(n.isSp?'editSpP':'editP')}</p>`:`<h3>${esc(T[L].addH(n.name))}</h3><p class="muted">${esc(T[L].addP(n.gen+1))}</p>`)+`<form id="pf" novalidate><div class="fg">`;
+ let h=X()+(mode==='edit'?`<h3>${esc(n.name)}</h3><p class="muted">${n.isSp?esc(spOfTxt(n))+'.':t('gen')+' '+n.gen+'.'} ${t(n.isSp?'editSpP':'editP')}</p>`:`<h3>${esc(T[L].addH(n.name))}</h3><p class="muted">${esc(T[L].addP(n.gen+1))}</p>`)+readerHTML(mode==='add'||!(prof(id)||{}).birthYear)+`<form id="pf" novalidate><div class="fg">`;
  if(mode==='add')h+=F('f-name','cName','Nguyễn Hữu ','text',true)+`<label>${t('cGender')}<select id="f-gender"><option value="nam">${t('male')}</option><option value="nu">${t('female')}</option></select></label>`+F('f-spouse','cSpouse','');
  else if(!n.sp&&!n.isSp)h+=F('f-spouse',isF(n)?'cHusband':'cSpouse',p.spouse,'text',true);
  h+=F('f-birth','cBirth',p.birthYear,'number')+F('f-death','cDeath',p.deathYear,'number')+F('f-addr','cAddr',p.addr,'text',true)+F('f-city','cCity',p.city)+F('f-phone','cPhone',p.phone,'tel')+F('f-email','cEmail',p.email,'email')+F('f-zalo','cZalo',p.zalo)+F('f-fb','cFb',p.fb)+F('f-ig','cIg',p.ig)+F('f-web','cWeb',p.web,'url',true)+F('f-job','cJob',p.job,'text',true);
  h+=`<label class="w">${t('cAbout')}<textarea id="f-about">${esc(p.about||'')}</textarea></label></div><label class="ok"><input type="checkbox" id="f-ok"> <span>${t('consent')}</span></label><div class="err" id="ferr"></div><div class="acts"><button class="btn main" type="submit">${t('save')}</button><button class="btn" type="button" data-close="1">${t('cancel')}</button></div></form>`;
  body.innerHTML=h;if(!dlg.open)dlg.showModal();
  document.getElementById('pf').onsubmit=e=>{e.preventDefault();save(mode,id)};
+ wireReader(r=>applyRead(r,mode==='edit'?P[id]:null));
+ if(PREFILL){applyRead(PREFILL,mode==='edit'?P[id]:null,true);PREFILL=null}
 }
 const val=i=>{const e=document.getElementById(i);return e?e.value.trim():''};
 async function save(mode,id){
@@ -1086,6 +1094,9 @@ document.addEventListener('click',e=>{
  if(tg){const id=tg.dataset.t;open.has(id)?open.delete(id):open.add(id);render();center(id,false);return}
  if(e.target.closest('[data-close]')){close();return}
  if(e.target.closest('[data-start]')){stepFind();return}
+ if(e.target.closest('[data-obit]')){obitStart();return}
+ const opk=e.target.closest('[data-obitpick]');if(opk){PREFILL=LASTREAD;form('edit',opk.dataset.obitpick);return}
+ if(e.target.closest('[data-obitnew]')){PREFILL=LASTREAD;stepParent();return}
  if(e.target.closest('[data-notin]')){stepParent();return}
  const pm=e.target.closest('[data-pickme]');if(pm){form('edit',pm.dataset.pickme);return}
  const ed=e.target.closest('[data-edit]');if(ed){form('edit',ed.dataset.edit);return}
@@ -1184,6 +1195,18 @@ Object.assign(T.en,{wifeOf:(n,g)=>`Wife of ${n} (generation ${g})`,husbandOf:(n,
 spUnknown:'Not recorded in the old records.',spAddW:'Add his wife’s name',spAddH:'Add her husband’s name',cHusband:'Husband',
 editSpP:'Help us remember her or him: birth and death years, home town, memories, or contact details if living.',
 treeIntro:'Click a box to see details. The box beside it, joined by a short line, is that person’s wife or husband. Old family records usually named only the men; here husbands and wives are recorded together so both are remembered. Use the button under a box to show children (+) or hide them (−). Drag to move around; use − and + to zoom. Boxes with a heavy outline are the direct line; a small dot in the corner means that person has contact details.'});
+Object.assign(T.vi,{obitBtn:'Đọc cáo phó (AI)',obitH:'Đọc cáo phó hoặc giấy tờ',obitP:'Tải ảnh cáo phó, cáo tang, giấy khai sinh, ghi chép tay… hoặc dán chữ vào. AI sẽ đọc và tìm tên, năm sinh, năm mất, nơi ở, nơi an táng. Sau đó bạn chọn người đó trong gia phả, kiểm tra lại và gửi.',
+rdH:'Đọc từ cáo phó hoặc giấy tờ (AI)',rdP:'Tải ảnh lên hoặc dán chữ vào, AI sẽ tự điền các ô bên dưới. Hãy kiểm tra lại trước khi gửi.',rdPick:'Chọn ảnh',rdPh:'Hoặc dán chữ vào đây (ví dụ chép từ Facebook, Zalo)…',rdGo:'Đọc và điền',
+rdLoading:'Đang tải bộ đọc chữ tiếng Việt (lần đầu khoảng 6 MB)…',rdReading:p=>`Đang đọc chữ trong ảnh… ${p}%`,rdEmpty:'Hãy chọn ảnh hoặc dán chữ trước.',rdErr:'Không đọc được ảnh này. Hãy thử ảnh rõ hơn hoặc dán chữ vào.',
+rdGot:x=>`Đã tìm thấy: ${x}. Các ô vừa điền được tô đậm, hãy kiểm tra lại.`,rdNone:'Không tìm thấy ngày tháng hay địa chỉ nào. Bạn có thể sửa chữ trong ô rồi bấm Đọc lại.',rdApprox:'ước tính từ tuổi',rdFound:x=>`Đã tìm thấy: ${x}.`,
+rdOther:(a,b)=>`Lưu ý: tên trên giấy là “${a}”, khác với người bạn đang sửa (${b}).`,
+obitWho:'Người này là ai trong gia phả?',obitNoMatch:'Chưa tìm thấy tên này trong gia phả. Hãy gõ tên để tìm, hoặc thêm người mới.',obitSearch:'Tìm trong gia phả',obitNew:'Người này chưa có trong gia phả, thêm mới'});
+Object.assign(T.en,{obitBtn:'Read an obituary (AI)',obitH:'Read an obituary or document',obitP:'Upload a photo of an obituary, birth certificate or handwritten note, or paste the text. AI reads it and finds the name, birth and death years, address and burial place. Then you choose the person in the family tree, check, and send.',
+rdH:'Fill in from an obituary or document (AI)',rdP:'Upload a photo or paste the text and AI fills in the boxes below. Please check before sending.',rdPick:'Choose photo',rdPh:'Or paste the text here (for example copied from Facebook or Zalo)…',rdGo:'Read and fill in',
+rdLoading:'Loading the Vietnamese text reader (about 6 MB the first time)…',rdReading:p=>`Reading the text in the photo… ${p}%`,rdEmpty:'Choose a photo or paste some text first.',rdErr:'Could not read this photo. Try a clearer photo or paste the text.',
+rdGot:x=>`Found: ${x}. The boxes just filled in are highlighted; please check them.`,rdNone:'No dates or addresses found. You can correct the text in the box and press Read again.',rdApprox:'estimated from age',rdFound:x=>`Found: ${x}.`,
+rdOther:(a,b)=>`Note: the name on the document is “${a}”, not the person you are editing (${b}).`,
+obitWho:'Who is this in the family tree?',obitNoMatch:'This name is not in the family tree yet. Type to search, or add a new person.',obitSearch:'Search the family tree',obitNew:'Not in the family tree yet, add as new'});
 applyText();
 const CFG=window.GP_CONFIG||{};let SB=null,isAdmin=false,QUEUE=[];
 const num=(v,lo,hi)=>{v=+v;return isFinite(v)?Math.min(hi,Math.max(lo,v)):lo};
@@ -1342,6 +1365,128 @@ document.getElementById('dupList').addEventListener('click',async e=>{
   await afterMerge(keep.id,drop);DUPS=DUPS.filter(z=>z!==x&&z.A!==gone&&z.B!==gone);renderDups()}
  catch(_){m.disabled=false;const pe=document.querySelector(`[data-derr="${+m.dataset.dmerge}"]`);if(pe)pe.textContent=t('eAct')}
 });
+
+// ===== Đọc cáo phó / ghi chép: tìm tên, năm sinh, năm mất, nơi ở... bằng quy tắc (miễn phí, chạy trong trình duyệt) =====
+function readDoc(raw,lang){
+ const flat=String(raw||'').replace(/\r/g,'').replace(/ /g,' ').replace(/[ \t]+/g,' ').replace(/ *\n\s*/g,'\n').trim();
+ const fd=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[đĐ]/g,'d').toLowerCase();
+ const map=[];let ff='';for(let i=0;i<flat.length;i++){const c=fd(flat[i]);for(let k=0;k<c.length;k++){ff+=c[k];map.push(i)}}
+ const orig=(a,b)=>flat.slice(a<map.length?map[a]:flat.length,b<map.length?map[b]:flat.length);
+ const out={},found=[],en=lang==='en';
+ const MON={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,sept:9,oct:10,nov:11,dec:12};
+ const Y=y=>{y=+y;return y>=1700&&y<=2100?y:0};
+ function dateIn(s){
+  // every date pattern; the one that starts first in the text wins (full dates beat bare years at the same spot)
+  const P=[
+   [/(?:ngay\s*)?(\d{1,2})\s*thang\s*(\d{1,2})\s*(?:nam\s*)?(\d{4})/,m=>({d:+m[1],m:+m[2],y:Y(m[3])})],
+   [/(\d{1,2})\s*[\/.\-]\s*(\d{1,2})\s*[\/.\-]\s*(\d{4})/,m=>({d:+m[1],m:+m[2],y:Y(m[3])})],
+   [/(jan|feb|mar|apr|may|jun|jul|aug|sept?|oct|nov|dec)[a-z]*\.?\s+(\d{1,2}),?\s+(\d{4})/,m=>({d:+m[2],m:MON[m[1]],y:Y(m[3])})],
+   [/(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sept?|oct|nov|dec)[a-z]*\.?\s+(\d{4})/,m=>({d:+m[1],m:MON[m[2]],y:Y(m[3])})],
+   [/(?:nam|in|year)\s*(\d{4})/,m=>({y:Y(m[1])})],
+   [/\b(1[7-9]\d\d|20\d\d)\b/,m=>({y:Y(m[1])})]];
+  let best=null;
+  for(const [re,f] of P){const m=s.match(re);if(!m)continue;const r=f(m);if(!r.y)continue;r.i=m.index;r.len=m[0].length;
+   if(!best||r.i<best.i||(r.i===best.i&&r.d&&!best.d))best=r}
+  return best}
+ const fmt=d=>d?(d.d&&d.m?`${d.d}/${d.m}/${d.y}`:String(d.y)):'';
+ function after(re,win){const m=ff.match(re);if(!m)return null;const st=m.index+m[0].length,seg=ff.slice(st,st+(win||90)),d=dateIn(seg);if(!d||!d.y)return null;
+  const p0=st+d.i+d.len,rest=ff.slice(p0,p0+80);
+  const lm=rest.match(/^[\s,(]*(?:tuc|nham|nhom)?\s*(?:ngay\s*)?(\d{1,2})\s*(?:thang|\/)\s*(\d{1,2})[^)\n]{0,30}?(?:am lich|\bal\b)/);
+  if(lm)d.lunar=orig(p0,p0+lm.index+lm[0].length).replace(/^[\s,(]+/,'').replace(/[\s,]+$/,'');
+  return d}
+ const range=ff.match(/\b(1[7-9]\d\d|20\d\d)\s*[-–—~]\s*(1[7-9]\d\d|20\d\d)\b/);
+ let b=after(/(sinh ngay|sinh nam|sinh nhat|sinh luc|ngay sinh|nam sinh|sinh|born on|born|date of birth|dob)\s*:?/);
+ if(!b&&range)b={y:+range[1]};
+ let d=after(/(yen nghi trong (?:nuoc|tay) chua|yen nghi|ve nuoc chua|ve voi chua|ve nha cha|duoc chua goi ve|an giac ngan thu|vien tich|xa bao|da tu tran|tu tran|ta the|qua doi|tu gia coi doi|vinh biet|mat ngay|mat luc|mat nam|tho chung|passed away peacefully on|passed away on|passed away|died on|died|date of death)\s*:?/,110);
+ if(!d&&range)d={y:+range[2]};
+ if(b&&d&&b.y&&d.y&&b.y>d.y){const x=b;b=d;d=x}
+ const am=ff.match(/(huong tho|huong duong|at the age of|aged|age)\s*:?\s*(\d{1,3})\b/)||ff.match(/\b(tho)\s+(\d{2,3})\s*tuoi/);
+ const age=am?+am[2]:0;
+ if(!b&&d&&d.y&&age&&age<120)b={y:d.y-age+1,approx:true};       // tuổi Việt (tuổi mụ)
+ if(b&&b.y){out.birthYear=String(b.y);found.push('birth')}
+ if(d&&d.y){out.deathYear=String(d.y);found.push('death')}
+ const STOP=/[;\n]|\.(?:\s|$)|,?\s(?:đã|sinh|mất|từ trần|tạ thế|qua đời|hưởng|con|vợ|chồng|an táng|lễ|nguyên quán|quê quán|trú quán|thường trú|born|died|passed|survived|he|she)(?=[\s,.]|$)/i;
+ const grab=(re,max)=>{const m=ff.match(re);if(!m)return '';const st=m.index+m[0].length;let seg=orig(st,Math.min(ff.length,st+(max||120)+40)).replace(/^[\s:,\-–]+/,'');
+  const cut=seg.search(STOP);if(cut>=0)seg=seg.slice(0,cut);return seg.trim().replace(/[,\s]+$/,'').slice(0,max||120)};
+ const addr=grab(/(tai tu gia|tu gia|thuong tru tai|thuong tru|tru quan|tru tai|cu ngu tai|cu ngu|ngu tai|dia chi|noi o|address|resided in|lived in|resident of)\s*:?/);
+ let home=grab(/(nguyen quan|que quan|que o|hometown|native of)\s*:?/);
+ if(!home)home=grab(/(?:sinh|born)[^\n.]{0,40}?\b(?:tai|in)\s/);
+ const lastPart=s=>{const parts=s.split(',').map(x=>x.trim()).filter(Boolean);if(!parts.length)return '';const last=parts[parts.length-1];return (/^[A-Z]{2}$/.test(last)&&parts.length>1?parts.slice(-2).join(', '):last).replace(/^(tp\.?|thành phố|tỉnh)\s*/i,'')};
+ if(addr){out.addr=addr;found.push('addr');if(addr.includes(',')){out.city=lastPart(addr);found.push('city')}}
+ else if(home){out.city=lastPart(home);if(out.city)found.push('city')}
+ const bur=grab(/(an tang tai|an tang|hoa tang tai|hoa tang|an nghi tai|chon cat tai|buried at|interment at|laid to rest at)\s*:?/,100);
+ const W="[A-ZÀ-ỸĐ][A-Za-zÀ-ỹĐđ]*";
+ const tc=s=>s.split(/\s+/).map(w=>w.charAt(0)+w.slice(1).toLowerCase()).join(' ');
+ let nm='';const nmm=flat.match(new RegExp(`(?:Cụ ông|Cụ bà|CỤ ÔNG|CỤ BÀ|Cụ|CỤ|Ông|ÔNG|Bà|BÀ|Anh|ANH|Chị|CHỊ|Mr\\.?|Mrs\\.?|Ms\\.?)\\s*:?\\s+(${W}(?:[ ]+${W}){1,4})`,'u'));if(nmm)nm=nmm[1];
+ if(!nm){const any=flat.match(new RegExp(`(?:Nguyễn|NGUYỄN|Trần|TRẦN|Lê|LÊ|Phạm|PHẠM)(?:[ ]+${W}){1,4}`,'u'));if(any)nm=any[0]}
+ if(nm){nm=tc(nm.split(/\s+/).filter(w=>!/^(SINH|NGÀY|NĂM|PHÁP|DANH|Sinh|Ngày|Năm|Pháp)$/.test(w)).slice(0,5).join(' '));out.name=nm;found.push('name')}
+ const sp=flat.match(new RegExp(`(?:[Vv]ợ|VỢ|[Cc]hồng|CHỒNG|[Pp]hu quân|[Hh]iền thê|[Ww]ife|[Hh]usband)\\s*:?\\s*(?:là\\s*)?(?:ông|bà|Ông|Bà)?\\s*(${W}(?:[ ]+${W}){1,4})`,'u'));
+ if(sp){out.spouse=tc(sp[1]);found.push('spouse')}
+ const ph=flat.match(/(?:\+?84|\b0)(?:[\s.\-]?\d){8,10}/);if(ph){out.phone=ph[0].trim();found.push('phone')}
+ const em=flat.match(/[\w.+-]+@[\w-]+\.[\w.]+/);if(em){out.email=em[0];found.push('email')}
+ const L=[];
+ if(b&&b.y)L.push(en?`Born ${b.approx?'about '+b.y:(b.d?'on ':'in ')+fmt(b)}${home?' in '+home:''}.`:`Sinh ${b.approx?'khoảng năm '+b.y:(b.d?'ngày ':'năm ')+fmt(b)}${home?' tại '+home:''}.`);
+ else if(home)L.push(en?`Home town: ${home}.`:`Quê quán: ${home}.`);
+ if(d&&d.y)L.push(en?`Passed away ${d.d?'on ':'in '}${fmt(d)}${d.lunar?' ('+d.lunar+')':''}${age?`, aged ${age}`:''}.`:`Mất ${d.d?'ngày ':'năm '}${fmt(d)}${d.lunar?' ('+d.lunar+')':''}${age?`, hưởng thọ ${age} tuổi`:''}.`);
+ if(bur)L.push(en?`Buried at ${bur}.`:`An táng tại ${bur}.`);
+ if(L.length){out.about=L.join(' ');found.push('about')}
+ out.found=found;out.birthApprox=!!(b&&b.approx);
+ return out}
+
+
+// ---- OCR (đọc chữ trong ảnh) chạy trong trình duyệt, miễn phí
+let ocrReady=null,PREFILL=null,LASTREAD=null;
+function loadOCR(){if(ocrReady)return ocrReady;ocrReady=(async()=>{if(!window.Tesseract)await new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';sc.onload=res;sc.onerror=rej;document.head.appendChild(sc)});return window.Tesseract})();ocrReady.catch(()=>{ocrReady=null});return ocrReady}
+async function prepImg(file){const u=URL.createObjectURL(file);try{const img=await loadImg(u);const k=Math.min(2.5,Math.max(1,1800/Math.max(img.naturalWidth,1)));const c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*k);c.height=Math.round(img.naturalHeight*k);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.imageSmoothingQuality='high';x.drawImage(img,0,0,c.width,c.height);return c}finally{setTimeout(()=>URL.revokeObjectURL(u),5000)}}
+async function ocrFile(file,onP){const TS=await loadOCR();const w=await TS.createWorker('vie',1,{logger:m=>{if(m&&m.status==='recognizing text'&&onP)onP(Math.round((m.progress||0)*100))}});try{const c=await prepImg(file);const r=await w.recognize(c);return (r&&r.data&&r.data.text)||''}finally{try{await w.terminate()}catch(_){}}}
+function readerHTML(open){return `<details class="reader"${open?' open':''}><summary>${t('rdH')}</summary><p class="muted" style="margin:6px 0 0">${t('rdP')}</p><div class="acts" style="margin-top:8px"><button type="button" class="btn" id="rdPick">${t('rdPick')}</button><input type="file" id="rdFile" accept="image/*" hidden><span class="muted" id="rdName"></span></div><img class="rdimg" id="rdImg" alt="" hidden><textarea id="rdText" placeholder="${esc(t('rdPh'))}"></textarea><div class="acts" style="margin-top:8px"><button type="button" class="btn main" id="rdGo">${t('rdGo')}</button></div><p class="hint" id="rdMsg" aria-live="polite"></p></details>`}
+function wireReader(onResult){
+ const pick=document.getElementById('rdPick'),fi=document.getElementById('rdFile'),go=document.getElementById('rdGo'),tx=document.getElementById('rdText'),msg=document.getElementById('rdMsg'),im=document.getElementById('rdImg');if(!go)return;
+ let file=null;
+ pick.onclick=()=>{fi.value='';fi.click()};
+ fi.onchange=()=>{file=fi.files&&fi.files[0]||null;document.getElementById('rdName').textContent=file?file.name:'';if(file){im.src=URL.createObjectURL(file);im.hidden=false}};
+ go.onclick=async()=>{
+  go.disabled=true;msg.textContent='';
+  try{
+   let text=tx.value.trim();
+   if(file){msg.textContent=t('rdLoading');const o=await ocrFile(file,pc=>{msg.textContent=T[L].rdReading(pc)});text=(o.trim()+(text?'\n'+text:''));tx.value=o.trim();file=null;fi.value='';document.getElementById('rdName').textContent=''}
+   if(!text){msg.textContent=t('rdEmpty');go.disabled=false;return}
+   const r=readDoc(text,L);LASTREAD=r;onResult(r,msg);
+  }catch(_){msg.textContent=t('rdErr')}
+  go.disabled=false};
+}
+// điền kết quả vào form đang mở; chỉ điền ô còn trống, đánh dấu ô vừa điền
+function applyRead(r,person,silent){
+ const set=(id,v)=>{const el=document.getElementById(id);if(!el||!v)return 0;if(id==='f-about'){if(el.value.includes(v))return 0;el.value=el.value?el.value+'\n'+v:v}else if(el.value.trim()&&!(id==='f-name'&&/^Nguyễn Hữu\s*$/.test(el.value.trim())))return 0;else el.value=v;el.classList.add('aifill');return 1};
+ const got=[];
+ if(set('f-name',r.name))got.push(t('cName')+': '+r.name);
+ if(set('f-birth',r.birthYear))got.push(t('cBirth')+': '+r.birthYear+(r.birthApprox?' ('+t('rdApprox')+')':''));
+ if(set('f-death',r.deathYear))got.push(t('cDeath')+': '+r.deathYear);
+ if(set('f-addr',r.addr))got.push(t('cAddr')+': '+r.addr);
+ if(set('f-city',r.city))got.push(t('cCity')+': '+r.city);
+ if(set('f-spouse',r.spouse))got.push(t('cSpouse')+': '+r.spouse);
+ if(set('f-phone',r.phone))got.push(t('cPhone')+': '+r.phone);
+ if(set('f-email',r.email))got.push('Email: '+r.email);
+ if(set('f-about',r.about))got.push(t('cAbout'));
+ const msg=document.getElementById('rdMsg');
+ let warn='';if(person&&r.name){const a=fold(r.name),b=fold(person.name);if(!a.includes(b.split(' ').pop())&&!b.includes(a.split(' ').pop()))warn=' '+T[L].rdOther(r.name,person.name)}
+ if(msg)msg.textContent=(got.length?T[L].rdGot(got.join(' · ')):t('rdNone'))+warn;
+ const det=document.querySelector('#dlgBody .reader');if(det&&silent)det.open=true;
+}
+// mở từ nút ở đầu trang: đọc trước, rồi chọn người trong gia phả
+function obitStart(){
+ body.innerHTML=`${X()}<h3>${t('obitH')}</h3><p class="muted">${t('obitP')}</p>${readerHTML(true)}<div id="obitRes"></div>`;
+ if(!dlg.open)dlg.showModal();
+ wireReader((r,msg)=>{
+  const f=fold(r.name||''),last=f.split(' ').pop();
+  const cand=f?ORDER.concat(SPOUSES).filter(i=>{const n=fold(P[i].name);return n===f||(n.endsWith(' '+last)&&(n.includes(f)||f.includes(n)))}).slice(0,8):[];
+  const facts=[r.name&&(t('cName')+': '+r.name),r.birthYear&&(t('cBirth')+': '+r.birthYear+(r.birthApprox?' ('+t('rdApprox')+')':'')),r.deathYear&&(t('cDeath')+': '+r.deathYear),r.addr&&(t('cAddr')+': '+r.addr),r.city&&(t('cCity')+': '+r.city),r.spouse&&(t('cSpouse')+': '+r.spouse)].filter(Boolean);
+  msg.textContent=facts.length?T[L].rdFound(facts.join(' · ')):t('rdNone');
+  const res=document.getElementById('obitRes');
+  res.innerHTML=`<h4 style="margin:14px 0 6px">${t('obitWho')}</h4>${cand.length?`<div class="pick">${cand.map(i=>`<button data-obitpick="${esc(i)}">${esc(P[i].name)} <small>${P[i].isSp?esc(spOfTxt(P[i])):t('gen')+' '+P[i].gen+(P[i].pa?' · '+t('childOf')+' '+esc(short(P[P[i].pa])):'')}</small></button>`).join('')}</div>`:`<p class="muted">${t('obitNoMatch')}</p>`}<div class="fg"><label class="w">${t('obitSearch')}<input id="obq" type="search" autocomplete="off" value="${esc(r.name||'')}"></label></div><div class="pick" id="obl"></div><div class="acts"><button class="btn" data-obitnew="1">${t('obitNew')}</button></div>`;
+  const q=document.getElementById('obq'),l=document.getElementById('obl');q.oninput=()=>{l.innerHTML=pickList(q.value,'data-obitpick')};if(!cand.length)q.oninput();
+ });
+}
 
 // admin
 const qSec=document.getElementById('duyet'),qList=document.getElementById('qlist');
