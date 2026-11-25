@@ -161,6 +161,7 @@ dialog::backdrop{background:#0008}
 .cta.cta2{margin-left:8px;background:var(--bg);color:var(--ink);border:1px solid var(--ink)}
 .cta.cta2:hover{background:var(--soft)}
 .reader.solo{border-style:solid}
+.fnote{grid-column:1/-1;margin:-4px 0 4px;font-size:13px}
 .obsteps{margin:10px 0 12px;padding-left:22px;line-height:1.5}.obsteps li{margin:6px 0}
 .ok input{width:20px;height:20px;margin-top:2px;flex:none}
 .err{font-size:14px;min-height:20px;margin-top:8px;font-weight:600}
@@ -728,6 +729,8 @@ function build(){
  while(rest.length&&guard++<20){const next=[];for(const a of rest){if(P[a.parent]&&!P[a.id]){P[a.id]={id:a.id,pa:a.parent,name:a.name,sp:a.spouse||'',yr:a.birthYear?a.birthYear+'–'+(a.deathYear||''):'',note:'',code:'',kids:[],added:true,gender:a.gender};ORDER.push(a.id)}else if(!P[a.id])next.push(a)}rest=next}
  for(const id of ORDER){const n=P[id];if(n.pa&&P[n.pa])P[n.pa].kids.push(id)}
  (function g(id,d){P[id].gen=d;for(const k of P[id].kids)g(k,d+1)})('b1',1);
+ const rn=id=>{const o=(PROF[key(id)]||{}).name;if(o&&P[id]){P[id].origName=P[id].name;P[id].name=String(o).slice(0,80)}};
+ for(const id of ORDER)rn(id);
  // vợ / chồng: mỗi người được ghi lại thành một thành viên để nhớ đến
  SPOUSES=[];
  for(const id of ORDER){const n=P[id],pr=PROF[key(id)]||{},raw=n.sp||pr.spouse||'';n.sps=[];
@@ -735,6 +738,7 @@ function build(){
    const sid='sp_'+key(id)+'_'+i,f=n.gender?n.gender==='nu':/ Thị |^Cô /.test(n.name);
    P[sid]={id:sid,pa:'',name:nm.charAt(0).toUpperCase()+nm.slice(1),isSp:true,of:id,gen:n.gen,sp:n.name,yr:'',note:'',code:'',kids:[],gender:f?'nam':'nu'};
    n.sps.push(sid);SPOUSES.push(sid)})}
+ for(const sid of SPOUSES)rn(sid);
 }
 build();
 const anc=id=>{if(P[id]&&P[id].isSp)return [...anc(P[id].of),P[id].of];const a=[];let p=P[id]?.pa;while(p&&P[p]){a.unshift(p);p=P[p].pa}return a};
@@ -1187,7 +1191,8 @@ function form(mode,id){
  const n=P[id],p=mode==='edit'?(prof(id)||{}):{};
  let h=X()+(mode==='edit'?`<h3>${esc(n.name)}</h3><p class="muted">${n.isSp?esc(spOfTxt(n))+'.':t('gen')+' '+n.gen+'.'} ${t(n.isSp?'editSpP':'editP')}</p>`:`<h3>${esc(T[L].addH(n.name))}</h3><p class="muted">${esc(T[L].addP(n.gen+1))}</p>`)+readerHTML(mode==='add'||!(prof(id)||{}).birthYear)+`<form id="pf" novalidate><div class="fg">`;
  if(mode==='add')h+=F('f-name','cName','Nguyễn Hữu ','text',true)+`<label>${t('cGender')}<select id="f-gender"><option value="nam">${t('male')}</option><option value="nu">${t('female')}</option></select></label>`+F('f-spouse','cSpouse','');
- else if(!n.sp&&!n.isSp)h+=F('f-spouse',isF(n)?'cHusband':'cSpouse',p.spouse,'text',true);
+ if(mode==='edit')h+=F('f-name','cName',n.name,'text',true)+`<p class="muted fnote">${t('nameHint')}${n.origName?' '+esc(T[L].nameWas(n.origName)):''}</p>`;
+ if(mode==='edit'&&!n.sp&&!n.isSp)h+=F('f-spouse',isF(n)?'cHusband':'cSpouse',p.spouse,'text',true);
  h+=F('f-birth','cBirth',p.birthYear,'number')+F('f-death','cDeath',p.deathYear,'number')+F('f-addr','cAddr',p.addr,'text',true)+F('f-city','cCity',p.city)+F('f-phone','cPhone',p.phone,'tel')+F('f-email','cEmail',p.email,'email')+F('f-zalo','cZalo',p.zalo)+F('f-fb','cFb',p.fb)+F('f-ig','cIg',p.ig)+F('f-web','cWeb',p.web,'url',true)+F('f-job','cJob',p.job,'text',true);
  h+=`<label class="w">${t('cAbout')}<textarea id="f-about">${esc(p.about||'')}</textarea></label></div><label class="ok"><input type="checkbox" id="f-ok"> <span>${t('consent')}</span></label><div class="err" id="ferr"></div><div class="acts"><button class="btn main" type="submit">${t('save')}</button><button class="btn" type="button" data-close="1">${t('cancel')}</button></div></form>`;
  body.innerHTML=h;if(!dlg.open)dlg.showModal();
@@ -1204,6 +1209,7 @@ async function save(mode,id){
  if(dy&&(+dy<1800||+dy>NOW||(by&&+dy<+by))){err.textContent=t('eDeath');return}
  const pr={birthYear:by,deathYear:dy,addr:val('f-addr'),city:val('f-city'),phone:val('f-phone'),email:val('f-email'),zalo:val('f-zalo'),fb:val('f-fb'),ig:val('f-ig'),web:val('f-web'),job:val('f-job'),about:val('f-about'),spouse:val('f-spouse'),updatedAt:new Date().toISOString()};
  if(pr.web&&!/^https:\/\//i.test(pr.web)){err.textContent=t('eWeb');return}
+ if(mode==='edit'){const nm=val('f-name').replace(/\s+/g,' '),n0=P[id],orig=n0.origName||n0.name;if(nm.length<2){err.textContent=t('eName');return}pr.name=nm===orig?'':nm.slice(0,80)}
  let person=null,pid=id;
  if(mode==='add'){const nm=val('f-name').replace(/\s+/g,' ');if(nm.split(' ').length<2){err.textContent=t('eName');return}
   pid='a'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -1227,7 +1233,7 @@ function copyStep(id,person,pr){
  const n=P[id],Ls=['GIA PHẢ NGUYỄN HỮU – THÔNG TIN BỔ SUNG / UPDATE'];
  if(person){Ls.push('Thêm người / New person: '+person.name+(person.gender==='nu'?' (nữ)':' (nam)'));Ls.push('Con của / Child of: '+n.name+' (đời '+n.gen+', mã '+id+')')}
  else Ls.push('Người / Person: '+n.name+' (đời '+n.gen+', mã '+id+')');
- const lab={spouse:'cSpouse',birthYear:'cBirth',deathYear:'cDeath',addr:'cAddr',city:'cCity',phone:'cPhone',email:'cEmail',zalo:'cZalo',fb:'cFb',ig:'cIg',web:'cWeb',job:'cJob',about:'cAbout'};
+ const lab={name:'cNewName',spouse:'cSpouse',birthYear:'cBirth',deathYear:'cDeath',addr:'cAddr',city:'cCity',phone:'cPhone',email:'cEmail',zalo:'cZalo',fb:'cFb',ig:'cIg',web:'cWeb',job:'cJob',about:'cAbout'};
  for(const k in lab)if(pr[k])Ls.push(t(lab[k])+': '+pr[k]);
  Ls.push(L==='en'?'Sender confirms permission to post.':'Người gửi xác nhận đã được đồng ý đăng.');
  body.innerHTML=`${X()}<h3>${t('cpH')}</h3><p class="muted">${t('cpP')}</p><textarea class="copy" id="ct" readonly></textarea><div class="acts"><button class="btn main" id="cbtn">${t('copy')}</button><button class="btn" data-close="1">${t('done')}</button></div><p class="muted" id="cmsg"></p>`;
@@ -1374,11 +1380,13 @@ Object.assign(T.vi,{rvOpen:'Xem, chỉnh & gắn tên',rvH:(i,n)=>`Duyệt ảnh
 Object.assign(T.en,{rvOpen:'Review, adjust & tag',rvH:(i,n)=>`Reviewing photo ${i}/${n}: rotate, tag people, edit the caption (press Details), then Approve.`,rvApprove:'Approve this photo',rvInfo:'Photo details',rotL:'Rotate left',rotR:'Rotate right',rvDone:'Approved. Here is the next photo waiting.',rvRejected:'Rejected. Here is the next photo waiting.',dlPhoto:'Download photo',dlShort:'Download'});
 Object.assign(T.vi,{rdPdf:'Đang mở file PDF…',rdPdfErr:'Không mở được file PDF này. File có thể bị khoá mật khẩu hoặc bị hỏng.',rdPages:n=>`${n} trang`+(n>PDFMAX?` (đọc ${PDFMAX} trang đầu)`:''),rdReadingPg:(i,n,pc)=>`Đang đọc chữ trang ${i}/${n}… ${pc}%`});
 Object.assign(T.en,{rdPdf:'Opening the PDF…',rdPdfErr:'Could not open this PDF. It may be password-protected or damaged.',rdPages:n=>`${n} page${n===1?'':'s'}`+(n>PDFMAX?` (reading the first ${PDFMAX})`:''),rdReadingPg:(i,n,pc)=>`Reading page ${i}/${n}… ${pc}%`});
+Object.assign(T.vi,{cNewName:'Đổi tên thành',nameHint:'Sửa nếu tên bị sai chính tả, thiếu dấu hoặc chưa đầy đủ.',nameWas:o=>`(Tên ghi trong gia phả gốc: ${o}.)`});
+Object.assign(T.en,{cNewName:'Change name to',nameHint:'Fix it if the name is misspelled, missing accents or incomplete.',nameWas:o=>`(Name in the original records: ${o}.)`});
 applyText();
 const CFG=window.GP_CONFIG||{};let SB=null,isAdmin=false,QUEUE=[];
 const num=(v,lo,hi)=>{v=+v;return isFinite(v)?Math.min(hi,Math.max(lo,v)):lo};
 const rid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
-const PF=['birthYear','deathYear','addr','city','phone','email','zalo','fb','ig','web','job','about','spouse','updatedAt'];
+const PF=['name','birthYear','deathYear','addr','city','phone','email','zalo','fb','ig','web','job','about','spouse','updatedAt'];
 const cleanProf=x=>{const c={};x=x||{};for(const k of PF)if(x[k]!=null&&x[k]!=='')c[k]=String(x[k]).slice(0,500);return c};
 const cleanTags=a=>(Array.isArray(a)?a:[]).filter(g=>g&&((typeof g.p==='string'&&g.p)||(typeof g.n==='string'&&g.n.trim()))).slice(0,200).map(g=>{const o={p:String(g.p||'').slice(0,40),x:num(g.x,0,1),y:num(g.y,0,1),r:num(g.r,.01,.5)};if(!o.p)o.n=String(g.n).trim().slice(0,60);return o});
 const rowToPhoto=x=>({phash:/^[0-9a-f]{16}$/.test(String(x.phash||''))?String(x.phash):'',id:String(x.id),asset:okId(x.path)?x.path:'',w:num(x.w,1,20000),h:num(x.h,1,20000),caption:String(x.caption||'').slice(0,200),when:String(x.when_text||'').slice(0,80),where:String(x.where_text||'').slice(0,120),uploadedAt:String(x.created_at||''),tags:cleanTags(x.tags)});
@@ -1687,7 +1695,7 @@ function renderQueue(){
  document.getElementById('qh').textContent=`${t('qH')} (${QUEUE.length})`;
  document.getElementById('adminNote').textContent=t('adminOn');
  if(!QUEUE.length){qList.innerHTML=`<p class="muted">${t('qEmpty')}</p>`;return}
- const lab={spouse:'cSpouse',birthYear:'cBirth',deathYear:'cDeath',addr:'cAddr',city:'cCity',phone:'cPhone',email:'cEmail',zalo:'cZalo',fb:'cFb',ig:'cIg',web:'cWeb',job:'cJob',about:'cAbout'};
+ const lab={name:'cNewName',spouse:'cSpouse',birthYear:'cBirth',deathYear:'cDeath',addr:'cAddr',city:'cCity',phone:'cPhone',email:'cEmail',zalo:'cZalo',fb:'cFb',ig:'cIg',web:'cWeb',job:'cJob',about:'cAbout'};
  const fields=pr=>{pr=cleanProf(pr);return Object.keys(lab).filter(k=>pr[k]).map(k=>`<div class="ln"><span class="muted">${t(lab[k])}:</span> ${esc(pr[k])}</div>`).join('')};
  const nm=id=>P[id]?esc(P[id].name):esc(id||'?');
  qList.innerHTML=QUEUE.map(s=>{const p=s.payload||{};let b='',k='';
