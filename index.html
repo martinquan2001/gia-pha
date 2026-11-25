@@ -1028,6 +1028,7 @@ qH:'Chờ duyệt',qEmpty:'Không có gì chờ duyệt.',approve:'Duyệt',reje
 Object.assign(T.en,{notConfigured:'This page is not connected to its data store yet.',sentH:'Sent!',sentP:'Thank you. Your information will appear once the page manager approves it.',photoSentP:'Thank you. The photo will appear once the page manager approves it; then you can tag the people in it.',tagSent:'Your tags were sent. Everyone will see them once the page manager approves them.',tagLocal:'Your tags are sent when you click “Done tagging”.',
 admin:'Manage',adminH:'Manager sign-in',adminP:'Only the page manager signs in, to approve submissions. Relatives don’t need an account.',email:'Email',password:'Password',signin:'Sign in',signout:'Sign out',eLogin:'Wrong email or password.',eNotAdmin:'This account is not a page manager.',
 qH:'Waiting for approval',qEmpty:'Nothing is waiting.',approve:'Approve',reject:'Reject',kProfile:'Contact details',kPerson:'New person',kPhoto:'New photo',kTags:'Name tags',forP:'For',childOfP:'Child of',sentAt:'Sent',eAct:'Could not do that; try again.',adminOn:'You are signed in as manager: what you enter is saved at once, without approval.'});
+applyText();
 const CFG=window.GP_CONFIG||{};let SB=null,isAdmin=false,QUEUE=[];
 const num=(v,lo,hi)=>{v=+v;return isFinite(v)?Math.min(hi,Math.max(lo,v)):lo};
 const rid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
