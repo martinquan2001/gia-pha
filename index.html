@@ -200,7 +200,32 @@ textarea.copy{width:100%;min-height:180px;font:14px/1.5 ui-monospace,monospace;m
 .phimg{display:block;aspect-ratio:4/3;background:var(--soft)}
 .phimg img{width:100%;height:100%;object-fit:cover;display:block}
 .phcap{display:flex;flex-direction:column;gap:2px;padding:12px 14px}
-dialog.pvd{width:min(1180px,calc(100vw - 24px))}
+dialog.pvd{width:100vw;max-width:100vw;height:100vh;height:100dvh;max-height:none;margin:0;border-radius:0;background:#0b0b0b;color:#fff;box-shadow:none}
+dialog.pvd::backdrop{background:#000}
+dialog.pvd>.dlg{padding:0;max-height:none;height:100%;overflow:hidden}
+.pvwrap{--pvh:calc(100dvh - 128px);height:100%;display:flex;flex-direction:column}
+.pvwrap.info{--pvh:40dvh}
+.pvwrap.tagmode{--pvh:calc(100dvh - 230px)}
+.pvwrap.tagmode.info{--pvh:34dvh}
+.pvbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;flex:none}
+.pvb{width:44px;height:44px;border-radius:50%;border:0;background:#ffffff24;color:#fff;font:600 18px/1 Georgia,serif;cursor:pointer}
+.pvb.on{background:#fff;color:#111}
+.pvcount{font-size:13px;color:#aaa}
+.pvstage{position:relative;flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;padding:0 8px;touch-action:pan-y pinch-zoom}
+.pvwrap.info .pvstage{flex:0 0 auto}
+.pvstage .pvimg{background:transparent;margin:0 auto}
+.pvnav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:64px;border:0;background:#ffffff1f;color:#fff;font-size:28px;border-radius:10px;cursor:pointer;z-index:3}
+.pvnav.prev{left:10px}.pvnav.next{right:10px}.pvnav:disabled{opacity:0;pointer-events:none}
+@media (hover:none){.pvnav{display:none}}
+.pvmore{align-self:center;margin:6px 0 16px;border:0;background:#ffffff24;color:#fff;border-radius:999px;padding:9px 18px;cursor:pointer;flex:none;font:inherit;font-size:14px}
+.pvmore:hover{background:#ffffff3a}
+.pvtool{flex:none;background:var(--bg);color:var(--ink);padding:12px 16px 14px;border-radius:14px 14px 0 0;margin-top:8px}
+.pvtool b{display:block;margin-bottom:4px}.pvtool .hint{margin:0 0 6px}.pvtool .acts{margin:6px 0 0}
+.pvside{display:none}
+.pvwrap.info .pvside{display:block;flex:1 1 auto;min-height:0;overflow:auto;background:var(--bg);color:var(--ink);border-radius:16px 16px 0 0;padding:12px 22px 28px;margin-top:10px}
+.pvwrap.info .pvside::before{content:"";display:block;width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 14px}
+.pvwrap.info.tagmode .pvside{margin-top:0;border-radius:0}
+.pvwrap.view .mk{display:none}
 .pvgrid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start;margin-top:8px}
 .pvimgw{min-width:0}
 .pvimg{position:relative;width:100%;margin:0 auto;background:var(--soft);border-radius:8px}
@@ -807,19 +832,35 @@ function wireBox(){
   pm.addEventListener('pointermove',mv);pm.addEventListener('pointerup',up);pm.addEventListener('pointercancel',up);
  });
 }
+function pvStep(d){const ph=photoById(pv.id);if(!ph)return;const LS=ph.draft?DRAFTS:PHOTOS,i=LS.indexOf(ph)+d;if(!LS[i])return;const keep=!!pv.info;openPhoto(LS[i].id);if(keep){pv.info=true;drawPV()}}
+function wirePV(){
+ const st=document.getElementById('pvstage'),sd=document.getElementById('pvside');if(!st)return;
+ let sx=0,sy=0,on=false;
+ st.addEventListener('touchstart',e=>{on=!pv.tag&&e.touches.length===1;if(on){sx=e.touches[0].clientX;sy=e.touches[0].clientY}},{passive:true});
+ st.addEventListener('touchend',e=>{if(!on)return;on=false;const c=e.changedTouches[0],dx=c.clientX-sx,dy=c.clientY-sy;
+  if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.3){pvStep(dx<0?1:-1);return}
+  if(dy<-50&&-dy>Math.abs(dx)){if(!pv.info){pv.info=true;drawPV()}return}
+  if(dy>70&&dy>Math.abs(dx)){if(pv.info){pv.info=false;drawPV()}else pvd.close()}});
+ st.addEventListener('wheel',e=>{if(pv.tag)return;if(e.deltaY>25&&!pv.info){e.preventDefault();pv.info=true;drawPV()}else if(e.deltaY<-25&&pv.info){e.preventDefault();pv.info=false;drawPV()}},{passive:false});
+ if(sd){let y0=0,top0=true;sd.addEventListener('touchstart',e=>{y0=e.touches[0].clientY;top0=sd.scrollTop<=0},{passive:true});
+  sd.addEventListener('touchend',e=>{if(top0&&e.changedTouches[0].clientY-y0>80&&!pv.tag){pv.info=false;drawPV()}})}
+}
 function drawPV(){
  const ph=photoById(pv.id);if(!ph){pvd.open&&pvd.close();return}
  if(!pv.pending)pv.cands=null;
  const a=(ph.h&&ph.w)?ph.h/ph.w:.75,canTag=!!db,LIST=ph.draft?DRAFTS:PHOTOS,idx=LIST.indexOf(ph);
- const mk=(tg,i,pend)=>{const n=P[tg.p],lab=n?short(n):(tg.n||'?');return `<div class="mk${pend?' pend':''}${pv.focus&&tg.p===pv.focus?' foc':''}" style="left:${((tg.x-tg.r)*100).toFixed(2)}%;top:${((tg.y-tg.r/a)*100).toFixed(2)}%;width:${(tg.r*200).toFixed(2)}%" data-mk="${i}">${pend?'<i class="hd tl" data-hd="tl"></i><i class="hd tr" data-hd="tr"></i><i class="hd bl" data-hd="bl"></i><i class="hd br" data-hd="br"></i>':''}${pv.names&&!pend?`<span class="mkl">${esc(lab)}</span>`:''}</div>`};
- let h=`<button class="x2" data-pvclose="1" aria-label="${t('close')}">✕</button><div class="pvgrid"><div class="pvimgw"><div class="pvimg${pv.tag?' tagging tagmode':''}" id="pvimg" style="aspect-ratio:${ph.w||4}/${ph.h||3};width:min(100%,calc(72vh*${ph.w||4}/${ph.h||3}))"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" id="pvpic">${ph.tags.map((tg,i)=>mk(tg,i)).join('')}${pv.pending?mk(pv.pending,-1,true)+tagPop(pv.pending,a):''}${(pv.faces||[]).map((f,i)=>covered(ph,f)||(pv.pending&&pv.pending.x===f.x&&pv.pending.y===f.y)?'':`<div class="mk ai" style="left:${((f.x-f.r)*100).toFixed(2)}%;top:${((f.y-f.r/a)*100).toFixed(2)}%;width:${(f.r*200).toFixed(2)}%" data-ai="${i}" role="button" aria-label="${esc(f.c[0]?P[f.c[0].p].name:t('whoIs'))}">${pv.names?`<span class="mkl">${f.c[0]?esc(short(P[f.c[0].p]))+'? '+f.c[0].s+'%':'?'}</span>`:''}</div>`).join('')}</div>`;
- h+=`<div class="acts"><button class="btn" data-pvnav="-1" ${idx<=0?'disabled':''} aria-label="${t('prev')}">‹</button><button class="btn" data-pvnav="1" ${idx>=LIST.length-1?'disabled':''} aria-label="${t('next')}">›</button><button class="btn" data-pvnames="1">${pv.names?t('hideNames'):t('showNames')}</button>${canTag&&pv.tag?`<button class="btn" data-pvai="1" ${pv.ai?'disabled':''}>${t('aiBtn')}</button><button class="btn main" data-pvtag="1">${t('tagDone')}</button>`:''}</div>${canTag&&!pv.tag?`<div class="asktag"><p>${t(ph.tags.length?'askTag2':'askTag')}</p><button class="btn main" data-pvtag="1">${t('askTagBtn')}</button></div>`:''}</div><div class="pvside">`;
- if(ph.draft)h+=`<h3>${esc(T[L].draftH(idx+1,DRAFTS.length))}</h3><p class="muted">${t(isAdmin?'draftHintA':'draftHint')}</p><div class="acts" style="margin:10px 0 14px"><button class="btn main" data-pvsend="1">${esc(T[L][isAdmin?'saveN':'sendN'](DRAFTS.length))}</button><button class="btn" data-pvdrop="1">${t('dropPhoto')}</button></div>`;
- else h+=`<h3>${esc(ph.caption||'')}</h3><p class="muted">${esc([ph.when,ph.where].filter(Boolean).join(' · '))}</p>`;
- if(pv.msg)h+=`<p class="hint">${esc(pv.msg)}</p>`;
- if(pv.aiMsg)h+=`<p class="hint">${esc(pv.aiMsg)}</p>`;
- if(pv.tag&&!pv.pending)h+=`<p class="hint">${t('tagHint')}</p>${isAdmin||ph.draft?'':`<p class="muted">${t('tagLocal')}</p>`}`;
+ const mk=(tg,i,pend)=>{const n=P[tg.p],lab=n?short(n):(tg.n||'?');return `<div class="mk${pend?' pend':''}${pv.focus&&tg.p===pv.focus?' foc':''}" style="left:${((tg.x-tg.r)*100).toFixed(2)}%;top:${((tg.y-tg.r/a)*100).toFixed(2)}%;width:${(tg.r*200).toFixed(2)}%" data-mk="${i}">${pend?'<i class="hd tl" data-hd="tl"></i><i class="hd tr" data-hd="tr"></i><i class="hd bl" data-hd="bl"></i><i class="hd br" data-hd="br"></i>':''}${(pv.info||pv.tag)&&!pend?`<span class="mkl">${esc(lab)}</span>`:''}</div>`};
+ const view=!pv.tag&&!pv.info;
+ let h=`<div class="pvwrap${pv.info?' info':''}${pv.tag?' tagmode':''}${view?' view':''}"><div class="pvbar"><button class="pvb" data-pvclose="1" aria-label="${t('close')}">✕</button><span class="pvcount">${idx+1} / ${LIST.length}</span><button class="pvb${pv.info?' on':''}" data-pvinfo="1" aria-label="${t('pvDetails')}" aria-pressed="${!!pv.info}">i</button></div>`;
+ h+=`<div class="pvstage" id="pvstage"><div class="pvimgw"><div class="pvimg${pv.tag?' tagging tagmode':''}" id="pvimg" style="aspect-ratio:${ph.w||4}/${ph.h||3};width:min(100%,calc(var(--pvh)*${ph.w||4}/${ph.h||3}))"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" id="pvpic">${ph.tags.map((tg,i)=>mk(tg,i)).join('')}${pv.pending?mk(pv.pending,-1,true)+tagPop(pv.pending,a):''}${(pv.faces||[]).map((f,i)=>covered(ph,f)||(pv.pending&&pv.pending.x===f.x&&pv.pending.y===f.y)?'':`<div class="mk ai" style="left:${((f.x-f.r)*100).toFixed(2)}%;top:${((f.y-f.r/a)*100).toFixed(2)}%;width:${(f.r*200).toFixed(2)}%" data-ai="${i}" role="button" aria-label="${esc(f.c[0]?P[f.c[0].p].name:t('whoIs'))}">${pv.names?`<span class="mkl">${f.c[0]?esc(short(P[f.c[0].p]))+'? '+f.c[0].s+'%':'?'}</span>`:''}</div>`).join('')}</div><button class="pvnav prev" data-pvnav="-1" ${idx<=0?'disabled':''} aria-label="${t('prev')}">‹</button><button class="pvnav next" data-pvnav="1" ${idx>=LIST.length-1?'disabled':''} aria-label="${t('next')}">›</button></div>`;
+ if(pv.tag)h+=`<div class="pvtool">${ph.draft?`<b>${esc(T[L].draftH(idx+1,DRAFTS.length))}</b>`:''}${pv.pending?'':`<p class="hint">${esc(pv.msg||t('tagHint'))}</p>`}${pv.aiMsg?`<p class="hint">${esc(pv.aiMsg)}</p>`:''}${isAdmin||ph.draft||pv.pending?'':`<p class="muted" style="margin:0">${t('tagLocal')}</p>`}<div class="acts">${canTag?`<button class="btn" data-pvai="1" ${pv.ai?'disabled':''}>${t('aiBtn')}</button>`:''}${ph.draft?`<button class="btn main" data-pvsend="1">${esc(T[L][isAdmin?'saveN':'sendN'](DRAFTS.length))}</button><button class="btn" data-pvdrop="1">${t('dropPhoto')}</button>`:`<button class="btn main" data-pvtag="1">${t('tagDone')}</button>`}<button class="btn" data-pvinfo="1">${t(pv.info?'pvHide':'pvDetails')}</button></div></div>`;
+ else if(!pv.info)h+=`<button class="pvmore" data-pvinfo="1"><span aria-hidden="true">︿</span> ${t('pvDetails')}</button>`;
+ h+=`<div class="pvside" id="pvside">`;
+ h+=`<h3>${esc(ph.caption||(ph.draft?T[L].draftH(idx+1,DRAFTS.length):t('pvNoCap')))}</h3>`;
+ if(ph.when||ph.where)h+=`<dl class="kv">${ph.when?`<dt>${t('when')}</dt><dd>${esc(ph.when)}</dd>`:''}${ph.where?`<dt>${t('where')}</dt><dd>${esc(ph.where)}</dd>`:''}</dl>`;
+ if(!pv.tag&&pv.msg)h+=`<p class="hint">${esc(pv.msg)}</p>`;
  h+=`<h4 style="margin:16px 0 8px">${t('inPhoto')}${ph.tags.length?` (${ph.tags.length})`:''}</h4><div class="tags">${ph.tags.map((tg,i)=>{const n=P[tg.p];return `<div class="trow" data-hl="${i}"><span class="av" style="${esc(cropStyle(ph,tg))}"></span>${n?`<button class="chip" data-pvgo="${esc(tg.p)}">${esc(n.name)}</button>`:`<span class="chip">${esc(tg.n||'?')}</span>`}${pv.tag?`<button class="btn sm" data-untag="${i}" aria-label="${t('removeTag')}">✕</button>`:''}</div>`}).join('')||`<p class="muted">${esc(T[L].tagged(0))}</p>`}</div>`;
+ if(canTag&&!pv.tag)h+=`<div class="asktag"><p>${t(ph.tags.length?'askTag2':'askTag')}</p><button class="btn main" data-pvtag="1">${t('askTagBtn')}</button></div>`;
  if(canAdmin&&!ph.draft)h+=`<div class="acts" style="margin-top:18px"><button class="btn" data-pvcap="1">${t('editCap')}</button><button class="btn" data-pvdel="1">${t('delPhoto')}</button></div>`;
  h+='</div></div>';
  pvb.innerHTML=h;
@@ -842,6 +883,7 @@ function drawPV(){
    pop.style.setProperty('--ax',Math.max(14,Math.min(pr.width-14,ir.left+ir.width*pv.pending.x-pr.left))+'px');pop.scrollIntoView({block:'nearest'})};
   fit();const oi=tq.oninput;tq.oninput=()=>{oi();fit()}}
  pvb.querySelectorAll('[data-hl]').forEach(r=>{const m=pvb.querySelector(`.mk[data-mk="${r.dataset.hl}"]`);if(!m)return;r.onmouseenter=()=>m.classList.add('hl');r.onmouseleave=()=>m.classList.remove('hl')});
+ wirePV();
  wireBox();
 }
 async function saveTags(ph,tags){
@@ -851,11 +893,13 @@ async function saveTags(ph,tags){
  if(error){const er=document.getElementById('terr');if(er)er.textContent=t('eTag');return false}
  ph.tags=tags;learnPhoto(ph).catch(()=>{});return true
 }
+pvd.addEventListener('keydown',e=>{if(e.target.closest('input,textarea')||pv.tag)return;if(e.key==='ArrowRight'){pvStep(1)}else if(e.key==='ArrowLeft'){pvStep(-1)}else if(e.key==='ArrowUp'&&!pv.info){pv.info=true;drawPV()}else if(e.key==='ArrowDown'&&pv.info){pv.info=false;drawPV()}else return;e.preventDefault()});
 pvd.addEventListener('click',async e=>{
+ if(e.target.closest('[data-pvinfo]')){pv.info=!pv.info;drawPV();return}
  if(e.target===pvd){pvd.close();if(DRAFTS.length)finishDrafts();return}
  const ph=photoById(pv.id);if(!ph)return;
  if(e.target.closest('[data-pvclose]')){pvd.close();if(DRAFTS.length)finishDrafts();return}
- const nv=e.target.closest('[data-pvnav]');if(nv){const LS=ph.draft?DRAFTS:PHOTOS,i=LS.indexOf(ph)+(+nv.dataset.pvnav);if(LS[i])openPhoto(LS[i].id);return}
+ const nv=e.target.closest('[data-pvnav]');if(nv){pvStep(+nv.dataset.pvnav);return}
  if(e.target.closest('[data-pvsend]')){finishDrafts();return}
  if(e.target.closest('[data-pvdrop]')&&ph.draft){const i=DRAFTS.indexOf(ph);DRAFTS.splice(i,1);SB.storage.from('photos').remove([ph.asset]).catch(()=>{});
   if(!DRAFTS.length){pvd.close();return}openPhoto(DRAFTS[Math.min(i,DRAFTS.length-1)].id);return}
@@ -865,7 +909,7 @@ pvd.addEventListener('click',async e=>{
    pv.faces=fs.map(f=>({x:f.x,y:f.y,r:f.r,c:candidates(f.d,ex)}));pv.aiMsg=fs.length?T[L].aiFound(fs.length,pv.faces.filter(f=>!covered(ph,f)).length):t('aiNone')}
   catch(_){if(pv.id!==id)return;pv.aiMsg=t('aiErr')}
   pv.ai=false;if(!pv.pending)drawPV();return}
- if(e.target.closest('[data-pvtag]')){if(pv.tag&&pv.dirty&&!isAdmin){try{await submit('tags',ph.id,{tags:ph.tags});pv.msg=t('tagSent')}catch(_){pv.msg=t('eTag')}pv.dirty=false}pv.tag=!pv.tag;pv.pending=null;drawPV();return}
+ if(e.target.closest('[data-pvtag]')){if(pv.tag&&pv.dirty&&!isAdmin){try{await submit('tags',ph.id,{tags:ph.tags});pv.msg=t('tagSent')}catch(_){pv.msg=t('eTag')}pv.dirty=false}pv.tag=!pv.tag;pv.pending=null;if(pv.tag)pv.info=false;drawPV();return}
  if(e.target.closest('[data-pvcancel]')){pv.pending=null;drawPV();return}
  const rz=e.target.closest('[data-rsz]');if(rz&&pv.pending){const q=document.getElementById('tq'),v=q?q.value:'';const ph2=photoById(pv.id),a2=(ph2&&ph2.h&&ph2.w)?ph2.h/ph2.w:.75,pd=pv.pending;pd.r=num(pd.r*(+rz.dataset.rsz>0?1.2:1/1.2),.01,Math.min(.5,a2/2));pd.x=num(pd.x,pd.r,1-pd.r);pd.y=num(pd.y,pd.r/a2,1-pd.r/a2);keepRedraw(v);return}
  const tp=e.target.closest('[data-tagp],[data-tagn]');if(tp&&pv.pending){const tags=ph.tags.concat(tp.dataset.tagp!=null?{p:tp.dataset.tagp,x:pv.pending.x,y:pv.pending.y,r:pv.pending.r}:{p:'',n:tp.dataset.tagn,x:pv.pending.x,y:pv.pending.y,r:pv.pending.r});pv.msg=T[L].tagAdded(tp.dataset.tagp!=null?(P[tp.dataset.tagp]||{}).name:tp.dataset.tagn,tags.length);if(await saveTags(ph,tags)){pv.pending=null;drawPV();refresh();renderGal()}return}
@@ -1271,6 +1315,8 @@ Object.assign(T.en,{gAll:'Photos',gPeople:'People',gPeopleN:n=>`${n} ${n===1?'pe
 gNoPeople:'Nobody has been tagged yet. Open a photo and tap a face to tag someone.'});
 Object.assign(T.vi,{askTag:'Bạn có biết ai trong ảnh này không?',askTag2:'Bạn có biết thêm ai trong ảnh này không?',askTagBtn:'Gắn tên người trong ảnh',tagHint:'Chạm vào khuôn mặt của một người để gắn tên. Gắn bao nhiêu người cũng được; xong thì bấm “Xong gắn tên”.'});
 Object.assign(T.en,{askTag:'Do you know anyone in this photo?',askTag2:'Do you know anyone else in this photo?',askTagBtn:'Tag people in this photo',tagHint:'Tap someone’s face to tag them. Tag as many people as you like, then press “Done tagging”.'});
+Object.assign(T.vi,{pvDetails:'Chi tiết',pvHide:'Ẩn chi tiết',pvNoCap:'Ảnh gia đình'});
+Object.assign(T.en,{pvDetails:'Details',pvHide:'Hide details',pvNoCap:'Family photo'});
 applyText();
 const CFG=window.GP_CONFIG||{};let SB=null,isAdmin=false,QUEUE=[];
 const num=(v,lo,hi)=>{v=+v;return isFinite(v)?Math.min(hi,Math.max(lo,v)):lo};
