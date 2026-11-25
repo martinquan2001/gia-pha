@@ -181,9 +181,9 @@ dialog.pvd{width:min(1180px,calc(100vw - 24px))}
 .tagpop .tpbar .sp{flex:1;font-size:12px;color:var(--mute)}
 .tagpop::before{content:"";position:absolute;left:var(--ax,50%);width:12px;height:12px;background:var(--bg);border-left:1px solid var(--line);border-top:1px solid var(--line);transform:translateX(-50%) rotate(45deg)}
 .tagpop.down::before{top:-7px}.tagpop.up::before{bottom:-7px;transform:translateX(-50%) rotate(225deg)}
-.mk{position:absolute;aspect-ratio:1;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1.5px #000a,inset 0 0 0 1.5px #000a;pointer-events:auto}
+.mk{position:absolute;aspect-ratio:1;border:2px solid #fff;border-radius:4px;box-shadow:0 0 0 1.5px #000a,inset 0 0 0 1.5px #000a;pointer-events:auto}
 .mk.pend{border-style:dashed}
-.mk.ai{border:2px dashed #fff;border-radius:14px;cursor:pointer;background:#ffffff14}
+.mk.ai{border:2px dashed #fff;border-radius:4px;cursor:pointer;background:#ffffff14}
 .mk.ai:hover{border-style:solid}
 .mk.ai .mkl{background:#fff;color:#111;border:1px solid #111}
 .aistat{margin:6px 0 0}
@@ -655,12 +655,12 @@ const PATH=new Set([...anc('tam'),'tam']);
 const DEFAULT=()=>new Set([...anc('tam'),'2.12.15']);
 let open=DEFAULT(),sel='2.12.15',root='2.9.1',zoom=1,db=null,canWrite=null,canAdmin=false,dbState='loading';
 // ===== photos =====
-Object.assign(T.vi,{navPhotos:'Ảnh',phH:'Ảnh gia đình',phIntro:'Ảnh họp mặt, ảnh cũ của ông bà. Bấm vào ảnh để xem ai là ai; người được gắn tên có vòng tròn đánh dấu khuôn mặt, và khuôn mặt đó sẽ hiện cạnh tên họ trong cây gia phả.',upload:'Tải ảnh lên',phSearch:'Tìm ảnh theo chú thích hoặc tên người…',noPhotos:'Chưa có ảnh nào.',noPhotosEd:'Chưa có ảnh nào. Bấm “Tải ảnh lên” để đăng ảnh đầu tiên.',onlyEditors:'Chỉ người được mời làm Editor mới tải ảnh lên được; ai có quyền sửa dữ liệu thì gắn tên được.',tagged:n=>n?`${n} người được gắn tên`:'Chưa gắn tên ai',
+Object.assign(T.vi,{navPhotos:'Ảnh',phH:'Ảnh gia đình',phIntro:'Ảnh họp mặt, ảnh cũ của ông bà. Bấm vào ảnh để xem ai là ai; người được gắn tên có khung vuông đánh dấu khuôn mặt, và khuôn mặt đó sẽ hiện cạnh tên họ trong cây gia phả.',upload:'Tải ảnh lên',phSearch:'Tìm ảnh theo chú thích hoặc tên người…',noPhotos:'Chưa có ảnh nào.',noPhotosEd:'Chưa có ảnh nào. Bấm “Tải ảnh lên” để đăng ảnh đầu tiên.',onlyEditors:'Chỉ người được mời làm Editor mới tải ảnh lên được; ai có quyền sửa dữ liệu thì gắn tên được.',tagged:n=>n?`${n} người được gắn tên`:'Chưa gắn tên ai',
 upH:'Đăng ảnh mới',caption:'Chú thích',capPh:'Ví dụ: Họp mặt gia đình Tết 2019',when:'Thời gian',whenPh:'Ví dụ: Tết 2019',where:'Địa điểm',wherePh:'Ví dụ: Đà Nẵng',upConsent:'Mọi người trong ảnh đồng ý cho đăng lên trang gia phả.',uploading:'Đang tải ảnh lên…',eUpload:'Chưa tải ảnh lên được, vui lòng thử lại.',eBig:'Ảnh quá lớn.',eType:'Chỉ nhận ảnh JPG, PNG, WebP hoặc GIF.',eQuotaA:'Bộ nhớ ảnh đã đầy.',chooseFile:'Chọn ảnh',
-tagMode:'Gắn tên',tagDone:'Xong gắn tên',tagHint:'Bấm vào khuôn mặt trong ảnh để gắn tên.',whoIs:'Đây là ai?',size:'Cỡ vòng tròn',showNames:'Hiện tên',hideNames:'Ẩn tên',inPhoto:'Trong ảnh',removeTag:'Bỏ gắn tên',delPhoto:'Xóa ảnh',delPhotoQ:'Xóa ảnh này? Ảnh và mọi tên đã gắn sẽ bị xóa hẳn.',editCap:'Sửa chú thích',photosOf:n=>`Ảnh (${n})`,prev:'Ảnh trước',next:'Ảnh sau',imgMissing:'Không tải được ảnh này.',eTag:'Chưa lưu được, vui lòng thử lại.'});
-Object.assign(T.en,{navPhotos:'Photos',phH:'Family photos',phIntro:'Reunion photos and old pictures of our elders. Click a photo to see who is who; tagged people have a circle on their face, and that face appears next to their name in the family tree.',upload:'Upload a photo',phSearch:'Search photos by caption or name…',noPhotos:'No photos yet.',noPhotosEd:'No photos yet. Click “Upload a photo” to post the first one.',onlyEditors:'Only people invited as Editors can upload photos; anyone who can change data can tag names.',tagged:n=>n?`${n} people tagged`:'No one tagged yet',
+tagMode:'Gắn tên',tagDone:'Xong gắn tên',tagHint:'Bấm vào khuôn mặt trong ảnh để gắn tên.',whoIs:'Đây là ai?',size:'Cỡ khung',showNames:'Hiện tên',hideNames:'Ẩn tên',inPhoto:'Trong ảnh',removeTag:'Bỏ gắn tên',delPhoto:'Xóa ảnh',delPhotoQ:'Xóa ảnh này? Ảnh và mọi tên đã gắn sẽ bị xóa hẳn.',editCap:'Sửa chú thích',photosOf:n=>`Ảnh (${n})`,prev:'Ảnh trước',next:'Ảnh sau',imgMissing:'Không tải được ảnh này.',eTag:'Chưa lưu được, vui lòng thử lại.'});
+Object.assign(T.en,{navPhotos:'Photos',phH:'Family photos',phIntro:'Reunion photos and old pictures of our elders. Click a photo to see who is who; tagged people have a box on their face, and that face appears next to their name in the family tree.',upload:'Upload a photo',phSearch:'Search photos by caption or name…',noPhotos:'No photos yet.',noPhotosEd:'No photos yet. Click “Upload a photo” to post the first one.',onlyEditors:'Only people invited as Editors can upload photos; anyone who can change data can tag names.',tagged:n=>n?`${n} people tagged`:'No one tagged yet',
 upH:'Post a new photo',caption:'Caption',capPh:'e.g. Family reunion, Tết 2019',when:'When',whenPh:'e.g. Tết 2019',where:'Where',wherePh:'e.g. Đà Nẵng',upConsent:'Everyone in the photo agrees to have it posted on the family tree.',uploading:'Uploading…',eUpload:'Could not upload; please try again.',eBig:'The photo is too large.',eType:'Only JPG, PNG, WebP or GIF photos.',eQuotaA:'Photo storage is full.',chooseFile:'Choose photo',
-tagMode:'Tag people',tagDone:'Done tagging',tagHint:'Click a face in the photo to tag it.',whoIs:'Who is this?',size:'Circle size',showNames:'Show names',hideNames:'Hide names',inPhoto:'In this photo',removeTag:'Remove tag',delPhoto:'Delete photo',delPhotoQ:'Delete this photo? The photo and all its tags will be removed for good.',editCap:'Edit caption',photosOf:n=>`Photos (${n})`,prev:'Previous photo',next:'Next photo',imgMissing:'This photo could not be loaded.',eTag:'Could not save; please try again.'});
+tagMode:'Tag people',tagDone:'Done tagging',tagHint:'Click a face in the photo to tag it.',whoIs:'Who is this?',size:'Box size',showNames:'Show names',hideNames:'Hide names',inPhoto:'In this photo',removeTag:'Remove tag',delPhoto:'Delete photo',delPhotoQ:'Delete this photo? The photo and all its tags will be removed for good.',editCap:'Edit caption',photosOf:n=>`Photos (${n})`,prev:'Previous photo',next:'Next photo',imgMissing:'This photo could not be loaded.',eTag:'Could not save; please try again.'});
 let PHOTOS=[],assetsNS=null,URLS={},pv={id:null,tag:false,pending:null,names:true,focus:null};
 const okId=s=>/^(pending|approved)\/[A-Za-z0-9_-]{1,80}\.(jpg|png|webp|gif)$/.test(String(s||''));
 const srcOf=a=>URLS[a]||(okId(a)&&SB?SB.storage.from('photos').getPublicUrl(a).data.publicUrl:'');
@@ -1107,9 +1107,9 @@ Object.assign(T.vi,{tagHint:'Bấm vào từng khuôn mặt để gắn tên. G�
 tagFree:v=>`Gắn tên “${v}” (người chưa có trong gia phả)`,tagAdded:(n,c)=>`Đã gắn ${n}. Ảnh này có ${c} người được gắn tên; bấm khuôn mặt tiếp theo để gắn thêm.`});
 Object.assign(T.en,{tagHint:'Click each face to name it. Tag as many people as you like: after one, just click the next face.',
 tagFree:v=>`Tag as “${v}” (not in the family tree)`,tagAdded:(n,c)=>`Tagged ${n}. ${c} ${c===1?'person':'people'} tagged in this photo; click the next face to add more.`});
-Object.assign(T.vi,{whoIsPh:'Đây là ai? Gõ tên…',circleSize:'Cỡ vòng tròn',smaller:'Thu nhỏ vòng tròn',bigger:'Phóng to vòng tròn',
+Object.assign(T.vi,{whoIsPh:'Đây là ai? Gõ tên…',circleSize:'Cỡ khung',smaller:'Thu nhỏ khung',bigger:'Phóng to khung',
 tagHint:'Chạm vào khuôn mặt của một người để gắn tên, như trên Facebook. Gắn bao nhiêu người cũng được.'});
-Object.assign(T.en,{whoIsPh:'Who is this? Type a name…',circleSize:'Circle size',smaller:'Smaller circle',bigger:'Bigger circle',
+Object.assign(T.en,{whoIsPh:'Who is this? Type a name…',circleSize:'Box size',smaller:'Smaller box',bigger:'Bigger box',
 tagHint:'Tap someone’s face to tag them, like on Facebook. Tag as many people as you like.'});
 applyText();
 const CFG=window.GP_CONFIG||{};let SB=null,isAdmin=false,QUEUE=[];
