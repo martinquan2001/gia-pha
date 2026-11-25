@@ -207,6 +207,8 @@ dialog.pvd{width:min(1180px,calc(100vw - 24px))}
 .pvimg>img{border-radius:8px}
 .pvimg img{width:100%;height:100%;display:block;object-fit:contain}
 .pvimg.tagging{cursor:crosshair}
+.asktag{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:12px;background:var(--soft)}
+.asktag p{margin:0;font-weight:600}
 .tagpop{position:absolute;z-index:6;width:270px;max-width:calc(100vw - 48px);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px #0006;padding:8px;cursor:default;text-align:left}
 .tagpop input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
 .tagpop .pick{max-height:210px;margin-top:6px}
@@ -810,13 +812,13 @@ function drawPV(){
  if(!pv.pending)pv.cands=null;
  const a=(ph.h&&ph.w)?ph.h/ph.w:.75,canTag=!!db,LIST=ph.draft?DRAFTS:PHOTOS,idx=LIST.indexOf(ph);
  const mk=(tg,i,pend)=>{const n=P[tg.p],lab=n?short(n):(tg.n||'?');return `<div class="mk${pend?' pend':''}${pv.focus&&tg.p===pv.focus?' foc':''}" style="left:${((tg.x-tg.r)*100).toFixed(2)}%;top:${((tg.y-tg.r/a)*100).toFixed(2)}%;width:${(tg.r*200).toFixed(2)}%" data-mk="${i}">${pend?'<i class="hd tl" data-hd="tl"></i><i class="hd tr" data-hd="tr"></i><i class="hd bl" data-hd="bl"></i><i class="hd br" data-hd="br"></i>':''}${pv.names&&!pend?`<span class="mkl">${esc(lab)}</span>`:''}</div>`};
- let h=`<button class="x2" data-pvclose="1" aria-label="${t('close')}">✕</button><div class="pvgrid"><div class="pvimgw"><div class="pvimg${canTag?' tagging':''}${pv.tag?' tagmode':''}" id="pvimg" style="aspect-ratio:${ph.w||4}/${ph.h||3};width:min(100%,calc(72vh*${ph.w||4}/${ph.h||3}))"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" id="pvpic">${ph.tags.map((tg,i)=>mk(tg,i)).join('')}${pv.pending?mk(pv.pending,-1,true)+tagPop(pv.pending,a):''}${(pv.faces||[]).map((f,i)=>covered(ph,f)||(pv.pending&&pv.pending.x===f.x&&pv.pending.y===f.y)?'':`<div class="mk ai" style="left:${((f.x-f.r)*100).toFixed(2)}%;top:${((f.y-f.r/a)*100).toFixed(2)}%;width:${(f.r*200).toFixed(2)}%" data-ai="${i}" role="button" aria-label="${esc(f.c[0]?P[f.c[0].p].name:t('whoIs'))}">${pv.names?`<span class="mkl">${f.c[0]?esc(short(P[f.c[0].p]))+'? '+f.c[0].s+'%':'?'}</span>`:''}</div>`).join('')}</div>`;
- h+=`<div class="acts"><button class="btn" data-pvnav="-1" ${idx<=0?'disabled':''} aria-label="${t('prev')}">‹</button><button class="btn" data-pvnav="1" ${idx>=LIST.length-1?'disabled':''} aria-label="${t('next')}">›</button><button class="btn" data-pvnames="1">${pv.names?t('hideNames'):t('showNames')}</button>${canTag?`<button class="btn" data-pvai="1" ${pv.ai?'disabled':''}>${t('aiBtn')}</button>`:''}${canTag?`<button class="btn main" data-pvtag="1">${pv.tag?t('tagDone'):t('tagMode')}</button>`:''}</div></div><div class="pvside">`;
+ let h=`<button class="x2" data-pvclose="1" aria-label="${t('close')}">✕</button><div class="pvgrid"><div class="pvimgw"><div class="pvimg${pv.tag?' tagging tagmode':''}" id="pvimg" style="aspect-ratio:${ph.w||4}/${ph.h||3};width:min(100%,calc(72vh*${ph.w||4}/${ph.h||3}))"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" id="pvpic">${ph.tags.map((tg,i)=>mk(tg,i)).join('')}${pv.pending?mk(pv.pending,-1,true)+tagPop(pv.pending,a):''}${(pv.faces||[]).map((f,i)=>covered(ph,f)||(pv.pending&&pv.pending.x===f.x&&pv.pending.y===f.y)?'':`<div class="mk ai" style="left:${((f.x-f.r)*100).toFixed(2)}%;top:${((f.y-f.r/a)*100).toFixed(2)}%;width:${(f.r*200).toFixed(2)}%" data-ai="${i}" role="button" aria-label="${esc(f.c[0]?P[f.c[0].p].name:t('whoIs'))}">${pv.names?`<span class="mkl">${f.c[0]?esc(short(P[f.c[0].p]))+'? '+f.c[0].s+'%':'?'}</span>`:''}</div>`).join('')}</div>`;
+ h+=`<div class="acts"><button class="btn" data-pvnav="-1" ${idx<=0?'disabled':''} aria-label="${t('prev')}">‹</button><button class="btn" data-pvnav="1" ${idx>=LIST.length-1?'disabled':''} aria-label="${t('next')}">›</button><button class="btn" data-pvnames="1">${pv.names?t('hideNames'):t('showNames')}</button>${canTag&&pv.tag?`<button class="btn" data-pvai="1" ${pv.ai?'disabled':''}>${t('aiBtn')}</button><button class="btn main" data-pvtag="1">${t('tagDone')}</button>`:''}</div>${canTag&&!pv.tag?`<div class="asktag"><p>${t(ph.tags.length?'askTag2':'askTag')}</p><button class="btn main" data-pvtag="1">${t('askTagBtn')}</button></div>`:''}</div><div class="pvside">`;
  if(ph.draft)h+=`<h3>${esc(T[L].draftH(idx+1,DRAFTS.length))}</h3><p class="muted">${t(isAdmin?'draftHintA':'draftHint')}</p><div class="acts" style="margin:10px 0 14px"><button class="btn main" data-pvsend="1">${esc(T[L][isAdmin?'saveN':'sendN'](DRAFTS.length))}</button><button class="btn" data-pvdrop="1">${t('dropPhoto')}</button></div>`;
  else h+=`<h3>${esc(ph.caption||'')}</h3><p class="muted">${esc([ph.when,ph.where].filter(Boolean).join(' · '))}</p>`;
  if(pv.msg)h+=`<p class="hint">${esc(pv.msg)}</p>`;
  if(pv.aiMsg)h+=`<p class="hint">${esc(pv.aiMsg)}</p>`;
- if(canTag&&!pv.pending)h+=`<p class="hint">${t('tagHint')}</p>${isAdmin||ph.draft?'':`<p class="muted">${t('tagLocal')}</p>`}`;
+ if(pv.tag&&!pv.pending)h+=`<p class="hint">${t('tagHint')}</p>${isAdmin||ph.draft?'':`<p class="muted">${t('tagLocal')}</p>`}`;
  h+=`<h4 style="margin:16px 0 8px">${t('inPhoto')}${ph.tags.length?` (${ph.tags.length})`:''}</h4><div class="tags">${ph.tags.map((tg,i)=>{const n=P[tg.p];return `<div class="trow" data-hl="${i}"><span class="av" style="${esc(cropStyle(ph,tg))}"></span>${n?`<button class="chip" data-pvgo="${esc(tg.p)}">${esc(n.name)}</button>`:`<span class="chip">${esc(tg.n||'?')}</span>`}${pv.tag?`<button class="btn sm" data-untag="${i}" aria-label="${t('removeTag')}">✕</button>`:''}</div>`}).join('')||`<p class="muted">${esc(T[L].tagged(0))}</p>`}</div>`;
  if(canAdmin&&!ph.draft)h+=`<div class="acts" style="margin-top:18px"><button class="btn" data-pvcap="1">${t('editCap')}</button><button class="btn" data-pvdel="1">${t('delPhoto')}</button></div>`;
  h+='</div></div>';
@@ -825,8 +827,7 @@ function drawPV(){
  document.getElementById('pvimg').onclick=e=>{
   const af=e.target.closest('.mk.ai');
   if(af){const f=pv.faces[+af.dataset.ai];if(!f)return;pv.tag=true;pv.pending={p:'',x:f.x,y:f.y,r:f.r};pv.cands=f.c;drawPV();return}
-  if(!canTag||e.target.closest('.mk')||e.target.closest('#tagpop'))return;
-  pv.tag=true;
+  if(!pv.tag||e.target.closest('.mk')||e.target.closest('#tagpop'))return;
   const r=e.currentTarget.getBoundingClientRect();
   pv.pending={p:'',x:+((e.clientX-r.left)/r.width).toFixed(4),y:+((e.clientY-r.top)/r.height).toFixed(4),r:pv.pending?.r||.06};drawPV();
  };
@@ -1268,6 +1269,8 @@ Object.assign(T.vi,{gAll:'Ảnh',gPeople:'Mọi người',gPeopleN:n=>`${n} ngư
 gNoPeople:'Chưa ai được gắn tên trong ảnh. Mở một ảnh và chạm vào khuôn mặt để gắn tên.'});
 Object.assign(T.en,{gAll:'Photos',gPeople:'People',gPeopleN:n=>`${n} ${n===1?'person':'people'}`,gCount:n=>`${n} photo${n===1?'':'s'}`,gFavs:'Favourites',gFav:'Favourite',gFaved:'Favourited',gProfile:'View profile',gFindP:'Find a person…',
 gNoPeople:'Nobody has been tagged yet. Open a photo and tap a face to tag someone.'});
+Object.assign(T.vi,{askTag:'Bạn có biết ai trong ảnh này không?',askTag2:'Bạn có biết thêm ai trong ảnh này không?',askTagBtn:'Gắn tên người trong ảnh',tagHint:'Chạm vào khuôn mặt của một người để gắn tên. Gắn bao nhiêu người cũng được; xong thì bấm “Xong gắn tên”.'});
+Object.assign(T.en,{askTag:'Do you know anyone in this photo?',askTag2:'Do you know anyone else in this photo?',askTagBtn:'Tag people in this photo',tagHint:'Tap someone’s face to tag them. Tag as many people as you like, then press “Done tagging”.'});
 applyText();
 const CFG=window.GP_CONFIG||{};let SB=null,isAdmin=false,QUEUE=[];
 const num=(v,lo,hi)=>{v=+v;return isFinite(v)?Math.min(hi,Math.max(lo,v)):lo};
