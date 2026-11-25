@@ -297,6 +297,9 @@ dialog.prd{width:min(900px,calc(100vw - 24px))}
 .pthi img{position:absolute;inset:0;width:100%;height:100%;display:block}
 .ring{position:absolute;aspect-ratio:1;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 2px #000,0 0 0 9999px #0000004d}
 .pthi .ring{display:none}
+.pmini{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;max-width:420px}
+.pmini .sq{position:relative;border-radius:6px}
+.pmore{position:absolute;inset:0;display:grid;place-items:center;background:#0008;color:#fff;font-weight:700;font-size:20px}
 .pthc{display:flex;flex-direction:column;gap:2px;padding:10px 12px}
 @media(max-width:640px){.pcols{grid-template-columns:minmax(0,1fr)}.av.xxl{width:80px;height:80px}}
 @media(max-width:820px){.pvgrid{grid-template-columns:minmax(0,1fr)}}
@@ -807,6 +810,10 @@ document.addEventListener('click',e=>{
  const pa=e.target.closest('[data-pal]');if(pa){GAL=pa.dataset.pal||null;renderGal();document.getElementById('anh').scrollIntoView({behavior:'smooth'});return}
  const pf=e.target.closest('[data-pfav]');if(pf){const k=pf.dataset.pfav,f=favs();f.has(k)?f.delete(k):f.add(k);try{localStorage.setItem(FAVK,JSON.stringify([...f]))}catch(_){}renderGal();return}
 });
+document.addEventListener('click',e=>{const b=e.target.closest('[data-palgo]');if(!b)return;
+ const k=b.dataset.palgo;if(prd.open)prd.close();if(typeof dlg!=='undefined'&&dlg.open)dlg.close();
+ GVIEW='people';GAL=k;gq.value='';document.querySelectorAll('[data-gview]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.gview==='people')));
+ renderGal();document.getElementById('anh').scrollIntoView({behavior:'smooth'})});
 function renderGal(){
  upBtn.hidden=!db;phNote.hidden=true;
  const v=fold(gq.value.trim());
@@ -1008,7 +1015,9 @@ function drawProfile(){
  h+=`<div class="acts"><button class="btn main" data-edit="${esc(prId)}">${c?t('editInfo'):t('addInfo')}</button>${n.isSp?'':`<button class="btn" data-add="${esc(prId)}">${t('addChild')}</button>`}<button class="btn" data-ptree="${esc(prId)}">${t('viewTree')}</button>${n.added&&canAdmin?`<button class="btn" data-del="${esc(prId)}">${t('del')}</button>`:''}</div>`;
  h+=`<h4 class="ph4">${t('photosH')}${faces.length?` (${faces.length})`:''}</h4>`;
  if(faces.length){
-  h+=`<div class="pgrid">${faces.map(({ph,tg})=>{const ar=(ph.h&&ph.w)?ph.h/ph.w:.75;return `<button class="pth" data-ph="${esc(ph.id)}" data-pfocus="${esc(prId)}"><span class="pthi" style="aspect-ratio:${ph.w||4}/${ph.h||3}"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" loading="lazy"><span class="ring" style="left:${((tg.x-tg.r)*100).toFixed(2)}%;top:${((tg.y-tg.r/ar)*100).toFixed(2)}%;width:${(tg.r*200).toFixed(2)}%"></span></span><span class="pthc"><b>${esc(ph.caption||'')}</b><span class="muted">${esc([ph.when,ph.where].filter(Boolean).join(' · '))}</span></span></button>`}).join('')}</div>`;
+  const PV=6,more=faces.length-PV;
+  h+=`<div class="pmini">${faces.slice(0,PV).map(({ph},k)=>`<button class="sq" data-ph="${esc(ph.id)}" data-pfocus="${esc(prId)}" title="${esc(ph.caption||'')}"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" loading="lazy">${k===PV-1&&more>0?`<span class="pmore">+${more}</span>`:''}</button>`).join('')}</div>`;
+  h+=`<div class="acts" style="margin-top:12px"><button class="btn main" data-palgo="${esc(prId)}">${esc(T[L].seeAllPh(faces.length,short(n)))} ›</button></div>`;
  }else h+=`<p class="muted">${t('noPhotosOf')} ${t('noPhotosHint')}</p>`;
  prb.innerHTML=h;
 }
@@ -1412,6 +1421,8 @@ Object.assign(T.vi,{rdPdf:'Đang mở file PDF…',rdPdfErr:'Không mở đượ
 Object.assign(T.en,{rdPdf:'Opening the PDF…',rdPdfErr:'Could not open this PDF. It may be password-protected or damaged.',rdPages:n=>`${n} page${n===1?'':'s'}`+(n>PDFMAX?` (reading the first ${PDFMAX})`:''),rdReadingPg:(i,n,pc)=>`Reading page ${i}/${n}… ${pc}%`});
 Object.assign(T.vi,{cNewName:'Đổi tên thành',nameHint:'Sửa nếu tên bị sai chính tả, thiếu dấu hoặc chưa đầy đủ.',nameWas:o=>`(Tên ghi trong gia phả gốc: ${o}.)`});
 Object.assign(T.en,{cNewName:'Change name to',nameHint:'Fix it if the name is misspelled, missing accents or incomplete.',nameWas:o=>`(Name in the original records: ${o}.)`});
+Object.assign(T.vi,{seeAllPh:(n,nm)=>`Xem tất cả ${n} ảnh của ${nm}`});
+Object.assign(T.en,{seeAllPh:(n,nm)=>`See all ${n} photo${n===1?'':'s'} of ${nm}`});
 applyText();
 const CFG=window.GP_CONFIG||{};let SB=null,isAdmin=false,QUEUE=[];
 const num=(v,lo,hi)=>{v=+v;return isFinite(v)?Math.min(hi,Math.max(lo,v)):lo};
