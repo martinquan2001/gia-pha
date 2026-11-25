@@ -1105,10 +1105,13 @@ function lifeOf(n){
  if(g.a>110||g.a<0)return {b,dead:null,age:null};   // quá già để còn sống: chỉ ghi năm sinh
  return {b,dead:false,age:g.a,exact:g.exact}}
 // dòng đầy đủ: "Sinh 01/01/1945 · Mất 12/03/2024 · Hưởng thọ 79 tuổi" / "Sinh 1990 – nay · 35 tuổi"
-function ageOf(n){const f=lifeOf(n);if(!f)return '';const V=T[L],A=f.age==null?'':(f.exact?'':V.about)+V.yrsOld(f.age);
- if(f.dead)return [f.b?V.bornOn(fmtD(f.b)):'',V.diedOn(fmtD(f.d)),A?V.agedAt(A):''].filter(Boolean).join(' · ');
- if(f.dead===false)return V.bornOn(fmtD(f.b))+' – '+V.present+(A?' · '+A:'');
- return V.bornOn(fmtD(f.b))}
+// ô vợ/chồng trên cây: giữ như cũ
+function treeAge(n){const p=prof(n.id)||{};const by=(parseD(p.birthYear)||{}).y||parseInt((n.yr||'').split('–')[0]);const dy=(parseD(p.deathYear)||{}).y||parseInt((n.yr||'').split('–')[1]);
+ if(!by)return '';if(dy)return `${by}–${dy}`;return T[L].age(by,NOW-by)}
+function ageOf(n){const f=lifeOf(n);if(!f)return '';const V=T[L],A=f.age==null?'':' · '+V.yrsOld(f.age);
+ if(f.dead)return (f.b?f.b.y:'?')+' – '+f.d.y+A;
+ if(f.dead===false)return f.b.y+' – '+V.present+A;
+ return String(f.b.y)}
 // dòng ngắn cho ô trên cây: "1945–2024 · 79 tuổi" / "1990–nay · 35 tuổi"
 function lifeShort(n){const f=lifeOf(n);if(!f)return n.yr||'';const V=T[L],A=f.age==null?'':' · '+(f.exact?'':'~')+V.yrsOld(f.age);
  if(f.dead)return (f.b?f.b.y:'?')+'–'+f.d.y+A;if(f.dead===false)return f.b.y+'–'+V.present+A;return String(f.b.y)}
@@ -1132,9 +1135,9 @@ function contactRows(id){
 const cw=document.getElementById('cw'),chart=document.getElementById('chart');
 function li(id){
  const n=P[id],o=open.has(id)&&n.kids.length;
- let h=`<li><div class="node"><button class="box${PATH.has(id)?' dl':''}${sel===id?' on':''}" data-open="${esc(id)}" data-box="${esc(id)}" title="${esc(n.name)}">${hasInfo(id)?'<span class="ci" aria-hidden="true"></span>':''}${faceHTML(id,'av bx')}${esc(short(n))}<small>${t('gen')} ${n.gen}${lifeShort(n)?' · '+esc(lifeShort(n)):''}</small>${n.added?`<span class="nw">${t('newTag')}</span>`:''}</button>`;
+ let h=`<li><div class="node"><button class="box${PATH.has(id)?' dl':''}${sel===id?' on':''}" data-open="${esc(id)}" data-box="${esc(id)}" title="${esc(n.name)}">${hasInfo(id)?'<span class="ci" aria-hidden="true"></span>':''}${faceHTML(id,'av bx')}${esc(short(n))}<small>${t('gen')} ${n.gen}${n.yr?' · '+esc(n.yr):''}</small>${n.added?`<span class="nw">${t('newTag')}</span>`:''}</button>`;
  if(n.sps&&n.sps.length){const show=n.sps.slice(0,3);
-  h=h.replace('<div class="node">','<div class="node"><div class="couple">')+`<span class="mline" aria-hidden="true"></span><div class="sps">${show.map(sid=>{const w=P[sid],ag=ageOf(w);return `<button class="box sp${sel===sid?' on':''}" data-open="${esc(sid)}" data-box="${esc(sid)}" title="${esc(spRole(w)+': '+w.name)}">${hasInfo(sid)?'<span class="ci" aria-hidden="true"></span>':''}${faceHTML(sid,'av bx')}${esc(w.name)}<small>${spRole(w)}${ag?' · '+esc(ag):''}</small></button>`}).join('')}${n.sps.length>3?`<button class="box sp more" data-open="${esc(id)}">+${n.sps.length-3} ${esc(spRole(P[n.sps[0]]).toLowerCase())}</button>`:''}</div></div>`}
+  h=h.replace('<div class="node">','<div class="node"><div class="couple">')+`<span class="mline" aria-hidden="true"></span><div class="sps">${show.map(sid=>{const w=P[sid],ag=treeAge(w);return `<button class="box sp${sel===sid?' on':''}" data-open="${esc(sid)}" data-box="${esc(sid)}" title="${esc(spRole(w)+': '+w.name)}">${hasInfo(sid)?'<span class="ci" aria-hidden="true"></span>':''}${faceHTML(sid,'av bx')}${esc(w.name)}<small>${spRole(w)}${ag?' · '+esc(ag):''}</small></button>`}).join('')}${n.sps.length>3?`<button class="box sp more" data-open="${esc(id)}">+${n.sps.length-3} ${esc(spRole(P[n.sps[0]]).toLowerCase())}</button>`:''}</div></div>`}
  if(n.kids.length)h+=`<button class="tgl" data-t="${esc(id)}" aria-expanded="${!!o}" aria-label="${o?t('bClose'):n.kids.length+' '+t('kids')}">${o?'−':'+'+n.kids.length}</button>`;
  h+='</div>';
  if(o)h+=`<ul>${n.kids.map(li).join('')}</ul>`;
