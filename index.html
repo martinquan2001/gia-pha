@@ -87,6 +87,13 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 .chart>ul>li{padding-top:0}
 .chart>ul>li::before,.chart>ul>li::after{display:none}
 .node{display:flex;flex-direction:column;align-items:center}
+.couple{display:flex;align-items:center}
+.couple .mline{width:14px;height:0;border-top:2px solid var(--ink);flex:none}
+.couple .sps{display:flex;flex-direction:column;gap:4px}
+.box.sp{background:var(--soft);font-size:13px;max-width:180px}
+.box.sp.on{background:var(--ink)}
+.box.more{padding:4px 10px;font-size:12px;color:var(--mute)}
+.spadd{display:inline;border:0;background:none;padding:0;text-decoration:underline;cursor:pointer;color:inherit;font:inherit}
 .box{position:relative;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 12px;font-size:14px;line-height:1.3;white-space:nowrap;cursor:pointer;max-width:200px;overflow:hidden;text-overflow:ellipsis}
 .box small{display:block;color:var(--mute);font-size:12px}
 .box:hover{border-color:var(--ink)}
@@ -646,7 +653,7 @@ for(const line of RAW.split('\n')){const [id,pa,nm,sp,yr,note,code]=line.split('
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fold=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[đĐ]/g,'d').toLowerCase();
 const NOW=new Date().getFullYear();
-let P={},ORDER=[],ADDED=[],PROF={};
+let P={},ORDER=[],ADDED=[],PROF={},SPOUSES=[];
 const key=id=>String(id).replace(/[^A-Za-z0-9_-]/g,'_');
 function build(){
  P={};ORDER=[];
@@ -655,11 +662,20 @@ function build(){
  while(rest.length&&guard++<20){const next=[];for(const a of rest){if(P[a.parent]&&!P[a.id]){P[a.id]={id:a.id,pa:a.parent,name:a.name,sp:a.spouse||'',yr:a.birthYear?a.birthYear+'–'+(a.deathYear||''):'',note:'',code:'',kids:[],added:true,gender:a.gender};ORDER.push(a.id)}else if(!P[a.id])next.push(a)}rest=next}
  for(const id of ORDER){const n=P[id];if(n.pa&&P[n.pa])P[n.pa].kids.push(id)}
  (function g(id,d){P[id].gen=d;for(const k of P[id].kids)g(k,d+1)})('b1',1);
+ // vợ / chồng: mỗi người được ghi lại thành một thành viên để nhớ đến
+ SPOUSES=[];
+ for(const id of ORDER){const n=P[id],pr=PROF[key(id)]||{},raw=n.sp||pr.spouse||'';n.sps=[];
+  raw.split(';').map(x=>x.trim()).filter(Boolean).slice(0,8).forEach((nm,i)=>{
+   const sid='sp_'+key(id)+'_'+i,f=n.gender?n.gender==='nu':/ Thị |^Cô /.test(n.name);
+   P[sid]={id:sid,pa:'',name:nm.charAt(0).toUpperCase()+nm.slice(1),isSp:true,of:id,gen:n.gen,sp:n.name,yr:'',note:'',code:'',kids:[],gender:f?'nam':'nu'};
+   n.sps.push(sid);SPOUSES.push(sid)})}
 }
 build();
-const anc=id=>{const a=[];let p=P[id]?.pa;while(p&&P[p]){a.unshift(p);p=P[p].pa}return a};
+const anc=id=>{if(P[id]&&P[id].isSp)return [...anc(P[id].of),P[id].of];const a=[];let p=P[id]?.pa;while(p&&P[p]){a.unshift(p);p=P[p].pa}return a};
 const isF=n=>n.gender?n.gender==='nu':/ Thị |^Cô /.test(n.name);
 const short=n=>n.name.replace(/^Nguyễn Hữu /,'');
+const spRole=n=>n.gender==='nam'?t('husband'):t('wife');
+const spOfTxt=n=>T[L][n.gender==='nam'?'husbandOf':'wifeOf'](P[n.of].name,P[n.of].gen);
 const noteOf=n=>L==='en'?(NOTE_EN[n.id]||''):n.note;
 const prof=id=>PROF[key(id)]||null;
 const CF=['addr','city','phone','email','fb','ig','zalo','web'];
@@ -809,17 +825,20 @@ function drawProfile(){
  const p=prof(prId)||{},a=anc(prId),faces=facesOf(prId),age=ageOf(n),sp=n.sp||p.spouse,c=contactRows(prId);
  const pc=id=>`<button class="chip" data-pp="${esc(id)}">${esc(P[id].name)}</button>`;
  const face=faceHTML(prId,'av xxl')||`<span class="av xxl ini" aria-hidden="true">${esc((short(n).trim()[0]||'?').toUpperCase())}</span>`;
- let h=`<button class="x2" data-pclose="1" aria-label="${t('close')}">✕</button><div class="phead">${face}<div><h3>${esc(n.name)}</h3><p class="muted" style="margin:6px 0 0">${t('fGen')} ${n.gen}${n.gen===1?t('founder'):''}${age?' · '+esc(age):''}${n.added?' · '+t('newTag'):''}</p></div></div>`;
+ let h=`<button class="x2" data-pclose="1" aria-label="${t('close')}">✕</button><div class="phead">${face}<div><h3>${esc(n.name)}</h3><p class="muted" style="margin:6px 0 0">${n.isSp?esc(spOfTxt(n)):t('fGen')+' '+n.gen+(n.gen===1?t('founder'):'')}${age?' · '+esc(age):''}${n.added?' · '+t('newTag'):''}</p></div></div>`;
  h+=`<div class="pcols"><div><dl class="kv">`;
- if(sp)h+=`<dt>${isF(n)?t('husband'):t('wife')}</dt><dd>${esc(sp)}</dd>`;
+ if(n.isSp)h+=`<dt>${spRole(n)}</dt><dd>${esc(T[L][n.gender==='nam'?'husbandOfS':'wifeOfS'])} ${pc(n.of)}</dd>`;
+ else if(n.sps&&n.sps.length)h+=`<dt>${isF(n)?t('husband'):t('wife')}</dt><dd class="chips">${n.sps.map(pc).join('')}</dd>`;
+ else h+=`<dt>${isF(n)?t('husband'):t('wife')}</dt><dd class="muted">${t('spUnknown')} <button class="spadd" data-edit="${esc(prId)}">${t(isF(n)?'spAddH':'spAddW')}</button></dd>`;
+ if(n.isSp&&P[n.of].sps.length===1&&P[n.of].kids.length)h+=`<dt>${t('children')}</dt><dd class="chips">${P[n.of].kids.map(pc).join('')}</dd>`;
  if(n.pa)h+=`<dt>${t('father')}</dt><dd>${pc(n.pa)}</dd>`;
  if(n.kids.length)h+=`<dt>${t('children')}</dt><dd class="chips">${n.kids.map(pc).join('')}</dd>`;
  if(n.code)h+=`<dt>${t('code')}</dt><dd>${esc(n.code)}</dd>`;
  h+='</dl>';
  const no=noteOf(n);if(no)h+=`<p class="note">${esc(no)}</p>`;
- if(a.length)h+=`<div class="chain">${t('lineage')}: ${a.length>6?'… ':''}${a.slice(-6).map(i=>`<button data-pp="${esc(i)}">${esc(short(P[i]))}</button>`).join(' › ')} › ${esc(short(n))}</div>`;
+ if(a.length&&!n.isSp)h+=`<div class="chain">${t('lineage')}: ${a.length>6?'… ':''}${a.slice(-6).map(i=>`<button data-pp="${esc(i)}">${esc(short(P[i]))}</button>`).join(' › ')} › ${esc(short(n))}</div>`;
  h+=`</div><div class="contact" style="margin-top:0;border-top:0;padding-top:0"><h4>${t('contactH')}</h4>${c?`<dl class="kv">${c}</dl>`:`<p class="muted">${t('noContact')}</p>`}${p.updatedAt?`<p class="muted">${t('updated')} ${esc(String(p.updatedAt).slice(0,10))}</p>`:''}</div></div>`;
- h+=`<div class="acts"><button class="btn main" data-edit="${esc(prId)}">${c?t('editInfo'):t('addInfo')}</button><button class="btn" data-add="${esc(prId)}">${t('addChild')}</button><button class="btn" data-ptree="${esc(prId)}">${t('viewTree')}</button>${n.added&&canAdmin?`<button class="btn" data-del="${esc(prId)}">${t('del')}</button>`:''}</div>`;
+ h+=`<div class="acts"><button class="btn main" data-edit="${esc(prId)}">${c?t('editInfo'):t('addInfo')}</button>${n.isSp?'':`<button class="btn" data-add="${esc(prId)}">${t('addChild')}</button>`}<button class="btn" data-ptree="${esc(prId)}">${t('viewTree')}</button>${n.added&&canAdmin?`<button class="btn" data-del="${esc(prId)}">${t('del')}</button>`:''}</div>`;
  h+=`<h4 class="ph4">${t('photosH')}${faces.length?` (${faces.length})`:''}</h4>`;
  if(faces.length){
   h+=`<div class="pgrid">${faces.map(({ph,tg})=>{const ar=(ph.h&&ph.w)?ph.h/ph.w:.75;return `<button class="pth" data-ph="${esc(ph.id)}" data-pfocus="${esc(prId)}"><span class="pthi" style="aspect-ratio:${ph.w||4}/${ph.h||3}"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" loading="lazy"><span class="ring" style="left:${((tg.x-tg.r)*100).toFixed(2)}%;top:${((tg.y-tg.r/ar)*100).toFixed(2)}%;width:${(tg.r*200).toFixed(2)}%"></span></span><span class="pthc"><b>${esc(ph.caption||'')}</b><span class="muted">${esc([ph.when,ph.where].filter(Boolean).join(' · '))}</span></span></button>`}).join('')}</div>`;
@@ -923,6 +942,8 @@ const cw=document.getElementById('cw'),chart=document.getElementById('chart');
 function li(id){
  const n=P[id],o=open.has(id)&&n.kids.length;
  let h=`<li><div class="node"><button class="box${PATH.has(id)?' dl':''}${sel===id?' on':''}" data-open="${esc(id)}" data-box="${esc(id)}" title="${esc(n.name)}">${hasInfo(id)?'<span class="ci" aria-hidden="true"></span>':''}${faceHTML(id,'av bx')}${esc(short(n))}<small>${t('gen')} ${n.gen}${n.yr?' · '+esc(n.yr):''}</small>${n.added?`<span class="nw">${t('newTag')}</span>`:''}</button>`;
+ if(n.sps&&n.sps.length){const show=n.sps.slice(0,3);
+  h=h.replace('<div class="node">','<div class="node"><div class="couple">')+`<span class="mline" aria-hidden="true"></span><div class="sps">${show.map(sid=>{const w=P[sid],ag=ageOf(w);return `<button class="box sp${sel===sid?' on':''}" data-open="${esc(sid)}" data-box="${esc(sid)}" title="${esc(spRole(w)+': '+w.name)}">${hasInfo(sid)?'<span class="ci" aria-hidden="true"></span>':''}${faceHTML(sid,'av bx')}${esc(w.name)}<small>${spRole(w)}${ag?' · '+esc(ag):''}</small></button>`}).join('')}${n.sps.length>3?`<button class="box sp more" data-open="${esc(id)}">+${n.sps.length-3} ${esc(spRole(P[n.sps[0]]).toLowerCase())}</button>`:''}</div></div>`}
  if(n.kids.length)h+=`<button class="tgl" data-t="${esc(id)}" aria-expanded="${!!o}" aria-label="${o?t('bClose'):n.kids.length+' '+t('kids')}">${o?'−':'+'+n.kids.length}</button>`;
  h+='</div>';
  if(o)h+=`<ul>${n.kids.map(li).join('')}</ul>`;
@@ -939,9 +960,12 @@ const panel=document.getElementById('panel');
 const chip=id=>`<button class="chip" data-s="${esc(id)}">${esc(P[id].name)}</button>`;
 function showPanel(id){
  const n=P[id];if(!n)return;const a=anc(id),p=prof(id)||{};
- let h=`<button class="x" id="px" aria-label="${t('close')}">✕</button>${faceHTML(id,'av xl')}<h3>${esc(n.name)}</h3><dl class="kv"><dt>${t('fGen')}</dt><dd>${n.gen}${n.gen===1?t('founder'):''}</dd>`;
+ let h=`<button class="x" id="px" aria-label="${t('close')}">✕</button>${faceHTML(id,'av xl')}<h3>${esc(n.name)}</h3>${n.isSp?`<p class="muted" style="margin:4px 0 0">${esc(spOfTxt(n))}</p>`:''}<dl class="kv">${n.isSp?'':`<dt>${t('fGen')}</dt><dd>${n.gen}${n.gen===1?t('founder'):''}</dd>`}`;
  const age=ageOf(n);if(age)h+=`<dt>${t('fYears')}</dt><dd>${esc(age)}</dd>`;
- const sp=n.sp||p.spouse;if(sp)h+=`<dt>${isF(n)?t('husband'):t('wife')}</dt><dd>${esc(sp)}</dd>`;
+ if(n.isSp)h+=`<dt>${spRole(n)}</dt><dd>${esc(T[L][n.gender==='nam'?'husbandOfS':'wifeOfS'])} ${chip(n.of)}</dd>`;
+ else if(n.sps&&n.sps.length)h+=`<dt>${isF(n)?t('husband'):t('wife')}</dt><dd class="chips">${n.sps.map(chip).join('')}</dd>`;
+ else h+=`<dt>${isF(n)?t('husband'):t('wife')}</dt><dd class="muted">${t('spUnknown')} <button class="spadd" data-edit="${esc(id)}">${t(isF(n)?'spAddH':'spAddW')}</button></dd>`;
+ if(n.isSp&&P[n.of].sps.length===1&&P[n.of].kids.length)h+=`<dt>${t('children')}</dt><dd class="chips">${P[n.of].kids.map(chip).join('')}</dd>`;
  if(n.pa)h+=`<dt>${t('father')}</dt><dd>${chip(n.pa)}</dd>`;
  if(n.kids.length)h+=`<dt>${t('children')}</dt><dd class="chips">${n.kids.map(chip).join('')}</dd>`;
  if(n.code)h+=`<dt>${t('code')}</dt><dd>${esc(n.code)}</dd>`;
@@ -950,13 +974,13 @@ function showPanel(id){
  h+=photosOfPanel(id);
  const c=contactRows(id);
  h+=`<div class="contact"><h4>${t('contactH')}</h4>${c?`<dl class="kv">${c}</dl>`:`<p class="muted">${t('noContact')}</p>`}${p.updatedAt?`<p class="muted">${t('updated')} ${esc(String(p.updatedAt).slice(0,10))}</p>`:''}`;
- h+=`<div class="acts"><button class="btn main" data-open="${esc(id)}">${t('openProf')}</button><button class="btn" data-edit="${esc(id)}">${c?t('editInfo'):t('addInfo')}</button><button class="btn" data-add="${esc(id)}">${t('addChild')}</button>${n.added&&canAdmin?`<button class="btn" data-del="${esc(id)}">${t('del')}</button>`:''}</div></div>`;
- if(a.length)h+=`<div class="chain">${t('lineage')}: ${a.length>6?'… ':''}${a.slice(-6).map(i=>`<button data-s="${esc(i)}">${esc(short(P[i]))}</button>`).join(' › ')} › ${esc(short(n))}</div>`;
+ h+=`<div class="acts"><button class="btn main" data-open="${esc(id)}">${t('openProf')}</button><button class="btn" data-edit="${esc(id)}">${c?t('editInfo'):t('addInfo')}</button>${n.isSp?'':`<button class="btn" data-add="${esc(id)}">${t('addChild')}</button>`}${n.added&&canAdmin?`<button class="btn" data-del="${esc(id)}">${t('del')}</button>`:''}</div></div>`;
+ if(a.length&&!n.isSp)h+=`<div class="chain">${t('lineage')}: ${a.length>6?'… ':''}${a.slice(-6).map(i=>`<button data-s="${esc(i)}">${esc(short(P[i]))}</button>`).join(' › ')} › ${esc(short(n))}</div>`;
  panel.innerHTML=h;document.getElementById('px').onclick=()=>panel.classList.remove('on');
 }
 function go(id,smooth=true){
  if(!P[id])return;
- const r=rootFor(id);if(r!==root){root=r;document.getElementById('root').value=r}
+ const r=rootFor(P[id].isSp?P[id].of:id);if(r!==root){root=r;document.getElementById('root').value=r}
  for(const a of anc(id))open.add(a);
  sel=id;render();showPanel(id);panel.classList.add('on');center(id,smooth);
 }
@@ -975,10 +999,10 @@ const dir=document.getElementById('dir'),dq=document.getElementById('dq'),dbStat
 function renderDir(){
  dbStatus.hidden=!dbState;if(dbState)dbStatus.textContent=t(dbState);
  const v=fold(dq.value.trim());
- const ids=ORDER.filter(hasInfo).filter(i=>!v||fold(P[i].name+' '+(prof(i).city||'')+' '+(prof(i).addr||'')).includes(v));
+ const ids=ORDER.concat(SPOUSES).filter(hasInfo).filter(i=>!v||fold(P[i].name+' '+(prof(i).city||'')+' '+(prof(i).addr||'')).includes(v));
  if(!ids.length){dir.innerHTML=db?`<p class="muted">${v?t('noFound'):t('noneYet')}</p>`:'';return}
  dir.innerHTML=ids.map(i=>{const n=P[i],p=prof(i),age=ageOf(n),pa=n.pa?short(P[n.pa]):'';
-  return `<article class="pc">${faceHTML(i,'av lg')}<h3>${esc(n.name)}</h3><div class="meta">${t('gen')} ${n.gen}${pa?' · '+t('childOf')+' '+esc(pa):''}${age?' · '+esc(age):''}</div>${p.city?`<div class="ln">${esc(p.city)}</div>`:''}${p.phone?`<div class="ln">${esc(p.phone)}</div>`:''}${p.email?`<div class="ln">${esc(p.email)}</div>`:''}<div class="acts"><button class="btn" data-open="${esc(i)}">${t('details')}</button></div></article>`}).join('');
+  return `<article class="pc">${faceHTML(i,'av lg')}<h3>${esc(n.name)}</h3><div class="meta">${n.isSp?esc(spOfTxt(n)):t('gen')+' '+n.gen+(pa?' · '+t('childOf')+' '+esc(pa):'')}${age?' · '+esc(age):''}</div>${p.city?`<div class="ln">${esc(p.city)}</div>`:''}${p.phone?`<div class="ln">${esc(p.phone)}</div>`:''}${p.email?`<div class="ln">${esc(p.email)}</div>`:''}<div class="acts"><button class="btn" data-open="${esc(i)}">${t('details')}</button></div></article>`}).join('');
 }
 dq.addEventListener('input',renderDir);
 function refresh(){build();stats();render();renderDir();renderGal();if(sel&&P[sel])showPanel(sel);if(prd.open)drawProfile()}
@@ -988,8 +1012,8 @@ const dlg=document.getElementById('dlg'),body=document.getElementById('dlgBody')
 const close=()=>dlg.open&&dlg.close();
 const X=()=>`<button class="x2" data-close="1" aria-label="${t('close')}">✕</button>`;
 const pickList=(v,attr)=>{const f=fold(v.trim());if(f.length<2)return `<p class="muted" style="padding:10px 14px;margin:0">${t('type2')}</p>`;
- const m=ORDER.filter(i=>fold(P[i].name).includes(f)).slice(0,40);
- return m.length?m.map(i=>`<button ${attr}="${esc(i)}">${esc(P[i].name)} <small>${t('gen')} ${P[i].gen}${P[i].pa?' · '+t('childOf')+' '+esc(short(P[P[i].pa])):''}</small></button>`).join(''):`<p class="muted" style="padding:10px 14px;margin:0">${t('noFound')}</p>`};
+ const m=(attr==='data-add'?ORDER:ORDER.concat(SPOUSES)).filter(i=>fold(P[i].name).includes(f)).slice(0,40);
+ return m.length?m.map(i=>`<button ${attr}="${esc(i)}">${esc(P[i].name)} <small>${P[i].isSp?esc(spOfTxt(P[i])):t('gen')+' '+P[i].gen+(P[i].pa?' · '+t('childOf')+' '+esc(short(P[P[i].pa])):'')}</small></button>`).join(''):`<p class="muted" style="padding:10px 14px;margin:0">${t('noFound')}</p>`};
 function stepPick(h,p,label,attr,extra){
  body.innerHTML=`${X()}<h3>${h}</h3><p class="muted">${p}</p><div class="fg"><label class="w">${label}<input id="fq" type="search" autocomplete="off"></label></div><div class="pick" id="fl"><p class="muted" style="padding:10px 14px;margin:0">${t('type2')}</p></div>${extra}`;
  const fq=document.getElementById('fq'),fl=document.getElementById('fl');fq.oninput=()=>{fl.innerHTML=pickList(fq.value,attr)};
@@ -1000,9 +1024,9 @@ const stepParent=()=>stepPick(t('s2H'),t('s2P'),t('parentName'),'data-add',`<p c
 const F=(id,k,val,type='text',w=false)=>`<label${w?' class="w"':''}>${t(k)}<input id="${id}" type="${type}" value="${esc(val||'')}" autocomplete="off"></label>`;
 function form(mode,id){
  const n=P[id],p=mode==='edit'?(prof(id)||{}):{};
- let h=X()+(mode==='edit'?`<h3>${esc(n.name)}</h3><p class="muted">${t('gen')} ${n.gen}. ${t('editP')}</p>`:`<h3>${esc(T[L].addH(n.name))}</h3><p class="muted">${esc(T[L].addP(n.gen+1))}</p>`)+`<form id="pf" novalidate><div class="fg">`;
+ let h=X()+(mode==='edit'?`<h3>${esc(n.name)}</h3><p class="muted">${n.isSp?esc(spOfTxt(n))+'.':t('gen')+' '+n.gen+'.'} ${t(n.isSp?'editSpP':'editP')}</p>`:`<h3>${esc(T[L].addH(n.name))}</h3><p class="muted">${esc(T[L].addP(n.gen+1))}</p>`)+`<form id="pf" novalidate><div class="fg">`;
  if(mode==='add')h+=F('f-name','cName','Nguyễn Hữu ','text',true)+`<label>${t('cGender')}<select id="f-gender"><option value="nam">${t('male')}</option><option value="nu">${t('female')}</option></select></label>`+F('f-spouse','cSpouse','');
- else if(!n.sp)h+=F('f-spouse','cSpouse',p.spouse,'text',true);
+ else if(!n.sp&&!n.isSp)h+=F('f-spouse',isF(n)?'cHusband':'cSpouse',p.spouse,'text',true);
  h+=F('f-birth','cBirth',p.birthYear,'number')+F('f-death','cDeath',p.deathYear,'number')+F('f-addr','cAddr',p.addr,'text',true)+F('f-city','cCity',p.city)+F('f-phone','cPhone',p.phone,'tel')+F('f-email','cEmail',p.email,'email')+F('f-zalo','cZalo',p.zalo)+F('f-fb','cFb',p.fb)+F('f-ig','cIg',p.ig)+F('f-web','cWeb',p.web,'url',true)+F('f-job','cJob',p.job,'text',true);
  h+=`<label class="w">${t('cAbout')}<textarea id="f-about">${esc(p.about||'')}</textarea></label></div><label class="ok"><input type="checkbox" id="f-ok"> <span>${t('consent')}</span></label><div class="err" id="ferr"></div><div class="acts"><button class="btn main" type="submit">${t('save')}</button><button class="btn" type="button" data-close="1">${t('cancel')}</button></div></form>`;
  body.innerHTML=h;if(!dlg.open)dlg.showModal();
@@ -1079,8 +1103,8 @@ document.getElementById('bClose').onclick=()=>{open=new Set(anc('tam'));render()
 const q=document.getElementById('q'),hits=document.getElementById('hits');
 q.addEventListener('input',()=>{
  const v=fold(q.value.trim());if(v.length<2){hits.hidden=true;return}
- const m=ORDER.filter(i=>fold(P[i].name).includes(v)||fold(P[i].sp||'').includes(v)).slice(0,30);
- hits.innerHTML=m.length?m.map(i=>`<button data-open="${esc(i)}">${esc(P[i].name)} <small>${t('gen')} ${P[i].gen}${P[i].pa?' · '+t('childOf')+' '+esc(short(P[P[i].pa])):''}</small></button>`).join(''):`<div style="padding:10px 14px" class="muted">${t('noFound')}</div>`;
+ const m=ORDER.concat(SPOUSES).filter(i=>fold(P[i].name).includes(v)).slice(0,30);
+ hits.innerHTML=m.length?m.map(i=>`<button data-open="${esc(i)}">${esc(P[i].name)} <small>${P[i].isSp?esc(spOfTxt(P[i])):t('gen')+' '+P[i].gen+(P[i].pa?' · '+t('childOf')+' '+esc(short(P[P[i].pa])):'')}</small></button>`).join(''):`<div style="padding:10px 14px" class="muted">${t('noFound')}</div>`;
  hits.hidden=false;
 });
 hits.addEventListener('click',()=>{hits.hidden=true});
@@ -1152,6 +1176,14 @@ Object.assign(T.en,{dupScan:'Find duplicate photos in the library',dupScanning:(
 dupPair:p=>`These two photos are ${p}% alike`,dupMergeLib:'Merge into one (keep the sharper copy)',dupNot:'Not a duplicate',
 dupLib:p=>`This photo may already be on the site (${p}% alike)`,dupNew:'New photo',dupOld:'Already on the site',dupHelp:'Merge keeps one photo (the sharper copy), combines the name tags from both, and fills in any missing caption.',
 dupMerge:'Merge into existing photo',dupKeepBoth:'Add as a separate photo anyway',dupQueue:'Another photo waiting for approval looks the same as this one.'});
+Object.assign(T.vi,{wifeOf:(n,g)=>`Vợ của ${n} (đời ${g})`,husbandOf:(n,g)=>`Chồng của ${n} (đời ${g})`,wifeOfS:'Vợ của',husbandOfS:'Chồng của',
+spUnknown:'Gia phả chưa ghi tên.',spAddW:'Thêm tên vợ',spAddH:'Thêm tên chồng',cHusband:'Chồng',
+editSpP:'Hãy giúp ghi nhớ bà/ông: năm sinh, năm mất, quê quán, kỷ niệm, hoặc thông tin liên lạc nếu còn sống.',
+treeIntro:'Bấm vào một ô để xem chi tiết. Ô bên cạnh, nối bằng một vạch ngang, là vợ hoặc chồng của người đó. Gia phả xưa thường chỉ ghi tên đàn ông; ở đây vợ và chồng được ghi cùng nhau để con cháu nhớ đến cả hai. Bấm nút dưới ô để mở các con (+) hoặc thu gọn (−). Kéo để di chuyển, dùng − và + để thu nhỏ, phóng to. Ô viền đậm là dòng trực hệ; chấm nhỏ ở góc ô nghĩa là người đó có thông tin liên lạc.'});
+Object.assign(T.en,{wifeOf:(n,g)=>`Wife of ${n} (generation ${g})`,husbandOf:(n,g)=>`Husband of ${n} (generation ${g})`,wifeOfS:'Wife of',husbandOfS:'Husband of',
+spUnknown:'Not recorded in the old records.',spAddW:'Add his wife’s name',spAddH:'Add her husband’s name',cHusband:'Husband',
+editSpP:'Help us remember her or him: birth and death years, home town, memories, or contact details if living.',
+treeIntro:'Click a box to see details. The box beside it, joined by a short line, is that person’s wife or husband. Old family records usually named only the men; here husbands and wives are recorded together so both are remembered. Use the button under a box to show children (+) or hide them (−). Drag to move around; use − and + to zoom. Boxes with a heavy outline are the direct line; a small dot in the corner means that person has contact details.'});
 applyText();
 const CFG=window.GP_CONFIG||{};let SB=null,isAdmin=false,QUEUE=[];
 const num=(v,lo,hi)=>{v=+v;return isFinite(v)?Math.min(hi,Math.max(lo,v)):lo};
