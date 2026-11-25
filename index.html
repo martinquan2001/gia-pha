@@ -207,10 +207,14 @@ dialog.pvd>.dlg{padding:0;max-height:none;height:100%;overflow:hidden}
 .pvwrap.info{--pvh:40dvh}
 .pvwrap.tagmode{--pvh:calc(100dvh - 230px)}
 .pvwrap.tagmode.info{--pvh:34dvh}
-.pvbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;flex:none}
+.pvbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;flex:none;position:relative}
+.pvbar .pvcount{position:absolute;left:50%;transform:translateX(-50%)}
 .pvb{width:44px;height:44px;border-radius:50%;border:0;background:#ffffff24;color:#fff;font:600 18px/1 Georgia,serif;cursor:pointer}
 .pvb.on{background:#fff;color:#111}
 .pvcount{font-size:13px;color:#aaa}
+.pvbr{display:flex;gap:8px;align-items:center}
+.pvdl{height:44px;border-radius:999px;border:0;background:#ffffff24;color:#fff;font:600 14px Inter,system-ui,sans-serif;padding:0 16px;cursor:pointer}
+.pvdl:hover{background:#ffffff3a}.pvdl:disabled{opacity:.5}
 .pvstage{position:relative;flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;padding:0 8px;touch-action:pan-y pinch-zoom}
 .pvwrap.info .pvstage{flex:0 0 auto}
 .pvstage .pvimg{background:transparent;margin:0 auto}
@@ -754,7 +758,8 @@ let PHOTOS=[],assetsNS=null,URLS={},pv={id:null,tag:false,pending:null,names:tru
 const okId=s=>/^(pending|approved)\/[A-Za-z0-9_-]{1,80}\.(jpg|png|webp|gif)$/.test(String(s||''));
 const srcOf=a=>URLS[a]||(okId(a)&&SB?SB.storage.from('photos').getPublicUrl(a).data.publicUrl:'');
 let DRAFTS=[],finishing=false;
-const photoById=id=>PHOTOS.find(p=>p.id===id)||DRAFTS.find(p=>p.id===id);
+let REVIEW=[];
+const photoById=id=>PHOTOS.find(p=>p.id===id)||DRAFTS.find(p=>p.id===id)||REVIEW.find(p=>p.id===id);
 function facesOf(pid){const r=[];for(const ph of PHOTOS)for(const tg of ph.tags)if(tg.p===pid)r.push({ph,tg});return r}
 function cropStyle(ph,tg){
  const a=(ph.h&&ph.w)?ph.h/ph.w:1,w=Math.min(.9,Math.max(.02,tg.r*2.4)),h=Math.min(1,w/a);
@@ -808,7 +813,7 @@ gq.addEventListener('input',renderGal);
 
 // viewer
 const pvd=document.getElementById('pv'),pvb=document.getElementById('pvBody');
-function openPhoto(id,focus){if(pv.dirty&&!isAdmin){const o=photoById(pv.id);if(o&&!o.draft)submit('tags',o.id,{tags:o.tags}).catch(()=>{})}pv={id,tag:!!(photoById(id)||{}).draft,pending:null,names:true,focus:focus||null};drawPV();if(!pvd.open)pvd.showModal()}
+function openPhoto(id,focus){if(pv.dirty&&!isAdmin){const o=photoById(pv.id);if(o&&!o.draft)submit('tags',o.id,{tags:o.tags}).catch(()=>{})}pv={id,tag:!!((photoById(id)||{}).draft||(photoById(id)||{}).review),pending:null,names:true,focus:focus||null};drawPV();if(!pvd.open)pvd.showModal()}
 function tagPop(pd,a){
  const up=pd.y>.6,edge=up?(pd.y-pd.r/a):(pd.y+pd.r/a),x=(pd.x*100).toFixed(2);
  const pos=`left:clamp(0px,calc(${x}% - 135px),calc(100% - 270px));${up?`bottom:calc(${((1-edge)*100).toFixed(2)}% + 10px)`:`top:calc(${(edge*100).toFixed(2)}% + 10px)`}`;
@@ -833,8 +838,9 @@ function wireBox(){
   pm.addEventListener('pointermove',mv);pm.addEventListener('pointerup',up);pm.addEventListener('pointercancel',up);
  });
 }
-function pvStep(d){const ph=photoById(pv.id);if(!ph)return;const LS=ph.draft?DRAFTS:PHOTOS,i=LS.indexOf(ph)+d;if(!LS[i])return;const keep=!!pv.info;openPhoto(LS[i].id);if(keep){pv.info=true;drawPV()}}
+function pvStep(d){const ph=photoById(pv.id);if(!ph)return;const LS=ph.draft?DRAFTS:ph.review?REVIEW:PHOTOS,i=LS.indexOf(ph)+d;if(!LS[i])return;const keep=!!pv.info;openPhoto(LS[i].id);if(keep){pv.info=true;drawPV()}}
 function wirePV(){
+ const cur=photoById(pv.id);if(cur&&cur.review)pvb.querySelectorAll('[data-rvf]').forEach(i=>{i.oninput=()=>{cur[i.dataset.rvf]=i.value.slice(0,i.dataset.rvf==='caption'?200:120)}});
  const st=document.getElementById('pvstage'),sd=document.getElementById('pvside');if(!st)return;
  let sx=0,sy=0,on=false;
  st.addEventListener('touchstart',e=>{on=!pv.tag&&e.touches.length===1;if(on){sx=e.touches[0].clientX;sy=e.touches[0].clientY}},{passive:true});
@@ -846,23 +852,61 @@ function wirePV(){
  if(sd){let y0=0,top0=true;sd.addEventListener('touchstart',e=>{y0=e.touches[0].clientY;top0=sd.scrollTop<=0},{passive:true});
   sd.addEventListener('touchend',e=>{if(top0&&e.changedTouches[0].clientY-y0>80&&!pv.tag){pv.info=false;drawPV()}})}
 }
+// ---- tải ảnh về máy
+async function downloadPhoto(ph,btn){
+ if(btn)btn.disabled=true;
+ try{const r=await fetch(srcOf(ph.asset));if(!r.ok)throw 0;const b=await r.blob();
+  const base=fold(ph.caption||'anh gia dinh').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60)||'anh';
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=base+'.'+((b.type.split('/')[1]||'jpg').replace('jpeg','jpg'));
+  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},3000)}
+ catch(_){window.open(srcOf(ph.asset),'_blank','noopener')}
+ finally{if(btn)btn.disabled=false}}
+// ---- duyệt ảnh: xem, xoay, gắn tên rồi mới duyệt
+function openReview(sid){
+ const items=QUEUE.filter(s=>s.kind==='photo'&&okId(s.payload&&s.payload.path));
+ REVIEW=items.map(s=>{const p=s.payload||{};return{id:'r'+String(s.id),review:true,sid:String(s.id),asset:p.path,w:num(p.w,1,20000),h:num(p.h,1,20000),caption:String(p.caption||'').slice(0,200),when:String(p.when||'').slice(0,80),where:String(p.where||'').slice(0,120),tags:cleanTags(p.tags)}});
+ const it=REVIEW.find(x=>x.sid===String(sid));if(it)openPhoto(it.id)}
+async function rotateReview(ph,dir){
+ const img=await loadImg(srcOf(ph.asset)),W=img.naturalWidth,H=img.naturalHeight,c=document.createElement('canvas');c.width=H;c.height=W;
+ const x=c.getContext('2d');x.translate(H/2,W/2);x.rotate(dir*Math.PI/2);x.drawImage(img,-W/2,-H/2);
+ const blob=await new Promise((res,rej)=>c.toBlob(b=>b?res(b):rej(0),'image/jpeg',.92));
+ const path='approved/'+rid()+'.jpg';URLS[path]=URL.createObjectURL(blob);
+ if(!ph.origPath)ph.origPath=ph.asset;ph.asset=path;ph.blob=blob;
+ const ow=ph.w,oh=ph.h;ph.w=oh;ph.h=ow;
+ ph.tags=ph.tags.map(g=>{const r=+Math.min(.5,g.r*ow/oh).toFixed(4);return dir>0?{...g,x:+(1-g.y).toFixed(4),y:+g.x.toFixed(4),r}:{...g,x:+g.y.toFixed(4),y:+(1-g.x).toFixed(4),r}})}
+async function finishReview(ph,ok){
+ const s=QUEUE.find(x=>String(x.id)===ph.sid);if(!s)throw 0;
+ if(ok){
+  if(ph.blob){const up=await SB.storage.from('photos').upload(ph.asset,ph.blob,{contentType:'image/jpeg',upsert:false});if(up.error)throw up.error}
+  await approve({...s,payload:{...(s.payload||{}),path:ph.asset,w:ph.w,h:ph.h,caption:ph.caption,when:ph.when,where:ph.where,tags:ph.tags}});
+  if(ph.blob&&ph.origPath)SB.storage.from('photos').remove([ph.origPath]).catch(()=>{});
+ }else{
+  const r=await SB.from('submissions').delete().eq('id',s.id);if(r.error)throw r.error;
+  SB.storage.from('photos').remove([ph.origPath||ph.asset]).catch(()=>{});
+ }
+ const i=REVIEW.indexOf(ph);REVIEW=REVIEW.filter(x=>x!==ph);
+ await loadQueue();await loadAll();
+ if(REVIEW.length){openPhoto(REVIEW[Math.min(i,REVIEW.length-1)].id);pv.msg=t(ok?'rvDone':'rvRejected');drawPV()}else{pvd.close()}
+}
 function drawPV(){
  const ph=photoById(pv.id);if(!ph){pvd.open&&pvd.close();return}
  if(!pv.pending)pv.cands=null;
- const a=(ph.h&&ph.w)?ph.h/ph.w:.75,canTag=!!db,LIST=ph.draft?DRAFTS:PHOTOS,idx=LIST.indexOf(ph);
+ const a=(ph.h&&ph.w)?ph.h/ph.w:.75,canTag=!!db,LIST=ph.draft?DRAFTS:ph.review?REVIEW:PHOTOS,idx=LIST.indexOf(ph);
  const mk=(tg,i,pend)=>{const n=P[tg.p],lab=n?short(n):(tg.n||'?');return `<div class="mk${pend?' pend':''}${pv.focus&&tg.p===pv.focus?' foc':''}" style="left:${((tg.x-tg.r)*100).toFixed(2)}%;top:${((tg.y-tg.r/a)*100).toFixed(2)}%;width:${(tg.r*200).toFixed(2)}%" data-mk="${i}">${pend?'<i class="hd tl" data-hd="tl"></i><i class="hd tr" data-hd="tr"></i><i class="hd bl" data-hd="bl"></i><i class="hd br" data-hd="br"></i>':''}${(pv.info||pv.tag)&&!pend?`<span class="mkl">${esc(lab)}</span>`:''}</div>`};
  const view=!pv.tag&&!pv.info;
- let h=`<div class="pvwrap${pv.info?' info':''}${pv.tag?' tagmode':''}${view?' view':''}"><div class="pvbar"><button class="pvb" data-pvclose="1" aria-label="${t('close')}">✕</button><span class="pvcount">${idx+1} / ${LIST.length}</span><button class="pvb${pv.info?' on':''}" data-pvinfo="1" aria-label="${t('pvDetails')}" aria-pressed="${!!pv.info}">i</button></div>`;
+ let h=`<div class="pvwrap${pv.info?' info':''}${pv.tag?' tagmode':''}${view?' view':''}"><div class="pvbar"><button class="pvb" data-pvclose="1" aria-label="${t('close')}">✕</button><span class="pvcount">${idx+1} / ${LIST.length}</span><span class="pvbr">${ph.draft||ph.review?'':`<button class="pvdl" data-pvdl="1" aria-label="${esc(t('dlPhoto'))}">⤓ ${t('dlShort')}</button>`}<button class="pvb${pv.info?' on':''}" data-pvinfo="1" aria-label="${t('pvDetails')}" aria-pressed="${!!pv.info}">i</button></span></div>`;
  h+=`<div class="pvstage" id="pvstage"><div class="pvimg${pv.tag?' tagging tagmode':''}" id="pvimg" style="aspect-ratio:${ph.w||4}/${ph.h||3};width:min(100%,calc(var(--pvh)*${ph.w||4}/${ph.h||3}))"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" id="pvpic">${ph.tags.map((tg,i)=>mk(tg,i)).join('')}${pv.pending?mk(pv.pending,-1,true)+tagPop(pv.pending,a):''}${(pv.faces||[]).map((f,i)=>covered(ph,f)||(pv.pending&&pv.pending.x===f.x&&pv.pending.y===f.y)?'':`<div class="mk ai" style="left:${((f.x-f.r)*100).toFixed(2)}%;top:${((f.y-f.r/a)*100).toFixed(2)}%;width:${(f.r*200).toFixed(2)}%" data-ai="${i}" role="button" aria-label="${esc(f.c[0]?P[f.c[0].p].name:t('whoIs'))}">${pv.names?`<span class="mkl">${f.c[0]?esc(short(P[f.c[0].p]))+'? '+f.c[0].s+'%':'?'}</span>`:''}</div>`).join('')}</div><button class="pvnav prev" data-pvnav="-1" ${idx<=0?'disabled':''} aria-label="${t('prev')}">‹</button><button class="pvnav next" data-pvnav="1" ${idx>=LIST.length-1?'disabled':''} aria-label="${t('next')}">›</button></div>`;
- if(pv.tag)h+=`<div class="pvtool">${ph.draft?`<b>${esc(T[L].draftH(idx+1,DRAFTS.length))}</b>`:''}${pv.pending?'':`<p class="hint">${esc(pv.msg||t('tagHint'))}</p>`}${pv.aiMsg?`<p class="hint">${esc(pv.aiMsg)}</p>`:''}${isAdmin||ph.draft||pv.pending?'':`<p class="muted" style="margin:0">${t('tagLocal')}</p>`}<div class="acts">${canTag?`<button class="btn" data-pvai="1" ${pv.ai?'disabled':''}>${t('aiBtn')}</button>`:''}${ph.draft?`<button class="btn main" data-pvsend="1">${esc(T[L][isAdmin?'saveN':'sendN'](DRAFTS.length))}</button><button class="btn" data-pvdrop="1">${t('dropPhoto')}</button>`:`<button class="btn main" data-pvtag="1">${t('tagDone')}</button>`}<button class="btn" data-pvinfo="1">${t(pv.info?'pvHide':'pvDetails')}</button></div></div>`;
+ if(pv.tag)h+=`<div class="pvtool">${ph.review?`<b>${esc(T[L].rvH(idx+1,REVIEW.length))}</b>`:''}${ph.draft?`<b>${esc(T[L].draftH(idx+1,DRAFTS.length))}</b>`:''}${pv.pending?'':`<p class="hint">${esc(pv.msg||t('tagHint'))}</p>`}${pv.aiMsg?`<p class="hint">${esc(pv.aiMsg)}</p>`:''}${isAdmin||ph.draft||pv.pending?'':`<p class="muted" style="margin:0">${t('tagLocal')}</p>`}<div class="acts">${canTag?`<button class="btn" data-pvai="1" ${pv.ai?'disabled':''}>${t('aiBtn')}</button>`:''}${ph.review?`<button class="btn" data-rvrot="-1" title="${esc(t('rotL'))}">⟲ ${t('rotL')}</button><button class="btn" data-rvrot="1" title="${esc(t('rotR'))}">⟳ ${t('rotR')}</button><button class="btn main" data-rvok="1">${t('rvApprove')}</button><button class="btn" data-rvno="1">${t('reject')}</button>`:ph.draft?`<button class="btn main" data-pvsend="1">${esc(T[L][isAdmin?'saveN':'sendN'](DRAFTS.length))}</button><button class="btn" data-pvdrop="1">${t('dropPhoto')}</button>`:`<button class="btn main" data-pvtag="1">${t('tagDone')}</button>`}<button class="btn" data-pvinfo="1">${t(pv.info?'pvHide':'pvDetails')}</button></div></div>`;
  else if(!pv.info)h+=`<button class="pvmore" data-pvinfo="1"><span aria-hidden="true">︿</span> ${t('pvDetails')}</button>`;
  h+=`<div class="pvside" id="pvside">`;
- h+=`<h3>${esc(ph.caption||(ph.draft?T[L].draftH(idx+1,DRAFTS.length):t('pvNoCap')))}</h3>`;
- if(ph.when||ph.where)h+=`<dl class="kv">${ph.when?`<dt>${t('when')}</dt><dd>${esc(ph.when)}</dd>`:''}${ph.where?`<dt>${t('where')}</dt><dd>${esc(ph.where)}</dd>`:''}</dl>`;
+ if(ph.review)h+=`<h3>${t('rvInfo')}</h3><div class="fg"><label class="w">${t('caption')}<input data-rvf="caption" value="${esc(ph.caption)}"></label><label>${t('when')}<input data-rvf="when" value="${esc(ph.when)}"></label><label>${t('where')}<input data-rvf="where" value="${esc(ph.where)}"></label></div>`;
+ else h+=`<h3>${esc(ph.caption||(ph.draft?T[L].draftH(idx+1,DRAFTS.length):t('pvNoCap')))}</h3>`;
+ if(!ph.review&&(ph.when||ph.where))h+=`<dl class="kv">${ph.when?`<dt>${t('when')}</dt><dd>${esc(ph.when)}</dd>`:''}${ph.where?`<dt>${t('where')}</dt><dd>${esc(ph.where)}</dd>`:''}</dl>`;
  if(!pv.tag&&pv.msg)h+=`<p class="hint">${esc(pv.msg)}</p>`;
  h+=`<h4 style="margin:16px 0 8px">${t('inPhoto')}${ph.tags.length?` (${ph.tags.length})`:''}</h4><div class="tags">${ph.tags.map((tg,i)=>{const n=P[tg.p];return `<div class="trow" data-hl="${i}"><span class="av" style="${esc(cropStyle(ph,tg))}"></span>${n?`<button class="chip" data-pvgo="${esc(tg.p)}">${esc(n.name)}</button>`:`<span class="chip">${esc(tg.n||'?')}</span>`}${pv.tag?`<button class="btn sm" data-untag="${i}" aria-label="${t('removeTag')}">✕</button>`:''}</div>`}).join('')||`<p class="muted">${esc(T[L].tagged(0))}</p>`}</div>`;
  if(canTag&&!pv.tag)h+=`<div class="asktag"><p>${t(ph.tags.length?'askTag2':'askTag')}</p><button class="btn main" data-pvtag="1">${t('askTagBtn')}</button></div>`;
- if(canAdmin&&!ph.draft)h+=`<div class="acts" style="margin-top:18px"><button class="btn" data-pvcap="1">${t('editCap')}</button><button class="btn" data-pvdel="1">${t('delPhoto')}</button></div>`;
+ if(!ph.draft&&!ph.review)h+=`<div class="acts" style="margin-top:16px"><button class="btn" data-pvdl="1">⤓ ${t('dlPhoto')}</button></div>`;
+ if(canAdmin&&!ph.draft&&!ph.review)h+=`<div class="acts" style="margin-top:18px"><button class="btn" data-pvcap="1">${t('editCap')}</button><button class="btn" data-pvdel="1">${t('delPhoto')}</button></div>`;
  h+='</div></div>';
  pvb.innerHTML=h;
  const pic=document.getElementById('pvpic');pic.onerror=()=>{pic.replaceWith(Object.assign(document.createElement('p'),{className:'muted',textContent:t('imgMissing')}))};
@@ -888,7 +932,7 @@ function drawPV(){
  wireBox();
 }
 async function saveTags(ph,tags){
- if(ph.draft){ph.tags=tags;return true}
+ if(ph.draft||ph.review){ph.tags=tags;return true}
  if(!isAdmin){ph.tags=tags;pv.dirty=true;pv.msg='';return true}
  const {error}=await SB.from('photos').update({tags}).eq('id',ph.id);
  if(error){const er=document.getElementById('terr');if(er)er.textContent=t('eTag');return false}
@@ -899,6 +943,9 @@ pvd.addEventListener('click',async e=>{
  if(e.target.closest('[data-pvinfo]')){pv.info=!pv.info;drawPV();return}
  if(e.target===pvd){pvd.close();if(DRAFTS.length)finishDrafts();return}
  const ph=photoById(pv.id);if(!ph)return;
+ const dlb=e.target.closest('[data-pvdl]');if(dlb){downloadPhoto(ph,dlb);return}
+ const rr=e.target.closest('[data-rvrot]');if(rr&&ph.review){rr.disabled=true;try{await rotateReview(ph,+rr.dataset.rvrot);pv.msg=''}catch(_){pv.msg=t('eAct')}pv.pending=null;pv.faces=null;drawPV();return}
+ const rv=e.target.closest('[data-rvok],[data-rvno]');if(rv&&ph.review){rv.disabled=true;try{await finishReview(ph,rv.hasAttribute('data-rvok'))}catch(_){pv.msg=t('eAct');drawPV()}return}
  if(e.target.closest('[data-pvclose]')){pvd.close();if(DRAFTS.length)finishDrafts();return}
  const nv=e.target.closest('[data-pvnav]');if(nv){pvStep(+nv.dataset.pvnav);return}
  if(e.target.closest('[data-pvsend]')){finishDrafts();return}
@@ -1318,6 +1365,8 @@ Object.assign(T.vi,{askTag:'Bạn có biết ai trong ảnh này không?',askTag
 Object.assign(T.en,{askTag:'Do you know anyone in this photo?',askTag2:'Do you know anyone else in this photo?',askTagBtn:'Tag people in this photo',tagHint:'Tap someone’s face to tag them. Tag as many people as you like, then press “Done tagging”.'});
 Object.assign(T.vi,{pvDetails:'Chi tiết',pvHide:'Ẩn chi tiết',pvNoCap:'Ảnh gia đình'});
 Object.assign(T.en,{pvDetails:'Details',pvHide:'Hide details',pvNoCap:'Family photo'});
+Object.assign(T.vi,{rvOpen:'Xem, chỉnh & gắn tên',rvH:(i,n)=>`Duyệt ảnh ${i}/${n}: xoay ảnh, gắn tên, sửa chú thích (bấm Chi tiết), rồi bấm Duyệt.`,rvApprove:'Duyệt ảnh này',rvInfo:'Thông tin ảnh',rotL:'Xoay trái',rotR:'Xoay phải',rvDone:'Đã duyệt. Đây là ảnh tiếp theo đang chờ.',rvRejected:'Đã từ chối. Đây là ảnh tiếp theo đang chờ.',dlPhoto:'Tải ảnh về máy',dlShort:'Tải ảnh'});
+Object.assign(T.en,{rvOpen:'Review, adjust & tag',rvH:(i,n)=>`Reviewing photo ${i}/${n}: rotate, tag people, edit the caption (press Details), then Approve.`,rvApprove:'Approve this photo',rvInfo:'Photo details',rotL:'Rotate left',rotR:'Rotate right',rvDone:'Approved. Here is the next photo waiting.',rvRejected:'Rejected. Here is the next photo waiting.',dlPhoto:'Download photo',dlShort:'Download'});
 applyText();
 const CFG=window.GP_CONFIG||{};let SB=null,isAdmin=false,QUEUE=[];
 const num=(v,lo,hi)=>{v=+v;return isFinite(v)?Math.min(hi,Math.max(lo,v)):lo};
@@ -1624,7 +1673,7 @@ function renderQueue(){
   else if(s.kind==='person'){const q=p.person||{};k=t('kPerson');b=`<div class="ln"><b>${esc(q.name||'')}</b> (${q.gender==='nu'?t('female'):t('male')})</div><div class="ln">${t('childOfP')}: ${nm(s.target)}</div>`+fields(p.profile)}
   else if(s.kind==='photo'){k=t('kPhoto');const tg=cleanTags(p.tags);b=`${okId(p.path)?qPhoto(srcOf(p.path),p.w,p.h,tg):''}<div class="dup" data-dup="${esc(String(s.id))}"></div>${tg.length?`<div class="ln"><span class="muted">${t('kTags')}:</span> ${tg.map(g=>esc((P[g.p]?P[g.p].name:(g.n||'?')))).join(', ')}</div>`:''}<div class="ln"><b>${esc(p.caption||'')}</b></div><div class="ln muted">${esc([p.when,p.where].filter(Boolean).join(' · '))}</div>`}
   else if(s.kind==='tags'){const ph=photoById(s.target);k=t('kTags');b=`${ph?qPhoto(srcOf(ph.asset),ph.w,ph.h,cleanTags(p.tags)):''}<div class="ln">${cleanTags(p.tags).map(g=>esc((P[g.p]?P[g.p].name:(g.n||'?')))).join(', ')||'—'}</div>`}
-  return `<article class="pc"><div class="meta"><b>${esc(k)}</b> · ${t('sentAt')} ${esc(String(s.created_at||'').slice(0,16).replace('T',' '))}</div>${b}<div class="acts"><button class="btn main" data-qok="${esc(s.id)}">${t('approve')}</button><button class="btn" data-qno="${esc(s.id)}">${t('reject')}</button></div><p class="err" data-qerr="${esc(s.id)}"></p></article>`}).join('');
+  return `<article class="pc"><div class="meta"><b>${esc(k)}</b> · ${t('sentAt')} ${esc(String(s.created_at||'').slice(0,16).replace('T',' '))}</div>${b}<div class="acts">${s.kind==='photo'?`<button class="btn main" data-qreview="${esc(s.id)}">${t('rvOpen')}</button>`:''}<button class="btn${s.kind==='photo'?'':' main'}" data-qok="${esc(s.id)}">${t('approve')}</button><button class="btn" data-qno="${esc(s.id)}">${t('reject')}</button></div><p class="err" data-qerr="${esc(s.id)}"></p></article>`}).join('');
  checkQueueDups().catch(()=>{});
 }
 async function approve(s){
@@ -1638,6 +1687,7 @@ async function approve(s){
 }
 const okPid=s=>/^a[a-z0-9]{6,30}$/.test(String(s||''));
 qList.addEventListener('click',async e=>{
+ const qr=e.target.closest('[data-qreview]');if(qr){openReview(qr.dataset.qreview);return}
  const mg=e.target.closest('[data-qmerge]');
  if(mg){const s=QUEUE.find(x=>String(x.id)===mg.dataset.qmerge),dst=photoById(mg.dataset.into);if(!s||!dst)return;mg.disabled=true;
   try{const p=s.payload||{};const drop=await mergeInto(dst,{path:p.path,w:num(p.w,1,20000),h:num(p.h,1,20000),caption:p.caption,when:p.when,where:p.where,tags:p.tags});
