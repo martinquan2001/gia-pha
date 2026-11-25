@@ -167,9 +167,20 @@ textarea.copy{width:100%;min-height:180px;font:14px/1.5 ui-monospace,monospace;m
 dialog.pvd{width:min(1180px,calc(100vw - 24px))}
 .pvgrid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start;margin-top:8px}
 .pvimgw{min-width:0}
-.pvimg{position:relative;width:100%;max-height:72vh;margin:0 auto;background:var(--soft);border-radius:8px;overflow:hidden}
+.pvimg{position:relative;width:100%;margin:0 auto;background:var(--soft);border-radius:8px}
+.pvimg>img{border-radius:8px}
 .pvimg img{width:100%;height:100%;display:block;object-fit:contain}
 .pvimg.tagging{cursor:crosshair}
+.tagpop{position:absolute;z-index:6;width:270px;max-width:calc(100vw - 48px);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px #0006;padding:8px;cursor:default;text-align:left}
+.tagpop input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.tagpop .pick{max-height:210px;margin-top:6px}
+.tagpop .pick button{min-height:40px;padding:8px 12px}
+.tagpop .tph{font-size:12px;color:var(--mute);padding:6px 12px 2px;margin:0}
+.tagpop .tpbar{display:flex;gap:6px;align-items:center;margin-top:8px}
+.tagpop .tpbar .sz{width:34px;height:34px;border:1px solid var(--line);border-radius:8px;background:none;color:var(--ink);cursor:pointer;font-size:18px;line-height:1}
+.tagpop .tpbar .sp{flex:1;font-size:12px;color:var(--mute)}
+.tagpop::before{content:"";position:absolute;left:var(--ax,50%);width:12px;height:12px;background:var(--bg);border-left:1px solid var(--line);border-top:1px solid var(--line);transform:translateX(-50%) rotate(45deg)}
+.tagpop.down::before{top:-7px}.tagpop.up::before{bottom:-7px;transform:translateX(-50%) rotate(225deg)}
 .mk{position:absolute;aspect-ratio:1;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1.5px #000a,inset 0 0 0 1.5px #000a;pointer-events:auto}
 .mk.pend{border-style:dashed}
 .mk.ai{border:2px dashed #fff;border-radius:14px;cursor:pointer;background:#ffffff14}
@@ -679,20 +690,23 @@ gq.addEventListener('input',renderGal);
 // viewer
 const pvd=document.getElementById('pv'),pvb=document.getElementById('pvBody');
 function openPhoto(id,focus){if(pv.dirty&&!isAdmin){const o=photoById(pv.id);if(o&&!o.draft)submit('tags',o.id,{tags:o.tags}).catch(()=>{})}pv={id,tag:!!(photoById(id)||{}).draft,pending:null,names:true,focus:focus||null};drawPV();if(!pvd.open)pvd.showModal()}
+function tagPop(pd,a){
+ const up=pd.y>.6,edge=up?(pd.y-pd.r/a):(pd.y+pd.r/a),x=(pd.x*100).toFixed(2);
+ const pos=`left:clamp(0px,calc(${x}% - 135px),calc(100% - 270px));${up?`bottom:calc(${((1-edge)*100).toFixed(2)}% + 10px)`:`top:calc(${(edge*100).toFixed(2)}% + 10px)`}`;
+ const sug=(pv.cands||[]).filter(c=>P[c.p]);
+ return `<div class="tagpop ${up?'up':'down'}" style="${pos}" id="tagpop"><input id="tq" type="search" autocomplete="off" placeholder="${esc(t('whoIsPh'))}" aria-label="${esc(t('whoIs'))}"><div class="pick" id="tl">${sug.length?`<p class="tph">${t('aiSugg')}</p>`+sug.map(c=>`<button data-tagp="${esc(c.p)}">${esc(P[c.p].name)} <small>${t('aiLike')} ${c.s}%</small></button>`).join(''):`<p class="tph">${t('type2')}</p>`}</div><div class="tpbar"><button type="button" class="sz" data-rsz="-1" aria-label="${esc(t('smaller'))}">−</button><button type="button" class="sz" data-rsz="1" aria-label="${esc(t('bigger'))}">+</button><span class="sp">${t('circleSize')}</span><button type="button" class="btn sm" data-pvcancel="1">${t('cancel')}</button></div><p class="err" id="terr" style="margin:4px 0 0"></p></div>`}
 function drawPV(){
  const ph=photoById(pv.id);if(!ph){pvd.open&&pvd.close();return}
  if(!pv.pending)pv.cands=null;
  const a=(ph.h&&ph.w)?ph.h/ph.w:.75,canTag=!!db,LIST=ph.draft?DRAFTS:PHOTOS,idx=LIST.indexOf(ph);
  const mk=(tg,i,pend)=>{const n=P[tg.p],lab=n?short(n):(tg.n||'?');return `<div class="mk${pend?' pend':''}${pv.focus&&tg.p===pv.focus?' foc':''}" style="left:${((tg.x-tg.r)*100).toFixed(2)}%;top:${((tg.y-tg.r/a)*100).toFixed(2)}%;width:${(tg.r*200).toFixed(2)}%" data-mk="${i}">${pv.names&&!pend?`<span class="mkl">${esc(lab)}</span>`:''}</div>`};
- let h=`<button class="x2" data-pvclose="1" aria-label="${t('close')}">✕</button><div class="pvgrid"><div class="pvimgw"><div class="pvimg${pv.tag?' tagging':''}" id="pvimg" style="aspect-ratio:${ph.w||4}/${ph.h||3}"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" id="pvpic">${ph.tags.map((tg,i)=>mk(tg,i)).join('')}${pv.pending?mk(pv.pending,-1,true):''}${(pv.faces||[]).map((f,i)=>covered(ph,f)||(pv.pending&&pv.pending.x===f.x&&pv.pending.y===f.y)?'':`<div class="mk ai" style="left:${((f.x-f.r)*100).toFixed(2)}%;top:${((f.y-f.r/a)*100).toFixed(2)}%;width:${(f.r*200).toFixed(2)}%" data-ai="${i}" role="button" aria-label="${esc(f.c[0]?P[f.c[0].p].name:t('whoIs'))}">${pv.names?`<span class="mkl">${f.c[0]?esc(short(P[f.c[0].p]))+'? '+f.c[0].s+'%':'?'}</span>`:''}</div>`).join('')}</div>`;
+ let h=`<button class="x2" data-pvclose="1" aria-label="${t('close')}">✕</button><div class="pvgrid"><div class="pvimgw"><div class="pvimg${canTag?' tagging':''}" id="pvimg" style="aspect-ratio:${ph.w||4}/${ph.h||3};width:min(100%,calc(72vh*${ph.w||4}/${ph.h||3}))"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" id="pvpic">${ph.tags.map((tg,i)=>mk(tg,i)).join('')}${pv.pending?mk(pv.pending,-1,true)+tagPop(pv.pending,a):''}${(pv.faces||[]).map((f,i)=>covered(ph,f)||(pv.pending&&pv.pending.x===f.x&&pv.pending.y===f.y)?'':`<div class="mk ai" style="left:${((f.x-f.r)*100).toFixed(2)}%;top:${((f.y-f.r/a)*100).toFixed(2)}%;width:${(f.r*200).toFixed(2)}%" data-ai="${i}" role="button" aria-label="${esc(f.c[0]?P[f.c[0].p].name:t('whoIs'))}">${pv.names?`<span class="mkl">${f.c[0]?esc(short(P[f.c[0].p]))+'? '+f.c[0].s+'%':'?'}</span>`:''}</div>`).join('')}</div>`;
  h+=`<div class="acts"><button class="btn" data-pvnav="-1" ${idx<=0?'disabled':''} aria-label="${t('prev')}">‹</button><button class="btn" data-pvnav="1" ${idx>=LIST.length-1?'disabled':''} aria-label="${t('next')}">›</button><button class="btn" data-pvnames="1">${pv.names?t('hideNames'):t('showNames')}</button>${canTag?`<button class="btn" data-pvai="1" ${pv.ai?'disabled':''}>${t('aiBtn')}</button>`:''}${canTag?`<button class="btn main" data-pvtag="1">${pv.tag?t('tagDone'):t('tagMode')}</button>`:''}</div></div><div class="pvside">`;
  if(ph.draft)h+=`<h3>${esc(T[L].draftH(idx+1,DRAFTS.length))}</h3><p class="muted">${t(isAdmin?'draftHintA':'draftHint')}</p><div class="acts" style="margin:10px 0 14px"><button class="btn main" data-pvsend="1">${esc(T[L][isAdmin?'saveN':'sendN'](DRAFTS.length))}</button><button class="btn" data-pvdrop="1">${t('dropPhoto')}</button></div>`;
  else h+=`<h3>${esc(ph.caption||'')}</h3><p class="muted">${esc([ph.when,ph.where].filter(Boolean).join(' · '))}</p>`;
  if(pv.msg)h+=`<p class="hint">${esc(pv.msg)}</p>`;
  if(pv.aiMsg)h+=`<p class="hint">${esc(pv.aiMsg)}</p>`;
- if(pv.tag&&!pv.pending)h+=`<p class="hint">${t('tagHint')}</p>${isAdmin||ph.draft?'':`<p class="muted">${t('tagLocal')}</p>`}`;
- if(pv.pending&&pv.cands&&pv.cands.length)h+=`<p class="muted" style="margin:8px 0 4px">${t('aiSugg')}</p><div class="pick">${pv.cands.filter(c=>P[c.p]).map(c=>`<button data-tagp="${esc(c.p)}">${esc(P[c.p].name)} <small>${t('aiLike')} ${c.s}%</small></button>`).join('')}</div>`;
- if(pv.pending)h+=`<div class="fg"><label class="w">${t('whoIs')}<input id="tq" type="search" autocomplete="off"></label><label class="w">${t('size')}<input id="tr" type="range" min="0.02" max="0.2" step="0.005" value="${pv.pending.r}"></label></div><div class="pick" id="tl"><p class="muted" style="padding:10px 14px;margin:0">${t('type2')}</p></div><div class="acts"><button class="btn" data-pvcancel="1">${t('cancel')}</button></div><div class="err" id="terr"></div>`;
+ if(canTag&&!pv.pending)h+=`<p class="hint">${t('tagHint')}</p>${isAdmin||ph.draft?'':`<p class="muted">${t('tagLocal')}</p>`}`;
  h+=`<h4 style="margin:16px 0 8px">${t('inPhoto')}${ph.tags.length?` (${ph.tags.length})`:''}</h4><div class="tags">${ph.tags.map((tg,i)=>{const n=P[tg.p];return `<div class="trow"><span class="av" style="${esc(cropStyle(ph,tg))}"></span>${n?`<button class="chip" data-pvgo="${esc(tg.p)}">${esc(n.name)}</button>`:`<span class="chip">${esc(tg.n||'?')}</span>`}${pv.tag?`<button class="btn sm" data-untag="${i}" aria-label="${t('removeTag')}">✕</button>`:''}</div>`}).join('')||`<p class="muted">${esc(T[L].tagged(0))}</p>`}</div>`;
  if(canAdmin&&!ph.draft)h+=`<div class="acts" style="margin-top:18px"><button class="btn" data-pvcap="1">${t('editCap')}</button><button class="btn" data-pvdel="1">${t('delPhoto')}</button></div>`;
  h+='</div></div>';
@@ -700,15 +714,22 @@ function drawPV(){
  const pic=document.getElementById('pvpic');pic.onerror=()=>{pic.replaceWith(Object.assign(document.createElement('p'),{className:'muted',textContent:t('imgMissing')}))};
  document.getElementById('pvimg').onclick=e=>{
   const af=e.target.closest('.mk.ai');
-  if(af){const f=pv.faces[+af.dataset.ai];if(!f)return;pv.tag=true;pv.pending={p:'',x:f.x,y:f.y,r:f.r};pv.cands=f.c;drawPV();document.getElementById('tq')?.focus();return}
-  if(!pv.tag||e.target.closest('.mk:not(.pend)'))return;
+  if(af){const f=pv.faces[+af.dataset.ai];if(!f)return;pv.tag=true;pv.pending={p:'',x:f.x,y:f.y,r:f.r};pv.cands=f.c;drawPV();return}
+  if(!canTag||e.target.closest('.mk:not(.pend)')||e.target.closest('#tagpop'))return;
+  pv.tag=true;
   const r=e.currentTarget.getBoundingClientRect();
-  pv.pending={p:'',x:+((e.clientX-r.left)/r.width).toFixed(4),y:+((e.clientY-r.top)/r.height).toFixed(4),r:pv.pending?.r||.06};drawPV();document.getElementById('tq')?.focus();
+  pv.pending={p:'',x:+((e.clientX-r.left)/r.width).toFixed(4),y:+((e.clientY-r.top)/r.height).toFixed(4),r:pv.pending?.r||.06};drawPV();
  };
  const tq=document.getElementById('tq');
  if(tq){const tl=document.getElementById('tl');tq.oninput=()=>{const v=tq.value.trim();tl.innerHTML=pickList(tq.value,'data-tagp')+(v.length>=2?`<button data-tagn="${esc(v.slice(0,60))}">+ ${esc(T[L].tagFree(v.slice(0,60)))}</button>`:'')};
   tq.onkeydown=ev=>{if(ev.key==='Enter'){ev.preventDefault();const b=tl.querySelector('button');if(b)b.click()}};
-  document.getElementById('tr').oninput=e=>{pv.pending.r=+e.target.value;const m=pvb.querySelector('.mk.pend');if(m){m.style.left=((pv.pending.x-pv.pending.r)*100)+'%';m.style.top=((pv.pending.y-pv.pending.r/a)*100)+'%';m.style.width=(pv.pending.r*200)+'%'}}}
+  tq.focus({preventScroll:true});
+  tq.addEventListener('keydown',ev=>{if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();pv.pending=null;drawPV()}});
+  const pop=document.getElementById('tagpop'),im=document.getElementById('pvimg');
+  const fit=()=>{if(!pop||!im)return;let pr=pop.getBoundingClientRect();const ir=im.getBoundingClientRect(),top=Math.max(0,pvd.getBoundingClientRect().top);
+   if(pop.classList.contains('up')&&pr.top<top+8){pop.classList.replace('up','down');pop.style.bottom='';pop.style.top=`calc(${((pv.pending.y+pv.pending.r/a)*100).toFixed(2)}% + 10px)`;pr=pop.getBoundingClientRect()}
+   pop.style.setProperty('--ax',Math.max(14,Math.min(pr.width-14,ir.left+ir.width*pv.pending.x-pr.left))+'px');pop.scrollIntoView({block:'nearest'})};
+  fit();const oi=tq.oninput;tq.oninput=()=>{oi();fit()}}
 }
 async function saveTags(ph,tags){
  if(ph.draft){ph.tags=tags;return true}
@@ -733,6 +754,7 @@ pvd.addEventListener('click',async e=>{
   pv.ai=false;if(!pv.pending)drawPV();return}
  if(e.target.closest('[data-pvtag]')){if(pv.tag&&pv.dirty&&!isAdmin){try{await submit('tags',ph.id,{tags:ph.tags});pv.msg=t('tagSent')}catch(_){pv.msg=t('eTag')}pv.dirty=false}pv.tag=!pv.tag;pv.pending=null;drawPV();return}
  if(e.target.closest('[data-pvcancel]')){pv.pending=null;drawPV();return}
+ const rz=e.target.closest('[data-rsz]');if(rz&&pv.pending){const q=document.getElementById('tq'),v=q?q.value:'';pv.pending.r=num(pv.pending.r*(+rz.dataset.rsz>0?1.2:1/1.2),.015,.25);drawPV();const q2=document.getElementById('tq');if(q2&&v){q2.value=v;q2.dispatchEvent(new Event('input'))}return}
  const tp=e.target.closest('[data-tagp],[data-tagn]');if(tp&&pv.pending){const tags=ph.tags.concat(tp.dataset.tagp!=null?{p:tp.dataset.tagp,x:pv.pending.x,y:pv.pending.y,r:pv.pending.r}:{p:'',n:tp.dataset.tagn,x:pv.pending.x,y:pv.pending.y,r:pv.pending.r});pv.msg=T[L].tagAdded(tp.dataset.tagp!=null?(P[tp.dataset.tagp]||{}).name:tp.dataset.tagn,tags.length);if(await saveTags(ph,tags)){pv.pending=null;drawPV();refresh();renderGal()}return}
  const ut=e.target.closest('[data-untag]');if(ut){const tags=ph.tags.filter((_,i)=>i!==+ut.dataset.untag);if(await saveTags(ph,tags)){drawPV();refresh();renderGal()}return}
  const g=e.target.closest('[data-pvgo]');if(g&&prd.open){pvd.close();go(g.dataset.pvgo,false);openProfile(g.dataset.pvgo);return}
@@ -1085,6 +1107,10 @@ Object.assign(T.vi,{tagHint:'Bấm vào từng khuôn mặt để gắn tên. G�
 tagFree:v=>`Gắn tên “${v}” (người chưa có trong gia phả)`,tagAdded:(n,c)=>`Đã gắn ${n}. Ảnh này có ${c} người được gắn tên; bấm khuôn mặt tiếp theo để gắn thêm.`});
 Object.assign(T.en,{tagHint:'Click each face to name it. Tag as many people as you like: after one, just click the next face.',
 tagFree:v=>`Tag as “${v}” (not in the family tree)`,tagAdded:(n,c)=>`Tagged ${n}. ${c} ${c===1?'person':'people'} tagged in this photo; click the next face to add more.`});
+Object.assign(T.vi,{whoIsPh:'Đây là ai? Gõ tên…',circleSize:'Cỡ vòng tròn',smaller:'Thu nhỏ vòng tròn',bigger:'Phóng to vòng tròn',
+tagHint:'Chạm vào khuôn mặt của một người để gắn tên, như trên Facebook. Gắn bao nhiêu người cũng được.'});
+Object.assign(T.en,{whoIsPh:'Who is this? Type a name…',circleSize:'Circle size',smaller:'Smaller circle',bigger:'Bigger circle',
+tagHint:'Tap someone’s face to tag them, like on Facebook. Tag as many people as you like.'});
 applyText();
 const CFG=window.GP_CONFIG||{};let SB=null,isAdmin=false,QUEUE=[];
 const num=(v,lo,hi)=>{v=+v;return isFinite(v)?Math.min(hi,Math.max(lo,v)):lo};
