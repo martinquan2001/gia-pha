@@ -1026,7 +1026,7 @@ function drawProfile(){
  const p=prof(prId)||{},a=anc(prId),faces=facesOf(prId),age=ageOf(n),sp=n.sp||p.spouse,c=contactRows(prId);
  const pc=id=>`<button class="chip" data-pp="${esc(id)}">${esc(P[id].name)}</button>`;
  const face=faceHTML(prId,'av xxl')||`<span class="av xxl ini" aria-hidden="true">${esc((short(n).trim()[0]||'?').toUpperCase())}</span>`;
- let h=`<button class="x2" data-pclose="1" aria-label="${t('close')}">✕</button><div class="phead">${face}<div><h3>${esc(n.name)}</h3><p class="muted" style="margin:6px 0 0">${n.isSp?esc(spOfTxt(n)):t('fGen')+' '+n.gen+(n.gen===1?t('founder'):'')}${age?' · '+esc(age):''}${n.added?' · '+t('newTag'):''}</p></div></div>`;
+ let h=`<button class="x2" data-pclose="1" aria-label="${t('close')}">✕</button><div class="phead">${face}<div><h3>${esc(n.name)}</h3><p class="muted" style="margin:6px 0 0">${n.isSp?esc(spOfTxt(n)):t('fGen')+' '+n.gen+(n.gen===1?t('founder'):'')}${age?' · '+esc(age):''}</p></div></div>`;
  if(!n.isSp&&n.sps&&n.sps.length)h+=`<div class="spcards"><p class="sph">${isF(n)?t('husband'):t('wife')}</p>${n.sps.map(sid=>{const w=P[sid],ag=ageOf(w);return `<button class="spcard" data-pp="${esc(sid)}">${faceHTML(sid,'av lg')||`<span class="av lg ini" aria-hidden="true">${esc((w.name.replace(/^(Bà|Ông|Cụ)\s+/,'').trim().split(' ').pop()[0]||'?').toUpperCase())}</span>`}<span><b>${esc(w.name)}</b>${ag?`<small>${esc(ag)}</small>`:''}</span><span class="spgo" aria-hidden="true">›</span></button>`}).join('')}</div>`;
  h+=`<div class="pcols"><div><dl class="kv">`;
  if(n.isSp)h+=`<dt>${spRole(n)}</dt><dd>${esc(T[L][n.gender==='nam'?'husbandOfS':'wifeOfS'])} ${pc(n.of)}</dd>`;
@@ -1181,7 +1181,7 @@ function treeYears(n){const f=lifeOf(n);if(!f)return '';
  return f.b.y+' – ?'}
 function li(id){
  const n=P[id],o=open.has(id)&&n.kids.length;
- let h=`<li><div class="node"><button class="box${PATH.has(id)?' dl':''}${sel===id?' on':''}" data-open="${esc(id)}" data-box="${esc(id)}" title="${esc(n.name)}">${hasInfo(id)?'<span class="ci" aria-hidden="true"></span>':''}${faceHTML(id,'av bx')||`<span class="av bx ini" aria-hidden="true">${esc((short(n).trim().split(' ').pop()[0]||'?').toUpperCase())}</span>`}<span class="bn">${esc(short(n))}</span><small>${esc(treeYears(n))||'&nbsp;'}</small>${n.added?`<span class="nw">${t('newTag')}</span>`:''}</button>`;
+ let h=`<li><div class="node"><button class="box${PATH.has(id)?' dl':''}${sel===id?' on':''}" data-open="${esc(id)}" data-box="${esc(id)}" title="${esc(n.name)}">${hasInfo(id)?'<span class="ci" aria-hidden="true"></span>':''}${faceHTML(id,'av bx')||`<span class="av bx ini" aria-hidden="true">${esc((short(n).trim().split(' ').pop()[0]||'?').toUpperCase())}</span>`}<span class="bn">${esc(short(n))}</span><small>${esc(treeYears(n))||'&nbsp;'}</small></button>`;
  if(n.kids.length)h+=`<button class="tgl" data-t="${esc(id)}" aria-expanded="${!!o}" aria-label="${o?t('bClose'):n.kids.length+' '+t('kids')}">${o?'−':'+'+n.kids.length}</button>`;
  h+='</div>';
  if(o)h+=`<ul>${n.kids.map(li).join('')}</ul>`;
