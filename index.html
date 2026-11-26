@@ -69,6 +69,12 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 .btn:hover{border-color:var(--ink)}
 .btn.main{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .zb{width:44px;padding:0;font-size:18px}
+.chartwrap.fs{position:fixed;inset:0;z-index:60;height:100vh;height:100dvh;border-radius:0;border:0;background:var(--soft)}
+.chartwrap.fs .chart{padding:84px 40px 60px}
+.fsbar{position:fixed;top:max(12px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:61;display:flex;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 8px;box-shadow:0 6px 20px #0002;white-space:nowrap}
+.fsbar[hidden]{display:none}
+.fsbar .btn{min-height:40px}.fsz{min-width:48px;text-align:center;font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums}
+body.fslock{overflow:hidden}
 .grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
 .chartwrap{border:1px solid var(--line);border-radius:12px;background:var(--soft);height:min(74vh,760px);overflow:auto;cursor:grab;touch-action:pan-x pan-y}
 .chartwrap.drag{cursor:grabbing;user-select:none}
@@ -360,9 +366,11 @@ dialog.prd{width:min(900px,calc(100vw - 24px))}
    <button class="btn" id="bAll" data-i="bAll"></button>
    <button class="btn" id="bClose" data-i="bClose"></button>
    <button class="btn zb" id="zOut" aria-label="−">−</button><button class="btn zb" id="zIn" aria-label="+">+</button>
+   <button class="btn main" id="fsBtn" data-i="fsOpen"></button>
   </div>
   <div class="grid">
    <div class="chartwrap" id="cw"><div class="chart" id="chart"></div></div>
+   <div class="fsbar" id="fsbar" hidden><button class="btn zb" id="fsOut" aria-label="−">−</button><span class="fsz" id="fsz">100%</span><button class="btn zb" id="fsIn" aria-label="+">+</button><button class="btn" id="fsFit" data-i="fsFit"></button><button class="btn main" id="fsClose" data-i="fsClose"></button></div>
    <aside class="panel" id="panel" aria-live="polite"></aside>
   </div>
  </div>
@@ -737,6 +745,8 @@ const ROOTS=[['b1','Nguyễn Bặc',1],['b11','Nguyễn Trãi',11],['b18','Nguy�
 let L='vi';
 try{const s=localStorage.getItem('gp-lang');if(s==='en'||s==='vi')L=s}catch(_){}
 const t=k=>T[L][k]??T.vi[k];
+Object.assign(T.vi,{fsOpen:'⛶ Toàn màn hình',fsClose:'✕ Thoát',fsFit:'Vừa màn hình'});
+Object.assign(T.en,{fsOpen:'⛶ Full screen',fsClose:'✕ Exit',fsFit:'Fit to screen'});
 Object.assign(T.vi,{kOrderBtn:'Sắp xếp thứ tự',kOrderH:n=>`Thứ tự các con của ${n}`,kOrderP:'Dùng ↑ ↓ để xếp từ con cả đến con út. Thứ tự này dùng trên cây gia phả và trong hồ sơ.',kUp:'Lên trên',kDown:'Xuống dưới',kSend:'Gửi để duyệt',cKidOrder:'Thứ tự con'});
 Object.assign(T.en,{kOrderBtn:'Change order',kOrderH:n=>`Order of ${n}’s children`,kOrderP:'Use ↑ ↓ to arrange from eldest to youngest. This order is used on the family tree and in profiles.',kUp:'Move up',kDown:'Move down',kSend:'Send for approval',cKidOrder:'Order of children'});
 Object.assign(T.vi,{cSocial:'Mạng xã hội',cSocialMore:'Mạng xã hội khác',socAdd:'Thêm',socPh:'Tên, số điện thoại hoặc link',cWebShort:'Trang khác',remove:'Xoá'});
@@ -1188,6 +1198,25 @@ function li(id){
  return h+'</li>';
 }
 const render=()=>{chart.innerHTML=`<ul>${li(root)}</ul>`;chart.style.zoom=zoom};
+// ---- toàn màn hình: phóng to, thu nhỏ, kéo, chụm 2 ngón
+const ZMIN=.3,ZMAX=2;
+function setZoom(z,cx,cy){z=Math.min(ZMAX,Math.max(ZMIN,+z.toFixed(3)));const old=zoom;if(z===old)return;
+ const w=cw.getBoundingClientRect();if(cx==null){cx=w.width/2;cy=w.height/2}
+ const px=cw.scrollLeft+cx,py=cw.scrollTop+cy,k=z/old;zoom=z;chart.style.zoom=z;
+ cw.scrollLeft=px*k-cx;cw.scrollTop=py*k-cy;const f=document.getElementById('fsz');if(f)f.textContent=Math.round(z*100)+'%'}
+function fsOpen(){if(cw.classList.contains('fs'))return;cw.classList.add('fs');document.getElementById('fsbar').hidden=false;document.body.classList.add('fslock');document.getElementById('fsz').textContent=Math.round(zoom*100)+'%';sel&&center(P[sel]&&P[sel].isSp?P[sel].of:sel,false);document.getElementById('fsClose').focus()}
+function fsClose(){if(!cw.classList.contains('fs'))return;cw.classList.remove('fs');document.getElementById('fsbar').hidden=true;document.body.classList.remove('fslock');if(zoom>1.5||zoom<.45){zoom=Math.min(1.5,Math.max(.45,zoom));chart.style.zoom=zoom}document.getElementById('fsBtn').focus()}
+function fsFit(){const sw=chart.scrollWidth/zoom,w=cw.clientWidth;setZoom(Math.max(ZMIN,Math.min(1,(w-20)/Math.max(sw,1))),0,0);cw.scrollTo({left:0,top:0})}
+document.getElementById('fsBtn').onclick=fsOpen;document.getElementById('fsClose').onclick=fsClose;document.getElementById('fsFit').onclick=fsFit;
+document.getElementById('fsIn').onclick=()=>setZoom(zoom*1.2);document.getElementById('fsOut').onclick=()=>setZoom(zoom/1.2);
+document.addEventListener('keydown',e=>{if(!cw.classList.contains('fs')||document.querySelector('dialog[open]'))return;
+ if(e.key==='Escape'){e.preventDefault();fsClose()}else if(e.key==='+'||e.key==='='){setZoom(zoom*1.2)}else if(e.key==='-'){setZoom(zoom/1.2)}});
+cw.addEventListener('wheel',e=>{if(!e.ctrlKey)return;e.preventDefault();const w=cw.getBoundingClientRect();setZoom(zoom*Math.exp(-e.deltaY*.01),e.clientX-w.left,e.clientY-w.top)},{passive:false});
+{let d0=0,z0=1,raf=0;const dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+ cw.addEventListener('touchstart',e=>{if(e.touches.length===2){d0=dist(e.touches);z0=zoom}},{passive:true});
+ cw.addEventListener('touchmove',e=>{if(e.touches.length!==2||!d0)return;e.preventDefault();const t=[...e.touches],w=cw.getBoundingClientRect(),cx=(t[0].clientX+t[1].clientX)/2-w.left,cy=(t[0].clientY+t[1].clientY)/2-w.top,z=z0*dist(t)/d0;
+  if(!raf)raf=requestAnimationFrame(()=>{raf=0;setZoom(z,cx,cy)})},{passive:false});
+ cw.addEventListener('touchend',e=>{if(e.touches.length<2)d0=0},{passive:true})}
 function center(id,smooth){
  const el=chart.querySelector(`[data-box="${CSS.escape(id)}"]`);if(!el)return;
  const r=el.getBoundingClientRect(),w=cw.getBoundingClientRect();
