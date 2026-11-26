@@ -162,6 +162,10 @@ dialog::backdrop{background:#0008}
 .cta.cta2:hover{background:var(--soft)}
 .reader.solo{border-style:solid}
 .fnote{grid-column:1/-1;margin:-4px 0 4px;font-size:13px}
+.socbox{display:block}.soclab{display:block;font-size:14px;font-weight:500;margin-bottom:4px}
+.socrow{display:grid;grid-template-columns:minmax(96px,118px) minmax(0,1fr) auto;gap:8px;align-items:center;margin-bottom:8px}
+.socrow select,.socrow input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:inherit;font:inherit}
+.socrow .btn.sm{min-height:40px}
 .obsteps{margin:10px 0 12px;padding-left:22px;line-height:1.5}.obsteps li{margin:6px 0}
 .ok input{width:20px;height:20px;margin-top:2px;flex:none}
 .err{font-size:14px;min-height:20px;margin-top:8px;font-weight:600}
@@ -673,7 +677,7 @@ loading:'Đang tải thông tin liên lạc…',signIn:'Đăng nhập claude.ai 
 s1H:'Thêm thông tin của bạn',s1P:'Bước 1: tìm tên của bạn trong gia phả. Gõ không dấu cũng được.',yourName:'Tên của bạn',type2:'Gõ ít nhất 2 chữ.',notIn:'Tên tôi chưa có trong cây',
 s2H:'Bạn là con của ai?',s2P:'Tìm tên cha (hoặc mẹ, nếu mẹ là người họ Nguyễn Hữu). Bạn sẽ được thêm vào làm con của người đó.',parentName:'Tên cha hoặc mẹ',s2N:'Nếu cha mẹ cũng chưa có tên, hãy thêm cha mẹ trước, rồi thêm bạn sau.',
 editP:'Điền những gì bạn muốn chia sẻ; ô nào không muốn thì để trống.',addH:n=>`Thêm con của ${n}`,addP:g=>`Người mới sẽ ở đời ${g}.`,consent:'Tôi là người này, hoặc đã được người này đồng ý cho đăng. Tôi hiểu mọi người xem trang gia phả đều thấy thông tin này.',save:'Lưu',saving:'Đang lưu…',cancel:'Hủy',
-eConsent:'Vui lòng đánh dấu ô đồng ý.',eBirth:'Ngày sinh không hợp lệ. Hãy ghi năm (1945) hoặc ngày/tháng/năm (01/01/1945).',eDeath:'Ngày mất không hợp lệ hoặc trước ngày sinh. Hãy ghi năm (2024) hoặc ngày/tháng/năm (12/03/2024).',eWeb:'Link trang khác phải bắt đầu bằng https://',eName:'Vui lòng nhập họ và tên đầy đủ.',eQuota:'Kho dữ liệu đã đầy, xin báo người quản lý trang.',eSave:'Chưa lưu được, vui lòng thử lại.',
+eConsent:'Vui lòng đánh dấu ô đồng ý.',eBirth:'Ngày sinh không hợp lệ. Hãy ghi năm (1945) hoặc ngày/tháng/năm (01/01/1945).',eDeath:'Ngày mất không hợp lệ hoặc trước ngày sinh. Hãy ghi năm (2024) hoặc ngày/tháng/năm (12/03/2024).',eWeb:'Link Trang khác, YouTube hoặc LinkedIn phải bắt đầu bằng https://',eName:'Vui lòng nhập họ và tên đầy đủ.',eQuota:'Kho dữ liệu đã đầy, xin báo người quản lý trang.',eSave:'Chưa lưu được, vui lòng thử lại.',
 cpH:'Gửi cho người quản lý trang',cpP:'Tài khoản của bạn chỉ được xem, chưa lưu trực tiếp được. Bấm “Sao chép” rồi gửi đoạn dưới đây cho người quản lý trang để được thêm vào.',copy:'Sao chép',copied:'Đã sao chép.',copyManual:'Hãy chọn đoạn chữ và sao chép thủ công.',done:'Xong',
 delH:n=>`Xóa ${n}?`,delP:'Người này và thông tin liên lạc sẽ bị xóa khỏi gia phả.',delKids:'Người này còn con trong cây. Hãy xóa các con trước.',delFail:'Chưa xóa được, vui lòng thử lại.',
 eras:['Đinh–Tiền Lê','Lý','Trần','Lê','Nguyễn','Hiện đại'],now:'Nay'},
@@ -696,7 +700,7 @@ loading:'Loading contact details…',signIn:'Sign in to claude.ai to see and add
 s1H:'Add your information',s1P:'Step 1: find your name in the tree. Accents are optional.',yourName:'Your name',type2:'Type at least 2 letters.',notIn:'My name is not in the tree',
 s2H:'Whose child are you?',s2P:'Find your father (or your mother, if she is the Nguyễn Hữu side). You will be added as their child.',parentName:'Father’s or mother’s name',s2N:'If your parents are not in the tree either, add them first, then add yourself.',
 editP:'Fill in only what you want to share; leave the rest blank.',addH:n=>`Add a child of ${n}`,addP:g=>`The new person will be in generation ${g}.`,consent:'I am this person, or I have their permission to post this. I understand everyone who can see the family tree will see it.',save:'Save',saving:'Saving…',cancel:'Cancel',
-eConsent:'Please tick the consent box.',eBirth:'Birth date is not valid. Write a year (1945) or day/month/year (01/01/1945).',eDeath:'Date of passing is not valid or is before the birth date. Write a year (2024) or day/month/year (12/03/2024).',eWeb:'The other link must start with https://',eName:'Please enter a full name.',eQuota:'The storage is full; please tell the page manager.',eSave:'Could not save; please try again.',
+eConsent:'Please tick the consent box.',eBirth:'Birth date is not valid. Write a year (1945) or day/month/year (01/01/1945).',eDeath:'Date of passing is not valid or is before the birth date. Write a year (2024) or day/month/year (12/03/2024).',eWeb:'Other link, YouTube or LinkedIn must start with https://',eName:'Please enter a full name.',eQuota:'The storage is full; please tell the page manager.',eSave:'Could not save; please try again.',
 cpH:'Send to the page manager',cpP:'Your account can only view, so it can’t save directly. Click “Copy” and send the text below to the page manager to have it added.',copy:'Copy',copied:'Copied.',copyManual:'Select the text and copy it by hand.',done:'Done',
 delH:n=>`Remove ${n}?`,delP:'This person and their contact details will be removed from the tree.',delKids:'This person still has children in the tree. Remove the children first.',delFail:'Could not remove; please try again.',
 eras:['Đinh–Early Lê','Lý','Trần','Lê','Nguyễn','Modern'],now:'Now'}};
@@ -717,6 +721,8 @@ const ROOTS=[['b1','Nguyễn Bặc',1],['b11','Nguyễn Trãi',11],['b18','Nguy�
 let L='vi';
 try{const s=localStorage.getItem('gp-lang');if(s==='en'||s==='vi')L=s}catch(_){}
 const t=k=>T[L][k]??T.vi[k];
+Object.assign(T.vi,{cSocial:'Mạng xã hội',cSocialMore:'Mạng xã hội khác',socAdd:'Thêm',socPh:'Tên, số điện thoại hoặc link',cWebShort:'Trang khác',remove:'Xoá'});
+Object.assign(T.en,{cSocial:'Social media',cSocialMore:'Other social media',socAdd:'Add',socPh:'Name, phone number or link',cWebShort:'Other link',remove:'Remove'});
 Object.assign(T.vi,{cBorn:'Nơi sinh (quê quán)',cAddrNow:'Nơi ở hiện nay',cAddrPast:'Nơi ở cuối cùng',seeMore:'Xem thêm'});
 Object.assign(T.en,{cBorn:'Place of birth (hometown)',cAddrNow:'Lives in',cAddrPast:'Last home',seeMore:'See more'});
 Object.assign(T.vi,{bornOn:x=>`Sinh ${x}`,diedOn:x=>`Mất ${x}`,agedAt:x=>`Hưởng thọ ${x}`,yrsOld:a=>`${a} tuổi`,about:'khoảng ',present:'nay',dateHint:'Ghi năm (1945) hoặc ngày/tháng/năm (01/01/1945). Để trống ô năm mất nếu người đó còn sống. Biết đủ ngày thì tuổi sẽ chính xác hơn.'});
@@ -755,7 +761,7 @@ const spRole=n=>n.gender==='nam'?t('husband'):t('wife');
 const spOfTxt=n=>T[L][n.gender==='nam'?'husbandOf':'wifeOf'](P[n.of].name,P[n.of].gen);
 const noteOf=n=>L==='en'?(NOTE_EN[n.id]||''):n.note;
 const prof=id=>PROF[key(id)]||null;
-const CF=['addr','city','phone','email','fb','ig','zalo','web'];
+const CF=['addr','city','phone','email','fb','ig','zalo','web','social'];
 const hasInfo=id=>{const p=prof(id);return !!p&&CF.some(f=>p[f])};
 const PATH=new Set([...anc('tam'),'tam']);
 const DEFAULT=()=>new Set([...anc('tam'),'2.12.15']);
@@ -1139,6 +1145,9 @@ function contactRows(id){
  const fb=httpsUrl(p.fb,'https://www.facebook.com/');if(fb)r.push(['Facebook',`<a href="${esc(fb)}">${esc(p.fb)}</a>`]);
  const ig=httpsUrl(p.ig,'https://www.instagram.com/');if(ig)r.push(['Instagram',`<a href="${esc(ig)}">${esc(p.ig)}</a>`]);
  const w=httpsUrl(p.web,'');if(w)r.push([t('cWeb'),`<a href="${esc(w)}">${esc(p.web)}</a>`]);
+ for(const ln of String(p.social||'').split('\n')){const i=ln.indexOf('|');if(i<1)continue;const k=ln.slice(0,i),v=ln.slice(i+1);
+  const base={fb:'https://www.facebook.com/',ig:'https://www.instagram.com/',tiktok:'https://www.tiktok.com/@'}[k]||'';
+  const u=k==='zalo'?'':httpsUrl(v,base);r.push([esc(socName(k)),u?`<a href="${esc(u)}">${esc(v)}</a>`:esc(v)])}
  if(p.job)r.push([t('cJob'),esc(p.job)]);
  if(p.about)r.push([t('cAbout'),esc(p.about)]);
  return r.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('');
@@ -1229,16 +1238,32 @@ function stepPick(h,p,label,attr,extra){
 const stepFind=()=>stepPick(t('s1H'),t('s1P'),t('yourName'),'data-pickme',`<div class="acts"><button class="btn" data-notin="1">${t('notIn')}</button></div>`);
 const stepParent=()=>stepPick(t('s2H'),t('s2P'),t('parentName'),'data-add',`<p class="muted">${t('s2N')}</p>`);
 const F=(id,k,val,type='text',w=false)=>`<label${w?' class="w"':''}>${t(k)}<input id="${id}" type="${type}" value="${esc(val||'')}" autocomplete="off"></label>`;
+// ---- mạng xã hội: một ô, bấm + để thêm
+const SOC=[['fb','Facebook'],['zalo','Zalo'],['ig','Instagram'],['tiktok','TikTok'],['youtube','YouTube'],['linkedin','LinkedIn'],['web','']];
+const socName=k=>k==='web'?t('cWebShort'):(SOC.find(x=>x[0]===k)||[,k])[1];
+function socialList(p){const L0=[];for(const k of ['fb','zalo','ig','web'])if(p[k])L0.push([k,p[k]]);
+ for(const ln of String(p.social||'').split('\n')){const i=ln.indexOf('|');if(i>0){const k=ln.slice(0,i),v=ln.slice(i+1).trim();if(v&&SOC.some(x=>x[0]===k))L0.push([k,v])}}return L0}
+const socRow=(k,v)=>`<div class="socrow"><select aria-label="${esc(t('cSocial'))}">${SOC.map(([a])=>`<option value="${a}"${a===k?' selected':''}>${esc(socName(a))}</option>`).join('')}</select><input type="text" value="${esc(v||'')}" placeholder="${esc(t('socPh'))}" autocomplete="off"><button type="button" class="btn sm" data-socdel aria-label="${esc(t('remove'))}">✕</button></div>`;
+function socialHTML(p){const L0=socialList(p);return `<div class="w socbox"><span class="soclab">${t('cSocial')}</span><div id="socrows">${(L0.length?L0:[['fb','']]).map(([k,v])=>socRow(k,v)).join('')}</div><button type="button" class="btn sm" id="socadd">+ ${t('socAdd')}</button></div>`}
+function wireSocial(){const box=document.getElementById('socrows'),add=document.getElementById('socadd');if(!box)return;
+ add.onclick=()=>{if(box.children.length>=8)return;box.insertAdjacentHTML('beforeend',socRow('fb',''));box.lastElementChild.querySelector('input').focus()};
+ box.onclick=e=>{const d=e.target.closest('[data-socdel]');if(!d)return;const r=d.closest('.socrow');if(box.children.length>1)r.remove();else r.querySelector('input').value=''}}
+function readSocial(){const o={fb:'',zalo:'',ig:'',web:'',social:''},extra=[];let bad=false;
+ document.querySelectorAll('#socrows .socrow').forEach(r=>{const k=r.querySelector('select').value,v=r.querySelector('input').value.trim().slice(0,200);if(!v)return;
+  if(['web','youtube','linkedin'].includes(k)&&!/^https:\/\//i.test(v))bad=true;
+  if(['fb','zalo','ig','web'].includes(k)&&!o[k])o[k]=v;else extra.push(k+'|'+v.replace(/\n/g,' '))});
+ o.social=extra.join('\n');if(bad)o.badLink=true;return o}
 function form(mode,id){
  const n=P[id],p=mode==='edit'?(prof(id)||{}):{};
  let h=X()+(mode==='edit'?`<h3>${esc(n.name)}</h3><p class="muted">${n.isSp?esc(spOfTxt(n))+'.':t('gen')+' '+n.gen+'.'} ${t(n.isSp?'editSpP':'editP')}</p>`:`<h3>${esc(T[L].addH(n.name))}</h3><p class="muted">${esc(T[L].addP(n.gen+1))}</p>`)+readerHTML(mode==='add'||!(prof(id)||{}).birthYear)+`<form id="pf" novalidate><div class="fg">`;
  if(mode==='add')h+=F('f-name','cName','Nguyễn Hữu ','text',true)+`<label>${t('cGender')}<select id="f-gender"><option value="nam">${t('male')}</option><option value="nu">${t('female')}</option></select></label>`+F('f-spouse','cSpouse','');
  if(mode==='edit')h+=F('f-name','cName',n.name,'text',true)+`<p class="muted fnote">${t('nameHint')}${n.origName?' '+esc(T[L].nameWas(n.origName)):''}</p>`;
  if(mode==='edit'&&!n.sp&&!n.isSp)h+=F('f-spouse',isF(n)?'cHusband':'cSpouse',p.spouse,'text',true);
- h+=F('f-birth','cBirth',p.birthYear,'text')+F('f-death','cDeath',p.deathYear,'text')+`<p class="muted fnote">${t('dateHint')}</p>`+F('f-born','cBorn',p.born,'text',true)+F('f-addr','cAddr',p.addr,'text',true)+F('f-city','cCity',p.city)+F('f-phone','cPhone',p.phone,'tel')+F('f-email','cEmail',p.email,'email')+F('f-zalo','cZalo',p.zalo)+F('f-fb','cFb',p.fb)+F('f-ig','cIg',p.ig)+F('f-web','cWeb',p.web,'url',true)+F('f-job','cJob',p.job,'text',true);
+ h+=F('f-birth','cBirth',p.birthYear,'text')+F('f-death','cDeath',p.deathYear,'text')+`<p class="muted fnote">${t('dateHint')}</p>`+F('f-born','cBorn',p.born,'text',true)+F('f-addr','cAddr',p.addr,'text',true)+F('f-city','cCity',p.city)+F('f-phone','cPhone',p.phone,'tel')+F('f-email','cEmail',p.email,'email')+socialHTML(p)+F('f-job','cJob',p.job,'text',true);
  h+=`<label class="w">${t('cAbout')}<textarea id="f-about">${esc(p.about||'')}</textarea></label></div><label class="ok"><input type="checkbox" id="f-ok"> <span>${t('consent')}</span></label><div class="err" id="ferr"></div><div class="acts"><button class="btn main" type="submit">${t('save')}</button><button class="btn" type="button" data-close="1">${t('cancel')}</button></div></form>`;
  body.innerHTML=h;if(!dlg.open)dlg.showModal();
  document.getElementById('pf').onsubmit=e=>{e.preventDefault();save(mode,id)};
+ wireSocial();
  wireReader(r=>applyRead(r,mode==='edit'?P[id]:null));
  if(PREFILL){applyRead(PREFILL,mode==='edit'?P[id]:null,true);PREFILL=null}
 }
@@ -1250,8 +1275,8 @@ async function save(mode,id){
  const bD=parseD(by),dD=parseD(dy),ord=x=>x.y*10000+(x.m||0)*100+(x.d||0),now=ord(TODAY);
  if(by&&(!bD||bD.y<800||ord(bD)>now)){err.textContent=t('eBirth');return}
  if(dy&&(!dD||dD.y<800||ord(dD)>now||(bD&&(dD.y<bD.y||(dD.d&&bD.d&&ord(dD)<ord(bD)))))){err.textContent=t('eDeath');return}
- const pr={birthYear:by,deathYear:dy,born:val('f-born'),addr:val('f-addr'),city:val('f-city'),phone:val('f-phone'),email:val('f-email'),zalo:val('f-zalo'),fb:val('f-fb'),ig:val('f-ig'),web:val('f-web'),job:val('f-job'),about:val('f-about'),spouse:val('f-spouse'),updatedAt:new Date().toISOString()};
- if(pr.web&&!/^https:\/\//i.test(pr.web)){err.textContent=t('eWeb');return}
+ const pr={birthYear:by,deathYear:dy,born:val('f-born'),addr:val('f-addr'),city:val('f-city'),phone:val('f-phone'),email:val('f-email'),...readSocial(),job:val('f-job'),about:val('f-about'),spouse:val('f-spouse'),updatedAt:new Date().toISOString()};
+ if(pr.badLink){err.textContent=t('eWeb');return}delete pr.badLink;
  if(mode==='edit'){const nm=val('f-name').replace(/\s+/g,' '),n0=P[id],orig=n0.origName||n0.name;if(nm.length<2){err.textContent=t('eName');return}pr.name=nm===orig?'':nm.slice(0,80)}
  let person=null,pid=id;
  if(mode==='add'){const nm=val('f-name').replace(/\s+/g,' ');if(nm.split(' ').length<2){err.textContent=t('eName');return}
@@ -1276,7 +1301,7 @@ function copyStep(id,person,pr){
  const n=P[id],Ls=['GIA PHẢ NGUYỄN HỮU – THÔNG TIN BỔ SUNG / UPDATE'];
  if(person){Ls.push('Thêm người / New person: '+person.name+(person.gender==='nu'?' (nữ)':' (nam)'));Ls.push('Con của / Child of: '+n.name+' (đời '+n.gen+', mã '+id+')')}
  else Ls.push('Người / Person: '+n.name+' (đời '+n.gen+', mã '+id+')');
- const lab={name:'cNewName',spouse:'cSpouse',birthYear:'cBirth',deathYear:'cDeath',born:'cBorn',addr:'cAddr',city:'cCity',phone:'cPhone',email:'cEmail',zalo:'cZalo',fb:'cFb',ig:'cIg',web:'cWeb',job:'cJob',about:'cAbout'};
+ const lab={name:'cNewName',spouse:'cSpouse',birthYear:'cBirth',deathYear:'cDeath',born:'cBorn',addr:'cAddr',social:'cSocialMore',city:'cCity',phone:'cPhone',email:'cEmail',zalo:'cZalo',fb:'cFb',ig:'cIg',web:'cWeb',job:'cJob',about:'cAbout'};
  for(const k in lab)if(pr[k])Ls.push(t(lab[k])+': '+pr[k]);
  Ls.push(L==='en'?'Sender confirms permission to post.':'Người gửi xác nhận đã được đồng ý đăng.');
  body.innerHTML=`${X()}<h3>${t('cpH')}</h3><p class="muted">${t('cpP')}</p><textarea class="copy" id="ct" readonly></textarea><div class="acts"><button class="btn main" id="cbtn">${t('copy')}</button><button class="btn" data-close="1">${t('done')}</button></div><p class="muted" id="cmsg"></p>`;
@@ -1431,7 +1456,7 @@ applyText();
 const CFG=window.GP_CONFIG||{};let SB=null,isAdmin=false,QUEUE=[];
 const num=(v,lo,hi)=>{v=+v;return isFinite(v)?Math.min(hi,Math.max(lo,v)):lo};
 const rid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
-const PF=['name','born','birthYear','deathYear','addr','city','phone','email','zalo','fb','ig','web','job','about','spouse','updatedAt'];
+const PF=['name','born','social','birthYear','deathYear','addr','city','phone','email','zalo','fb','ig','web','job','about','spouse','updatedAt'];
 const cleanProf=x=>{const c={};x=x||{};for(const k of PF)if(x[k]!=null&&x[k]!=='')c[k]=String(x[k]).slice(0,500);return c};
 const cleanTags=a=>(Array.isArray(a)?a:[]).filter(g=>g&&((typeof g.p==='string'&&g.p)||(typeof g.n==='string'&&g.n.trim()))).slice(0,200).map(g=>{const o={p:String(g.p||'').slice(0,40),x:num(g.x,0,1),y:num(g.y,0,1),r:num(g.r,.01,.5)};if(!o.p)o.n=String(g.n).trim().slice(0,60);return o});
 const rowToPhoto=x=>({phash:/^[0-9a-f]{16}$/.test(String(x.phash||''))?String(x.phash):'',id:String(x.id),asset:okId(x.path)?x.path:'',w:num(x.w,1,20000),h:num(x.h,1,20000),caption:String(x.caption||'').slice(0,200),when:String(x.when_text||'').slice(0,80),where:String(x.where_text||'').slice(0,120),uploadedAt:String(x.created_at||''),tags:cleanTags(x.tags)});
@@ -1742,7 +1767,7 @@ function renderQueue(){
  document.getElementById('qh').textContent=`${t('qH')} (${QUEUE.length})`;
  document.getElementById('adminNote').textContent=t('adminOn');
  if(!QUEUE.length){qList.innerHTML=`<p class="muted">${t('qEmpty')}</p>`;return}
- const lab={name:'cNewName',spouse:'cSpouse',birthYear:'cBirth',deathYear:'cDeath',born:'cBorn',addr:'cAddr',city:'cCity',phone:'cPhone',email:'cEmail',zalo:'cZalo',fb:'cFb',ig:'cIg',web:'cWeb',job:'cJob',about:'cAbout'};
+ const lab={name:'cNewName',spouse:'cSpouse',birthYear:'cBirth',deathYear:'cDeath',born:'cBorn',addr:'cAddr',social:'cSocialMore',city:'cCity',phone:'cPhone',email:'cEmail',zalo:'cZalo',fb:'cFb',ig:'cIg',web:'cWeb',job:'cJob',about:'cAbout'};
  const fields=pr=>{pr=cleanProf(pr);return Object.keys(lab).filter(k=>pr[k]).map(k=>`<div class="ln"><span class="muted">${t(lab[k])}:</span> ${esc(pr[k])}</div>`).join('')};
  const nm=id=>P[id]?esc(P[id].name):esc(id||'?');
  qList.innerHTML=QUEUE.map(s=>{const p=s.payload||{};let b='',k='';
