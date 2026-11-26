@@ -166,6 +166,11 @@ dialog::backdrop{background:#0008}
 .socrow{display:grid;grid-template-columns:minmax(96px,118px) minmax(0,1fr) auto;gap:8px;align-items:center;margin-bottom:8px}
 .socrow select,.socrow input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:inherit;font:inherit}
 .socrow .btn.sm{min-height:40px}
+.kolist{list-style:none;padding:0;margin:12px 0}
+.kolist li{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.kolist .kon{width:26px;text-align:center;font-weight:700;color:var(--mute)}
+.kolist .kname{flex:1;min-width:0}.kolist .kname b{display:block}.kolist .kname small{color:var(--mute);font-size:13px}
+.kolist .btn.sm{min-width:44px;min-height:40px;font-size:18px}
 .obsteps{margin:10px 0 12px;padding-left:22px;line-height:1.5}.obsteps li{margin:6px 0}
 .ok input{width:20px;height:20px;margin-top:2px;flex:none}
 .err{font-size:14px;min-height:20px;margin-top:8px;font-weight:600}
@@ -728,6 +733,8 @@ const ROOTS=[['b1','Nguyễn Bặc',1],['b11','Nguyễn Trãi',11],['b18','Nguy�
 let L='vi';
 try{const s=localStorage.getItem('gp-lang');if(s==='en'||s==='vi')L=s}catch(_){}
 const t=k=>T[L][k]??T.vi[k];
+Object.assign(T.vi,{kOrderBtn:'Sắp xếp thứ tự',kOrderH:n=>`Thứ tự các con của ${n}`,kOrderP:'Dùng ↑ ↓ để xếp từ con cả đến con út. Thứ tự này dùng trên cây gia phả và trong hồ sơ.',kUp:'Lên trên',kDown:'Xuống dưới',kSend:'Gửi để duyệt',cKidOrder:'Thứ tự con'});
+Object.assign(T.en,{kOrderBtn:'Change order',kOrderH:n=>`Order of ${n}’s children`,kOrderP:'Use ↑ ↓ to arrange from eldest to youngest. This order is used on the family tree and in profiles.',kUp:'Move up',kDown:'Move down',kSend:'Send for approval',cKidOrder:'Order of children'});
 Object.assign(T.vi,{cSocial:'Mạng xã hội',cSocialMore:'Mạng xã hội khác',socAdd:'Thêm',socPh:'Tên, số điện thoại hoặc link',cWebShort:'Trang khác',remove:'Xoá'});
 Object.assign(T.en,{cSocial:'Social media',cSocialMore:'Other social media',socAdd:'Add',socPh:'Name, phone number or link',cWebShort:'Other link',remove:'Remove'});
 Object.assign(T.vi,{cBorn:'Nơi sinh (quê quán)',cAddrNow:'Nơi ở hiện nay',cAddrPast:'Nơi ở cuối cùng',seeMore:'Xem thêm'});
@@ -748,6 +755,7 @@ function build(){
  let rest=ADDED.slice(),guard=0;
  while(rest.length&&guard++<20){const next=[];for(const a of rest){if(P[a.parent]&&!P[a.id]){P[a.id]={id:a.id,pa:a.parent,name:a.name,sp:a.spouse||'',yr:a.birthYear?a.birthYear+'–'+(a.deathYear||''):'',note:'',code:'',kids:[],added:true,gender:a.gender};ORDER.push(a.id)}else if(!P[a.id])next.push(a)}rest=next}
  for(const id of ORDER){const n=P[id];if(n.pa&&P[n.pa])P[n.pa].kids.push(id)}
+ for(const id of ORDER){const o=String((PROF[key(id)]||{}).kidOrder||'').split(',').filter(Boolean);if(o.length>0&&P[id].kids.length>1){const ix=k=>{const i=o.indexOf(k);return i<0?1e6:i},orig=P[id].kids.slice();P[id].kids.sort((a,b)=>ix(a)-ix(b)||orig.indexOf(a)-orig.indexOf(b))}}
  (function g(id,d){P[id].gen=d;for(const k of P[id].kids)g(k,d+1)})('b1',1);
  const rn=id=>{const o=(PROF[key(id)]||{}).name;if(o&&P[id]){P[id].origName=P[id].name;P[id].name=String(o).slice(0,80)}};
  for(const id of ORDER)rn(id);
@@ -1021,7 +1029,7 @@ function drawProfile(){
  else if(!(n.sps&&n.sps.length))h+=`<dt>${isF(n)?t('husband'):t('wife')}</dt><dd class="muted">${t('spUnknown')} <button class="spadd" data-edit="${esc(prId)}">${t(isF(n)?'spAddH':'spAddW')}</button></dd>`;
  if(n.isSp&&P[n.of].sps.length===1&&P[n.of].kids.length)h+=`<dt>${t('children')}</dt><dd class="chips">${P[n.of].kids.map(pc).join('')}</dd>`;
  if(n.pa)h+=`<dt>${t('father')}</dt><dd>${pc(n.pa)}</dd>`;
- if(n.kids.length)h+=`<dt>${t('children')}</dt><dd class="chips">${n.kids.map(pc).join('')}</dd>`;
+ if(n.kids.length)h+=`<dt>${t('children')}</dt><dd class="chips">${n.kids.map(pc).join('')}${n.kids.length>1?`<button class="spadd" data-korder="${esc(prId)}">⇅ ${t('kOrderBtn')}</button>`:''}</dd>`;
  if(n.code)h+=`<dt>${t('code')}</dt><dd>${esc(n.code)}</dd>`;
  h+='</dl>';
  const no=noteOf(n);if(no)h+=`<p class="note">${esc(no)}</p>`;
@@ -1258,6 +1266,20 @@ function readSocial(){const o={fb:'',zalo:'',ig:'',web:'',social:''},extra=[];le
   if(['web','youtube','linkedin'].includes(k)&&!/^https:\/\//i.test(v))bad=true;
   if(['fb','zalo','ig','web'].includes(k)&&!o[k])o[k]=v;else extra.push(k+'|'+v.replace(/\n/g,' '))});
  o.social=extra.join('\n');if(bad)o.badLink=true;return o}
+// ---- sắp xếp thứ tự con
+let KO=null;
+function kidOrder(id){const n=P[id];if(!n||n.kids.length<2)return;KO={id,list:n.kids.slice()};drawKO();if(prd.open)prd.close();if(!dlg.open)dlg.showModal()}
+function drawKO(){const n=P[KO.id];
+ body.innerHTML=`${X()}<h3>${esc(T[L].kOrderH(short(n)))}</h3><p class="muted">${t('kOrderP')}</p><ol class="kolist">${KO.list.map((k,i)=>`<li><span class="kon">${i+1}</span>${faceHTML(k,'av bx')}<span class="kname"><b>${esc(P[k].name)}</b>${ageOf(P[k])?`<small>${esc(ageOf(P[k]))}</small>`:''}</span><button type="button" class="btn sm" data-kmv="-1" data-ki="${i}" ${i===0?'disabled':''} aria-label="${t('kUp')}">↑</button><button type="button" class="btn sm" data-kmv="1" data-ki="${i}" ${i===KO.list.length-1?'disabled':''} aria-label="${t('kDown')}">↓</button></li>`).join('')}</ol><div class="err" id="koerr"></div><div class="acts"><button class="btn main" id="kosave">${t(isAdmin?'save':'kSend')}</button><button class="btn" type="button" data-close="1">${t('cancel')}</button></div>`;
+ body.querySelectorAll('[data-kmv]').forEach(b=>b.onclick=()=>{const i=+b.dataset.ki,j=i+(+b.dataset.kmv);[KO.list[i],KO.list[j]]=[KO.list[j],KO.list[i]];drawKO();const f=body.querySelector(`[data-ki="${j}"][data-kmv="${b.dataset.kmv}"]`)||body.querySelector(`[data-ki="${j}"]`);if(f&&!f.disabled)f.focus()});
+ document.getElementById('kosave').onclick=saveKO}
+async function saveKO(){const id=KO.id,btn=document.getElementById('kosave'),err=document.getElementById('koerr');btn.disabled=true;
+ const pr={...(prof(id)||{}),kidOrder:KO.list.join(','),updatedAt:new Date().toISOString()};
+ try{if(!db)throw 0;
+  if(isAdmin){const r=await SB.from('profiles').upsert({person_id:id,data:cleanProf(pr),updated_at:pr.updatedAt});if(r.error)throw r.error;await loadAll();close();openProfile(id)}
+  else{await submit('profile',id,{profile:pr});body.innerHTML=`${X()}<h3>${t('sentH')}</h3><p>${t('sentP')}</p><div class="acts"><button class="btn main" data-close="1">${t('done')}</button></div>`}
+ }catch(_){btn.disabled=false;err.textContent=t('eSave')}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-korder]');if(b){e.stopPropagation();kidOrder(b.dataset.korder)}},true);
 function form(mode,id){
  const n=P[id],p=mode==='edit'?(prof(id)||{}):{};
  let h=X()+(mode==='edit'?`<h3>${esc(n.name)}</h3><p class="muted">${n.isSp?esc(spOfTxt(n))+'.':t('gen')+' '+n.gen+'.'} ${t(n.isSp?'editSpP':'editP')}</p>`:`<h3>${esc(T[L].addH(n.name))}</h3><p class="muted">${esc(T[L].addP(n.gen+1))}</p>`)+readerHTML(mode==='add'||!(prof(id)||{}).birthYear)+`<form id="pf" novalidate><div class="fg">`;
@@ -1280,7 +1302,7 @@ async function save(mode,id){
  const bD=parseD(by),dD=parseD(dy),ord=x=>x.y*10000+(x.m||0)*100+(x.d||0),now=ord(TODAY);
  if(by&&(!bD||bD.y<800||ord(bD)>now)){err.textContent=t('eBirth');return}
  if(dy&&(!dD||dD.y<800||ord(dD)>now||(bD&&(dD.y<bD.y||(dD.d&&bD.d&&ord(dD)<ord(bD)))))){err.textContent=t('eDeath');return}
- const pr={birthYear:by,deathYear:dy,born:val('f-born'),addr:val('f-addr'),city:val('f-city'),phone:val('f-phone'),email:val('f-email'),...readSocial(),job:val('f-job'),about:val('f-about'),spouse:val('f-spouse'),updatedAt:new Date().toISOString()};
+ const pr={kidOrder:mode==='edit'?((prof(id)||{}).kidOrder||''):'',birthYear:by,deathYear:dy,born:val('f-born'),addr:val('f-addr'),city:val('f-city'),phone:val('f-phone'),email:val('f-email'),...readSocial(),job:val('f-job'),about:val('f-about'),spouse:val('f-spouse'),updatedAt:new Date().toISOString()};
  if(pr.badLink){err.textContent=t('eWeb');return}delete pr.badLink;
  if(mode==='edit'){const nm=val('f-name').replace(/\s+/g,' '),n0=P[id],orig=n0.origName||n0.name;if(nm.length<2){err.textContent=t('eName');return}pr.name=nm===orig?'':nm.slice(0,80)}
  let person=null,pid=id;
@@ -1306,7 +1328,7 @@ function copyStep(id,person,pr){
  const n=P[id],Ls=['GIA PHẢ NGUYỄN HỮU – THÔNG TIN BỔ SUNG / UPDATE'];
  if(person){Ls.push('Thêm người / New person: '+person.name+(person.gender==='nu'?' (nữ)':' (nam)'));Ls.push('Con của / Child of: '+n.name+' (đời '+n.gen+', mã '+id+')')}
  else Ls.push('Người / Person: '+n.name+' (đời '+n.gen+', mã '+id+')');
- const lab={name:'cNewName',spouse:'cSpouse',birthYear:'cBirth',deathYear:'cDeath',born:'cBorn',addr:'cAddr',social:'cSocialMore',city:'cCity',phone:'cPhone',email:'cEmail',zalo:'cZalo',fb:'cFb',ig:'cIg',web:'cWeb',job:'cJob',about:'cAbout'};
+ const lab={name:'cNewName',spouse:'cSpouse',birthYear:'cBirth',deathYear:'cDeath',born:'cBorn',addr:'cAddr',social:'cSocialMore',kidOrder:'cKidOrder',city:'cCity',phone:'cPhone',email:'cEmail',zalo:'cZalo',fb:'cFb',ig:'cIg',web:'cWeb',job:'cJob',about:'cAbout'};
  for(const k in lab)if(pr[k])Ls.push(t(lab[k])+': '+pr[k]);
  Ls.push(L==='en'?'Sender confirms permission to post.':'Người gửi xác nhận đã được đồng ý đăng.');
  body.innerHTML=`${X()}<h3>${t('cpH')}</h3><p class="muted">${t('cpP')}</p><textarea class="copy" id="ct" readonly></textarea><div class="acts"><button class="btn main" id="cbtn">${t('copy')}</button><button class="btn" data-close="1">${t('done')}</button></div><p class="muted" id="cmsg"></p>`;
@@ -1461,7 +1483,7 @@ applyText();
 const CFG=window.GP_CONFIG||{};let SB=null,isAdmin=false,QUEUE=[];
 const num=(v,lo,hi)=>{v=+v;return isFinite(v)?Math.min(hi,Math.max(lo,v)):lo};
 const rid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
-const PF=['name','born','social','birthYear','deathYear','addr','city','phone','email','zalo','fb','ig','web','job','about','spouse','updatedAt'];
+const PF=['name','born','social','kidOrder','birthYear','deathYear','addr','city','phone','email','zalo','fb','ig','web','job','about','spouse','updatedAt'];
 const cleanProf=x=>{const c={};x=x||{};for(const k of PF)if(x[k]!=null&&x[k]!=='')c[k]=String(x[k]).slice(0,500);return c};
 const cleanTags=a=>(Array.isArray(a)?a:[]).filter(g=>g&&((typeof g.p==='string'&&g.p)||(typeof g.n==='string'&&g.n.trim()))).slice(0,200).map(g=>{const o={p:String(g.p||'').slice(0,40),x:num(g.x,0,1),y:num(g.y,0,1),r:num(g.r,.01,.5)};if(!o.p)o.n=String(g.n).trim().slice(0,60);return o});
 const rowToPhoto=x=>({phash:/^[0-9a-f]{16}$/.test(String(x.phash||''))?String(x.phash):'',id:String(x.id),asset:okId(x.path)?x.path:'',w:num(x.w,1,20000),h:num(x.h,1,20000),caption:String(x.caption||'').slice(0,200),when:String(x.when_text||'').slice(0,80),where:String(x.where_text||'').slice(0,120),uploadedAt:String(x.created_at||''),tags:cleanTags(x.tags)});
@@ -1772,8 +1794,8 @@ function renderQueue(){
  document.getElementById('qh').textContent=`${t('qH')} (${QUEUE.length})`;
  document.getElementById('adminNote').textContent=t('adminOn');
  if(!QUEUE.length){qList.innerHTML=`<p class="muted">${t('qEmpty')}</p>`;return}
- const lab={name:'cNewName',spouse:'cSpouse',birthYear:'cBirth',deathYear:'cDeath',born:'cBorn',addr:'cAddr',social:'cSocialMore',city:'cCity',phone:'cPhone',email:'cEmail',zalo:'cZalo',fb:'cFb',ig:'cIg',web:'cWeb',job:'cJob',about:'cAbout'};
- const fields=pr=>{pr=cleanProf(pr);return Object.keys(lab).filter(k=>pr[k]).map(k=>`<div class="ln"><span class="muted">${t(lab[k])}:</span> ${esc(pr[k])}</div>`).join('')};
+ const lab={name:'cNewName',spouse:'cSpouse',birthYear:'cBirth',deathYear:'cDeath',born:'cBorn',addr:'cAddr',social:'cSocialMore',kidOrder:'cKidOrder',city:'cCity',phone:'cPhone',email:'cEmail',zalo:'cZalo',fb:'cFb',ig:'cIg',web:'cWeb',job:'cJob',about:'cAbout'};
+ const fields=pr=>{pr=cleanProf(pr);return Object.keys(lab).filter(k=>pr[k]).map(k=>`<div class="ln"><span class="muted">${t(lab[k])}:</span> ${esc(k==='kidOrder'?pr[k].split(',').map((i,j)=>(j+1)+'. '+(P[i]?short(P[i]):i)).join('  '):pr[k])}</div>`).join('')};
  const nm=id=>P[id]?esc(P[id].name):esc(id||'?');
  qList.innerHTML=QUEUE.map(s=>{const p=s.payload||{};let b='',k='';
   if(s.kind==='profile'){k=t('kProfile');b=`<div class="ln"><b>${t('forP')}: ${nm(s.target)}</b></div>`+fields(p.profile)}
