@@ -1172,7 +1172,7 @@ function contactRows(id){
 const cw=document.getElementById('cw'),chart=document.getElementById('chart');
 function li(id){
  const n=P[id],o=open.has(id)&&n.kids.length;
- let h=`<li><div class="node"><button class="box${PATH.has(id)?' dl':''}${sel===id?' on':''}" data-open="${esc(id)}" data-box="${esc(id)}" title="${esc(n.name)}">${hasInfo(id)?'<span class="ci" aria-hidden="true"></span>':''}${faceHTML(id,'av bx')}${esc(short(n))}<small>${t('gen')} ${n.gen}${n.yr?' · '+esc(n.yr):''}</small>${n.added?`<span class="nw">${t('newTag')}</span>`:''}</button>`;
+ let h=`<li><div class="node"><button class="box${PATH.has(id)?' dl':''}${sel===id?' on':''}" data-open="${esc(id)}" data-box="${esc(id)}" title="${esc(n.name)}">${hasInfo(id)?'<span class="ci" aria-hidden="true"></span>':''}${faceHTML(id,'av bx')}${esc(short(n))}${n.yr?`<small>${esc(n.yr)}</small>`:''}${n.added?`<span class="nw">${t('newTag')}</span>`:''}</button>`;
  if(n.kids.length)h+=`<button class="tgl" data-t="${esc(id)}" aria-expanded="${!!o}" aria-label="${o?t('bClose'):n.kids.length+' '+t('kids')}">${o?'−':'+'+n.kids.length}</button>`;
  h+='</div>';
  if(o)h+=`<ul>${n.kids.map(li).join('')}</ul>`;
