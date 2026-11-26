@@ -288,6 +288,13 @@ dialog.pvd>.dlg{padding:0;max-height:none;height:100%;overflow:hidden}
 .btn:disabled{opacity:.4;cursor:default}
 dialog.prd{width:min(900px,calc(100vw - 24px))}
 .phead{display:flex;gap:18px;align-items:center;padding-right:44px;margin-bottom:18px}
+.spcards{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:-4px 0 18px}
+.sph{margin:0;width:100%;font-size:13px;color:var(--mute);font-weight:600}
+.spcard{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:14px;background:var(--soft);padding:8px 14px 8px 8px;cursor:pointer;text-align:left;color:inherit;font:inherit;min-width:220px}
+.spcard:hover{border-color:var(--ink)}
+.spcard b{display:block;font-size:16px}.spcard small{display:block;color:var(--mute);font-size:13px;margin-top:2px}
+.spcard .av.ini{font-size:22px;border-radius:50%;background:var(--bg)}
+.spcard .spgo{margin-left:auto;font-size:22px;color:var(--mute)}
 .phead h3{font-size:clamp(24px,4vw,32px);padding-right:0}
 .av.xxl{width:104px;height:104px;border-width:2px}
 .av.ini{display:grid;place-items:center;font-size:40px;font-weight:700;color:var(--mute)}
@@ -685,7 +692,7 @@ en:{brand:'Nguyễn Hữu Family',navTree:'Family tree',navDir:'Directory',navPe
 h1:'The Nguyễn Hữu family tree',lead:'From the founding ancestor Nguyễn Bặc, Duke of Định Quốc under the Đinh dynasty, through Nguyễn Trãi and Lord Nguyễn Hữu Dật, to the second branch of Nguyễn Hữu Tòng in Thanh Quýt, Quảng Nam, and the family today.',cta:'Add your information',
 sGen:'generations recorded',sPeople:'people in the tree',sYears:'years since Nguyễn Bặc',sInfo:'people with contact details',
 figcap:'Each dot is one generation of the direct line. Large dots have a recorded birth year; the others are placed by estimate.',
-treeH:'Family tree',treeIntro:'Click a box to see details. Use the button under a box to show children (+) or hide them (−). Drag to move around; use − and + to zoom. Boxes with a heavy outline are the direct line to Nguyễn Hữu Tùy; a small dot in the corner means that person has contact details.',
+treeH:'Family tree',treeIntro:'Click a box to see details, including the person’s wife or husband. Use the button under a box to show children (+) or hide them (−). Drag to move around; use − and + to zoom. Boxes with a heavy outline are the direct line to Nguyễn Hữu Tùy; a small dot in the corner means that person has contact details.',
 search:'Search a name, accents optional',startFrom:'Start from',bPath:'Direct line',bAll:'Expand all',bClose:'Collapse',gen:'Gen.',kids:'children',
 dirH:'Family directory',dirIntro:'Relatives who have shared an address, phone or social media so family can reach each other. Everyone who can open this page can see these details.',dirSearch:'Search the directory: name, city…',
 peopleH:'Notable ancestors',peopleIntro:'Summarised from Vietnamese Wikipedia and “Dòng họ Nguyễn Hữu” by Nguyễn Hữu Am, generation 29.',onTree:'Show in the tree',
@@ -1008,10 +1015,10 @@ function drawProfile(){
  const pc=id=>`<button class="chip" data-pp="${esc(id)}">${esc(P[id].name)}</button>`;
  const face=faceHTML(prId,'av xxl')||`<span class="av xxl ini" aria-hidden="true">${esc((short(n).trim()[0]||'?').toUpperCase())}</span>`;
  let h=`<button class="x2" data-pclose="1" aria-label="${t('close')}">✕</button><div class="phead">${face}<div><h3>${esc(n.name)}</h3><p class="muted" style="margin:6px 0 0">${n.isSp?esc(spOfTxt(n)):t('fGen')+' '+n.gen+(n.gen===1?t('founder'):'')}${age?' · '+esc(age):''}${n.added?' · '+t('newTag'):''}</p></div></div>`;
+ if(!n.isSp&&n.sps&&n.sps.length)h+=`<div class="spcards"><p class="sph">${isF(n)?t('husband'):t('wife')}</p>${n.sps.map(sid=>{const w=P[sid],ag=ageOf(w);return `<button class="spcard" data-pp="${esc(sid)}">${faceHTML(sid,'av lg')||`<span class="av lg ini" aria-hidden="true">${esc((w.name.replace(/^(Bà|Ông|Cụ)\s+/,'').trim().split(' ').pop()[0]||'?').toUpperCase())}</span>`}<span><b>${esc(w.name)}</b>${ag?`<small>${esc(ag)}</small>`:''}</span><span class="spgo" aria-hidden="true">›</span></button>`}).join('')}</div>`;
  h+=`<div class="pcols"><div><dl class="kv">`;
  if(n.isSp)h+=`<dt>${spRole(n)}</dt><dd>${esc(T[L][n.gender==='nam'?'husbandOfS':'wifeOfS'])} ${pc(n.of)}</dd>`;
- else if(n.sps&&n.sps.length)h+=`<dt>${isF(n)?t('husband'):t('wife')}</dt><dd class="chips">${n.sps.map(pc).join('')}</dd>`;
- else h+=`<dt>${isF(n)?t('husband'):t('wife')}</dt><dd class="muted">${t('spUnknown')} <button class="spadd" data-edit="${esc(prId)}">${t(isF(n)?'spAddH':'spAddW')}</button></dd>`;
+ else if(!(n.sps&&n.sps.length))h+=`<dt>${isF(n)?t('husband'):t('wife')}</dt><dd class="muted">${t('spUnknown')} <button class="spadd" data-edit="${esc(prId)}">${t(isF(n)?'spAddH':'spAddW')}</button></dd>`;
  if(n.isSp&&P[n.of].sps.length===1&&P[n.of].kids.length)h+=`<dt>${t('children')}</dt><dd class="chips">${P[n.of].kids.map(pc).join('')}</dd>`;
  if(n.pa)h+=`<dt>${t('father')}</dt><dd>${pc(n.pa)}</dd>`;
  if(n.kids.length)h+=`<dt>${t('children')}</dt><dd class="chips">${n.kids.map(pc).join('')}</dd>`;
@@ -1158,8 +1165,6 @@ const cw=document.getElementById('cw'),chart=document.getElementById('chart');
 function li(id){
  const n=P[id],o=open.has(id)&&n.kids.length;
  let h=`<li><div class="node"><button class="box${PATH.has(id)?' dl':''}${sel===id?' on':''}" data-open="${esc(id)}" data-box="${esc(id)}" title="${esc(n.name)}">${hasInfo(id)?'<span class="ci" aria-hidden="true"></span>':''}${faceHTML(id,'av bx')}${esc(short(n))}<small>${t('gen')} ${n.gen}${n.yr?' · '+esc(n.yr):''}</small>${n.added?`<span class="nw">${t('newTag')}</span>`:''}</button>`;
- if(n.sps&&n.sps.length){const show=n.sps.slice(0,3);
-  h=h.replace('<div class="node">','<div class="node"><div class="couple">')+`<span class="mline" aria-hidden="true"></span><div class="sps">${show.map(sid=>{const w=P[sid],ag=treeAge(w);return `<button class="box sp${sel===sid?' on':''}" data-open="${esc(sid)}" data-box="${esc(sid)}" title="${esc(spRole(w)+': '+w.name)}">${hasInfo(sid)?'<span class="ci" aria-hidden="true"></span>':''}${faceHTML(sid,'av bx')}${esc(w.name)}<small>${spRole(w)}${ag?' · '+esc(ag):''}</small></button>`}).join('')}${n.sps.length>3?`<button class="box sp more" data-open="${esc(id)}">+${n.sps.length-3} ${esc(spRole(P[n.sps[0]]).toLowerCase())}</button>`:''}</div></div>`}
  if(n.kids.length)h+=`<button class="tgl" data-t="${esc(id)}" aria-expanded="${!!o}" aria-label="${o?t('bClose'):n.kids.length+' '+t('kids')}">${o?'−':'+'+n.kids.length}</button>`;
  h+='</div>';
  if(o)h+=`<ul>${n.kids.map(li).join('')}</ul>`;
@@ -1198,7 +1203,7 @@ function go(id,smooth=true){
  if(!P[id])return;
  const r=rootFor(P[id].isSp?P[id].of:id);if(r!==root){root=r;document.getElementById('root').value=r}
  for(const a of anc(id))open.add(a);
- sel=id;render();showPanel(id);panel.classList.add('on');center(id,smooth);
+ sel=id;render();showPanel(id);panel.classList.add('on');center(P[id].isSp?P[id].of:id,smooth);
 }
 document.getElementById('root').onchange=e=>{root=e.target.value;render();cw.scrollTo({top:0,left:0});const el=chart.querySelector(`[data-box="${CSS.escape(root)}"]`);if(el)center(root,false)};
 document.getElementById('zIn').onclick=()=>{zoom=Math.min(1.5,+(zoom+.15).toFixed(2));render();sel&&center(sel,false)};
@@ -1419,11 +1424,11 @@ dupMerge:'Merge into existing photo',dupKeepBoth:'Add as a separate photo anyway
 Object.assign(T.vi,{wifeOf:(n,g)=>`Vợ của ${n} (đời ${g})`,husbandOf:(n,g)=>`Chồng của ${n} (đời ${g})`,wifeOfS:'Vợ của',husbandOfS:'Chồng của',
 spUnknown:'Gia phả chưa ghi tên.',spAddW:'Thêm tên vợ',spAddH:'Thêm tên chồng',cHusband:'Chồng',
 editSpP:'Hãy giúp ghi nhớ bà/ông: năm sinh, năm mất, quê quán, kỷ niệm, hoặc thông tin liên lạc nếu còn sống.',
-treeIntro:'Bấm vào một ô để xem chi tiết. Ô bên cạnh, nối bằng một vạch ngang, là vợ hoặc chồng của người đó. Gia phả xưa thường chỉ ghi tên đàn ông; ở đây vợ và chồng được ghi cùng nhau để con cháu nhớ đến cả hai. Bấm nút dưới ô để mở các con (+) hoặc thu gọn (−). Kéo để di chuyển, dùng − và + để thu nhỏ, phóng to. Ô viền đậm là dòng trực hệ; chấm nhỏ ở góc ô nghĩa là người đó có thông tin liên lạc.'});
+treeIntro:'Bấm vào một ô để xem chi tiết. Bấm vào một người để xem cả vợ hoặc chồng của người đó. Gia phả xưa thường chỉ ghi tên đàn ông; ở đây vợ và chồng được ghi cùng nhau để con cháu nhớ đến cả hai. Bấm nút dưới ô để mở các con (+) hoặc thu gọn (−). Kéo để di chuyển, dùng − và + để thu nhỏ, phóng to. Ô viền đậm là dòng trực hệ; chấm nhỏ ở góc ô nghĩa là người đó có thông tin liên lạc.'});
 Object.assign(T.en,{wifeOf:(n,g)=>`Wife of ${n} (generation ${g})`,husbandOf:(n,g)=>`Husband of ${n} (generation ${g})`,wifeOfS:'Wife of',husbandOfS:'Husband of',
 spUnknown:'Not recorded in the old records.',spAddW:'Add his wife’s name',spAddH:'Add her husband’s name',cHusband:'Husband',
 editSpP:'Help us remember her or him: birth and death years, home town, memories, or contact details if living.',
-treeIntro:'Click a box to see details. The box beside it, joined by a short line, is that person’s wife or husband. Old family records usually named only the men; here husbands and wives are recorded together so both are remembered. Use the button under a box to show children (+) or hide them (−). Drag to move around; use − and + to zoom. Boxes with a heavy outline are the direct line; a small dot in the corner means that person has contact details.'});
+treeIntro:'Click a box to see details, including the person’s wife or husband. The box beside it, joined by a short line, is that person’s wife or husband. Old family records usually named only the men; here husbands and wives are recorded together so both are remembered. Use the button under a box to show children (+) or hide them (−). Drag to move around; use − and + to zoom. Boxes with a heavy outline are the direct line; a small dot in the corner means that person has contact details.'});
 Object.assign(T.vi,{obitBtn:'✨ Thêm người thân bằng AI',obitH:'Thêm thông tin người thân bằng AI',obitP:'Bạn có giấy tờ về một người trong gia đình, như cáo phó, cáo tang, giấy khai sinh, hay ghi chép tay của ông bà? Không cần gõ lại từng chữ. Hãy chụp ảnh, tải file PDF, hoặc dán chữ vào đây, AI sẽ đọc giúp bạn.</p><ol class="obsteps"><li><b>Tải giấy tờ lên.</b> Chụp ảnh, chọn ảnh hoặc file PDF có sẵn, hoặc dán chữ vào ô bên dưới.</li><li><b>AI đọc và điền sẵn.</b> AI tìm tên, ngày sinh, ngày mất, nơi ở, nơi an nghỉ của người thân đó.</li><li><b>Bạn chọn đúng người và kiểm tra.</b> Chọn người đó trong gia phả (hoặc thêm người mới), sửa lại chỗ AI đọc sai, rồi gửi để quản lý duyệt.</li></ol><p class="muted" style="font-size:13px">AI chạy ngay trên máy của bạn và chỉ gửi đi những thông tin bạn bấm gửi. Không có gì được đưa lên gia phả khi quản lý chưa duyệt.',
 rdH:'Đọc từ cáo phó hoặc giấy tờ (AI)',rdP:'Tải ảnh hoặc file PDF lên, hoặc dán chữ vào, AI sẽ tự điền các ô bên dưới. Hãy kiểm tra lại trước khi gửi.',rdPick:'Chọn ảnh hoặc PDF',rdPh:'Hoặc dán chữ vào đây (ví dụ chép từ Facebook, Zalo)…',rdGo:'Đọc và điền',
 rdLoading:'Đang tải bộ đọc chữ tiếng Việt (lần đầu khoảng 6 MB)…',rdReading:p=>`Đang đọc chữ trong ảnh… ${p}%`,rdEmpty:'Hãy chọn ảnh, file PDF hoặc dán chữ trước.',rdErr:'Không đọc được file này. Hãy thử ảnh rõ hơn, file PDF khác, hoặc dán chữ vào.',
