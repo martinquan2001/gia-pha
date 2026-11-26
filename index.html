@@ -94,14 +94,16 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 .box.sp.on{background:var(--ink)}
 .box.more{padding:4px 10px;font-size:12px;color:var(--mute)}
 .spadd{display:inline;border:0;background:none;padding:0;text-decoration:underline;cursor:pointer;color:inherit;font:inherit}
-.box{position:relative;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 12px;font-size:14px;line-height:1.3;white-space:nowrap;cursor:pointer;max-width:200px;overflow:hidden;text-overflow:ellipsis}
-.box small{display:block;color:var(--mute);font-size:12px}
+.box{position:relative;box-sizing:border-box;width:132px;height:108px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 8px;font-size:14px;line-height:1.25;white-space:nowrap;cursor:pointer;overflow:hidden}
+.box .bn{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;max-width:100%;overflow:hidden;white-space:normal;text-align:center;font-weight:600;line-height:1.2}
+.box.dl{box-shadow:inset 0 0 0 1px var(--ink)}
+.box small{display:block;color:var(--mute);font-size:12px;font-variant-numeric:tabular-nums}
 .box:hover{border-color:var(--ink)}
-.box.dl{border:2px solid var(--ink);font-weight:600}
+.box.dl{border-color:var(--ink)}
 .box.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .box.on small{color:var(--bg);opacity:.75}
 .box .ci{position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%;background:currentColor}
-.box .nw{font-size:11px;color:var(--mute)}
+.box .nw{position:absolute;top:3px;left:6px;font-size:10px;color:var(--mute)}
 .tgl{margin-top:4px;border:1px solid var(--line);background:var(--bg);border-radius:999px;font-size:12px;padding:0 9px;min-height:24px;cursor:pointer;color:var(--mute)}
 .tgl:hover{border-color:var(--ink);color:var(--ink)}
 .panel{position:sticky;top:76px;border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--bg);max-height:calc(100vh - 96px);overflow:auto}
@@ -177,7 +179,9 @@ dialog::backdrop{background:#0008}
 .pick{max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:8px;margin-top:10px}
 textarea.copy{width:100%;min-height:180px;font:14px/1.5 ui-monospace,monospace;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--soft)}
 .av{display:inline-block;width:40px;height:40px;border-radius:50%;background-color:var(--soft);background-repeat:no-repeat;border:1px solid var(--line);flex:none;vertical-align:middle}
-.av.bx{display:block;width:34px;height:34px;margin:0 auto 4px}
+.av.bx{display:block;flex:none;width:36px;height:36px;margin:0 auto 2px}
+.av.bx.ini{display:grid;place-items:center;font-size:16px;font-weight:700;color:var(--mute);background:var(--soft);border-radius:50%;box-shadow:0 0 0 1px var(--line)}
+.box.on .av.bx.ini{background:#ffffff22;color:var(--bg)}
 .box.on .av{border-color:var(--bg)}
 .av.lg{width:56px;height:56px}
 .av.xl{display:block;width:88px;height:88px;margin-bottom:10px}
@@ -1170,9 +1174,14 @@ function contactRows(id){
 
 // chart
 const cw=document.getElementById('cw'),chart=document.getElementById('chart');
+// năm sinh – năm mất (hoặc "nay") cho ô trên cây
+function treeYears(n){const f=lifeOf(n);if(!f)return '';
+ if(f.dead)return (f.b?f.b.y:'?')+' – '+f.d.y;
+ if(f.dead===false)return f.b.y+' – '+t('present');
+ return f.b.y+' – ?'}
 function li(id){
  const n=P[id],o=open.has(id)&&n.kids.length;
- let h=`<li><div class="node"><button class="box${PATH.has(id)?' dl':''}${sel===id?' on':''}" data-open="${esc(id)}" data-box="${esc(id)}" title="${esc(n.name)}">${hasInfo(id)?'<span class="ci" aria-hidden="true"></span>':''}${faceHTML(id,'av bx')}${esc(short(n))}${n.yr?`<small>${esc(n.yr)}</small>`:''}${n.added?`<span class="nw">${t('newTag')}</span>`:''}</button>`;
+ let h=`<li><div class="node"><button class="box${PATH.has(id)?' dl':''}${sel===id?' on':''}" data-open="${esc(id)}" data-box="${esc(id)}" title="${esc(n.name)}">${hasInfo(id)?'<span class="ci" aria-hidden="true"></span>':''}${faceHTML(id,'av bx')||`<span class="av bx ini" aria-hidden="true">${esc((short(n).trim().split(' ').pop()[0]||'?').toUpperCase())}</span>`}<span class="bn">${esc(short(n))}</span><small>${esc(treeYears(n))||'&nbsp;'}</small>${n.added?`<span class="nw">${t('newTag')}</span>`:''}</button>`;
  if(n.kids.length)h+=`<button class="tgl" data-t="${esc(id)}" aria-expanded="${!!o}" aria-label="${o?t('bClose'):n.kids.length+' '+t('kids')}">${o?'−':'+'+n.kids.length}</button>`;
  h+='</div>';
  if(o)h+=`<ul>${n.kids.map(li).join('')}</ul>`;
