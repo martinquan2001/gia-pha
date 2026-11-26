@@ -667,7 +667,7 @@ notesH:'Ghi chú khi đối chiếu',notesEnd:'Ai biết thêm tên, năm sinh, 
 foot:'Gia phả tộc Nguyễn Hữu, tổng hợp từ tài liệu do ông Nguyễn Hữu Lễ sưu tầm, năm 2026.',toTop:'Về đầu trang',
 fGen:'Đời',fYears:'Cuộc đời',wife:'Vợ',husband:'Chồng',father:'Cha',children:'Con',code:'Mã phái nhì',founder:' (Tiền tổ)',contactH:'Thông tin liên lạc',noContact:'Chưa có. Nếu đây là bạn hoặc người thân của bạn, hãy thêm vào.',updated:'Cập nhật',editInfo:'Sửa thông tin',addInfo:'Thêm thông tin',addChild:'Thêm con',del:'Xóa người này',lineage:'Dòng dõi',childOf:'con ông',newTag:'mới thêm',close:'Đóng',
 age:(b,a)=>`sinh ${b}, khoảng ${a} tuổi`,
-cAddr:'Địa chỉ',cMap:'Xem bản đồ',cCity:'Nơi ở',cPhone:'Điện thoại',cZalo:'Zalo',cEmail:'Email',cFb:'Facebook',cIg:'Instagram',cWeb:'Trang khác',cJob:'Nghề nghiệp',cAbout:'Ghi chú',cSpouse:'Vợ hoặc chồng',cBirth:'Ngày sinh hoặc năm sinh',cDeath:'Ngày mất hoặc năm mất (nếu đã mất)',cName:'Họ và tên',cGender:'Giới tính',male:'Nam',female:'Nữ',
+cAddr:'Nơi ở hiện nay (nếu đã mất: nơi ở cuối cùng)',cMap:'Xem bản đồ',cCity:'Tỉnh / thành phố',cPhone:'Điện thoại',cZalo:'Zalo',cEmail:'Email',cFb:'Facebook',cIg:'Instagram',cWeb:'Trang khác',cJob:'Nghề nghiệp',cAbout:'Ghi chú',cSpouse:'Vợ hoặc chồng',cBirth:'Ngày sinh hoặc năm sinh',cDeath:'Ngày mất hoặc năm mất (nếu đã mất)',cName:'Họ và tên',cGender:'Giới tính',male:'Nam',female:'Nữ',
 noneYet:'Chưa có ai thêm thông tin liên lạc. Hãy là người đầu tiên: bấm “Thêm thông tin của bạn”.',noFound:'Không tìm thấy.',details:'Xem chi tiết',
 loading:'Đang tải thông tin liên lạc…',signIn:'Đăng nhập claude.ai để xem và thêm thông tin liên lạc của gia đình. Cây gia phả vẫn xem được bình thường.',viewOnly:'Bạn đang ở chế độ chỉ xem. Bạn vẫn điền được thông tin; trang sẽ tạo một đoạn để bạn gửi cho người quản lý trang.',slow:'Chưa kết nối được dữ liệu liên lạc. Thông tin có thể chưa đầy đủ.',failed:'Không tải được thông tin liên lạc lúc này.',
 s1H:'Thêm thông tin của bạn',s1P:'Bước 1: tìm tên của bạn trong gia phả. Gõ không dấu cũng được.',yourName:'Tên của bạn',type2:'Gõ ít nhất 2 chữ.',notIn:'Tên tôi chưa có trong cây',
@@ -690,7 +690,7 @@ notesH:'Notes on the sources',notesEnd:'If you know more names, birth years, spo
 foot:'Nguyễn Hữu family tree, compiled from documents collected by Nguyễn Hữu Lễ, 2026.',toTop:'Back to top',
 fGen:'Generation',fYears:'Life',wife:'Wife',husband:'Husband',father:'Father',children:'Children',code:'Branch code',founder:' (founder)',contactH:'Contact',noContact:'None yet. If this is you or your relative, please add it.',updated:'Updated',editInfo:'Edit details',addInfo:'Add details',addChild:'Add a child',del:'Remove this person',lineage:'Lineage',childOf:'child of',newTag:'newly added',close:'Close',
 age:(b,a)=>`born ${b}, about ${a} years old`,
-cAddr:'Home address',cMap:'Open map',cCity:'City, country',cPhone:'Phone',cZalo:'Zalo',cEmail:'Email',cFb:'Facebook',cIg:'Instagram',cWeb:'Other link',cJob:'Occupation',cAbout:'Notes',cSpouse:'Spouse',cBirth:'Date or year of birth',cDeath:'Date or year of passing (if passed away)',cName:'Full name',cGender:'Gender',male:'Male',female:'Female',
+cAddr:'Where they live now (if passed away: last home)',cMap:'Open map',cCity:'City, country',cPhone:'Phone',cZalo:'Zalo',cEmail:'Email',cFb:'Facebook',cIg:'Instagram',cWeb:'Other link',cJob:'Occupation',cAbout:'Notes',cSpouse:'Spouse',cBirth:'Date or year of birth',cDeath:'Date or year of passing (if passed away)',cName:'Full name',cGender:'Gender',male:'Male',female:'Female',
 noneYet:'No one has added contact details yet. Be the first: click “Add your information”.',noFound:'Nothing found.',details:'View details',
 loading:'Loading contact details…',signIn:'Sign in to claude.ai to see and add family contact details. The tree works without signing in.',viewOnly:'You have view-only access. You can still fill in the form; the page will make a text for you to send to the page manager.',slow:'Contact details can’t be reached yet and may be incomplete.',failed:'Contact details could not be loaded right now.',
 s1H:'Add your information',s1P:'Step 1: find your name in the tree. Accents are optional.',yourName:'Your name',type2:'Type at least 2 letters.',notIn:'My name is not in the tree',
@@ -717,6 +717,8 @@ const ROOTS=[['b1','Nguyễn Bặc',1],['b11','Nguyễn Trãi',11],['b18','Nguy�
 let L='vi';
 try{const s=localStorage.getItem('gp-lang');if(s==='en'||s==='vi')L=s}catch(_){}
 const t=k=>T[L][k]??T.vi[k];
+Object.assign(T.vi,{cBorn:'Nơi sinh (quê quán)',cAddrNow:'Nơi ở hiện nay',cAddrPast:'Nơi ở cuối cùng',seeMore:'Xem thêm'});
+Object.assign(T.en,{cBorn:'Place of birth (hometown)',cAddrNow:'Lives in',cAddrPast:'Last home',seeMore:'See more'});
 Object.assign(T.vi,{bornOn:x=>`Sinh ${x}`,diedOn:x=>`Mất ${x}`,agedAt:x=>`Hưởng thọ ${x}`,yrsOld:a=>`${a} tuổi`,about:'khoảng ',present:'nay',dateHint:'Ghi năm (1945) hoặc ngày/tháng/năm (01/01/1945). Để trống ô năm mất nếu người đó còn sống. Biết đủ ngày thì tuổi sẽ chính xác hơn.'});
 Object.assign(T.en,{bornOn:x=>`Born ${x}`,diedOn:x=>`Died ${x}`,agedAt:x=>x,yrsOld:a=>`age ${a}`,about:'about ',present:'present',dateHint:'Write a year (1945) or day/month/year (01/01/1945). Leave the passing box empty if the person is living. A full date gives an exact age.'});
 
@@ -990,8 +992,8 @@ pvd.addEventListener('click',async e=>{
 
 
 // ===== profile =====
-Object.assign(T.vi,{viewTree:'Xem trên cây',openProf:'Xem hồ sơ',photosH:'Ảnh có người này',noPhotosOf:'Chưa có ảnh nào gắn tên người này.',noPhotosHint:'Đăng ảnh ở mục Ảnh rồi gắn tên để ảnh hiện ở đây.'});
-Object.assign(T.en,{viewTree:'Show in tree',openProf:'Open profile',photosH:'Photos of this person',noPhotosOf:'No photos are tagged with this person yet.',noPhotosHint:'Post a photo in the Photos section and tag them to show it here.'});
+Object.assign(T.vi,{viewTree:'Xem trên cây',openProf:'Xem hồ sơ',photosH:'Media',noPhotosOf:'Chưa có ảnh nào gắn tên người này.',noPhotosHint:'Đăng ảnh ở mục Ảnh rồi gắn tên để ảnh hiện ở đây.'});
+Object.assign(T.en,{viewTree:'Show in tree',openProf:'Open profile',photosH:'Media',noPhotosOf:'No photos are tagged with this person yet.',noPhotosHint:'Post a photo in the Photos section and tag them to show it here.'});
 const prd=document.getElementById('prof'),prb=document.getElementById('profBody');let prId=null;
 function openProfile(id){if(!P[id])return;prId=id;drawProfile();if(!prd.open)prd.showModal();prb.scrollTop=0}
 function drawProfile(){
@@ -1016,8 +1018,8 @@ function drawProfile(){
  h+=`<h4 class="ph4">${t('photosH')}${faces.length?` (${faces.length})`:''}</h4>`;
  if(faces.length){
   const PV=6,more=faces.length-PV;
-  h+=`<div class="pmini">${faces.slice(0,PV).map(({ph},k)=>`<button class="sq" data-ph="${esc(ph.id)}" data-pfocus="${esc(prId)}" title="${esc(ph.caption||'')}"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" loading="lazy">${k===PV-1&&more>0?`<span class="pmore">+${more}</span>`:''}</button>`).join('')}</div>`;
-  h+=`<div class="acts" style="margin-top:12px"><button class="btn main" data-palgo="${esc(prId)}">${esc(T[L].seeAllPh(faces.length,short(n)))} ›</button></div>`;
+  h+=`<div class="pmini">${faces.slice(0,PV).map(({ph},k)=>`${k===PV-1&&more>0?`<button class="sq" data-palgo="${esc(prId)}" aria-label="${esc(t('seeMore'))}"><img src="${esc(srcOf(ph.asset))}" alt="" loading="lazy"><span class="pmore">+${more}</span></button>`:`<button class="sq" data-ph="${esc(ph.id)}" data-pfocus="${esc(prId)}" title="${esc(ph.caption||'')}"><img src="${esc(srcOf(ph.asset))}" alt="${esc(ph.caption||'')}" loading="lazy"></button>`}`).join('')}</div>`;
+  if(more>0)h+=`<div class="acts" style="margin-top:12px"><button class="btn" data-palgo="${esc(prId)}">${t('seeMore')} (${more}) ›</button></div>`;
  }else h+=`<p class="muted">${t('noPhotosOf')} ${t('noPhotosHint')}</p>`;
  prb.innerHTML=h;
 }
@@ -1127,7 +1129,9 @@ function lifeShort(n){const f=lifeOf(n);if(!f)return n.yr||'';const V=T[L],A=f.a
 const httpsUrl=(v,base)=>{v=String(v||'').trim();if(!v)return '';if(/^https:\/\//i.test(v))return v;if(/^http:/i.test(v))return '';return base?base+encodeURIComponent(v.replace(/^@/,'')):''};
 function contactRows(id){
  const p=prof(id);if(!p)return '';const r=[];
- if(p.addr)r.push([t('cAddr'),`${esc(p.addr)}<br><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.addr)}">${t('cMap')}</a>`]);
+ const gone=(lifeOf(P[id]||{id})||{}).dead;
+ if(p.born)r.push([t('cBorn'),`${esc(p.born)}<br><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.born)}">${t('cMap')}</a>`]);
+ if(p.addr)r.push([t(gone?'cAddrPast':'cAddrNow'),`${esc(p.addr)}<br><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.addr)}">${t('cMap')}</a>`]);
  if(p.city)r.push([t('cCity'),esc(p.city)]);
  if(p.phone)r.push([t('cPhone'),`<a href="tel:${esc(p.phone.replace(/[^\d+]/g,''))}">${esc(p.phone)}</a>`]);
  if(p.zalo)r.push(['Zalo',esc(p.zalo)]);
@@ -1231,7 +1235,7 @@ function form(mode,id){
  if(mode==='add')h+=F('f-name','cName','Nguyễn Hữu ','text',true)+`<label>${t('cGender')}<select id="f-gender"><option value="nam">${t('male')}</option><option value="nu">${t('female')}</option></select></label>`+F('f-spouse','cSpouse','');
  if(mode==='edit')h+=F('f-name','cName',n.name,'text',true)+`<p class="muted fnote">${t('nameHint')}${n.origName?' '+esc(T[L].nameWas(n.origName)):''}</p>`;
  if(mode==='edit'&&!n.sp&&!n.isSp)h+=F('f-spouse',isF(n)?'cHusband':'cSpouse',p.spouse,'text',true);
- h+=F('f-birth','cBirth',p.birthYear,'text')+F('f-death','cDeath',p.deathYear,'text')+`<p class="muted fnote">${t('dateHint')}</p>`+F('f-addr','cAddr',p.addr,'text',true)+F('f-city','cCity',p.city)+F('f-phone','cPhone',p.phone,'tel')+F('f-email','cEmail',p.email,'email')+F('f-zalo','cZalo',p.zalo)+F('f-fb','cFb',p.fb)+F('f-ig','cIg',p.ig)+F('f-web','cWeb',p.web,'url',true)+F('f-job','cJob',p.job,'text',true);
+ h+=F('f-birth','cBirth',p.birthYear,'text')+F('f-death','cDeath',p.deathYear,'text')+`<p class="muted fnote">${t('dateHint')}</p>`+F('f-born','cBorn',p.born,'text',true)+F('f-addr','cAddr',p.addr,'text',true)+F('f-city','cCity',p.city)+F('f-phone','cPhone',p.phone,'tel')+F('f-email','cEmail',p.email,'email')+F('f-zalo','cZalo',p.zalo)+F('f-fb','cFb',p.fb)+F('f-ig','cIg',p.ig)+F('f-web','cWeb',p.web,'url',true)+F('f-job','cJob',p.job,'text',true);
  h+=`<label class="w">${t('cAbout')}<textarea id="f-about">${esc(p.about||'')}</textarea></label></div><label class="ok"><input type="checkbox" id="f-ok"> <span>${t('consent')}</span></label><div class="err" id="ferr"></div><div class="acts"><button class="btn main" type="submit">${t('save')}</button><button class="btn" type="button" data-close="1">${t('cancel')}</button></div></form>`;
  body.innerHTML=h;if(!dlg.open)dlg.showModal();
  document.getElementById('pf').onsubmit=e=>{e.preventDefault();save(mode,id)};
@@ -1246,7 +1250,7 @@ async function save(mode,id){
  const bD=parseD(by),dD=parseD(dy),ord=x=>x.y*10000+(x.m||0)*100+(x.d||0),now=ord(TODAY);
  if(by&&(!bD||bD.y<800||ord(bD)>now)){err.textContent=t('eBirth');return}
  if(dy&&(!dD||dD.y<800||ord(dD)>now||(bD&&(dD.y<bD.y||(dD.d&&bD.d&&ord(dD)<ord(bD)))))){err.textContent=t('eDeath');return}
- const pr={birthYear:by,deathYear:dy,addr:val('f-addr'),city:val('f-city'),phone:val('f-phone'),email:val('f-email'),zalo:val('f-zalo'),fb:val('f-fb'),ig:val('f-ig'),web:val('f-web'),job:val('f-job'),about:val('f-about'),spouse:val('f-spouse'),updatedAt:new Date().toISOString()};
+ const pr={birthYear:by,deathYear:dy,born:val('f-born'),addr:val('f-addr'),city:val('f-city'),phone:val('f-phone'),email:val('f-email'),zalo:val('f-zalo'),fb:val('f-fb'),ig:val('f-ig'),web:val('f-web'),job:val('f-job'),about:val('f-about'),spouse:val('f-spouse'),updatedAt:new Date().toISOString()};
  if(pr.web&&!/^https:\/\//i.test(pr.web)){err.textContent=t('eWeb');return}
  if(mode==='edit'){const nm=val('f-name').replace(/\s+/g,' '),n0=P[id],orig=n0.origName||n0.name;if(nm.length<2){err.textContent=t('eName');return}pr.name=nm===orig?'':nm.slice(0,80)}
  let person=null,pid=id;
@@ -1272,7 +1276,7 @@ function copyStep(id,person,pr){
  const n=P[id],Ls=['GIA PHẢ NGUYỄN HỮU – THÔNG TIN BỔ SUNG / UPDATE'];
  if(person){Ls.push('Thêm người / New person: '+person.name+(person.gender==='nu'?' (nữ)':' (nam)'));Ls.push('Con của / Child of: '+n.name+' (đời '+n.gen+', mã '+id+')')}
  else Ls.push('Người / Person: '+n.name+' (đời '+n.gen+', mã '+id+')');
- const lab={name:'cNewName',spouse:'cSpouse',birthYear:'cBirth',deathYear:'cDeath',addr:'cAddr',city:'cCity',phone:'cPhone',email:'cEmail',zalo:'cZalo',fb:'cFb',ig:'cIg',web:'cWeb',job:'cJob',about:'cAbout'};
+ const lab={name:'cNewName',spouse:'cSpouse',birthYear:'cBirth',deathYear:'cDeath',born:'cBorn',addr:'cAddr',city:'cCity',phone:'cPhone',email:'cEmail',zalo:'cZalo',fb:'cFb',ig:'cIg',web:'cWeb',job:'cJob',about:'cAbout'};
  for(const k in lab)if(pr[k])Ls.push(t(lab[k])+': '+pr[k]);
  Ls.push(L==='en'?'Sender confirms permission to post.':'Người gửi xác nhận đã được đồng ý đăng.');
  body.innerHTML=`${X()}<h3>${t('cpH')}</h3><p class="muted">${t('cpP')}</p><textarea class="copy" id="ct" readonly></textarea><div class="acts"><button class="btn main" id="cbtn">${t('copy')}</button><button class="btn" data-close="1">${t('done')}</button></div><p class="muted" id="cmsg"></p>`;
@@ -1427,7 +1431,7 @@ applyText();
 const CFG=window.GP_CONFIG||{};let SB=null,isAdmin=false,QUEUE=[];
 const num=(v,lo,hi)=>{v=+v;return isFinite(v)?Math.min(hi,Math.max(lo,v)):lo};
 const rid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
-const PF=['name','birthYear','deathYear','addr','city','phone','email','zalo','fb','ig','web','job','about','spouse','updatedAt'];
+const PF=['name','born','birthYear','deathYear','addr','city','phone','email','zalo','fb','ig','web','job','about','spouse','updatedAt'];
 const cleanProf=x=>{const c={};x=x||{};for(const k of PF)if(x[k]!=null&&x[k]!=='')c[k]=String(x[k]).slice(0,500);return c};
 const cleanTags=a=>(Array.isArray(a)?a:[]).filter(g=>g&&((typeof g.p==='string'&&g.p)||(typeof g.n==='string'&&g.n.trim()))).slice(0,200).map(g=>{const o={p:String(g.p||'').slice(0,40),x:num(g.x,0,1),y:num(g.y,0,1),r:num(g.r,.01,.5)};if(!o.p)o.n=String(g.n).trim().slice(0,60);return o});
 const rowToPhoto=x=>({phash:/^[0-9a-f]{16}$/.test(String(x.phash||''))?String(x.phash):'',id:String(x.id),asset:okId(x.path)?x.path:'',w:num(x.w,1,20000),h:num(x.h,1,20000),caption:String(x.caption||'').slice(0,200),when:String(x.when_text||'').slice(0,80),where:String(x.where_text||'').slice(0,120),uploadedAt:String(x.created_at||''),tags:cleanTags(x.tags)});
@@ -1630,6 +1634,7 @@ function readDoc(raw,lang){
  const lastPart=s=>{const parts=s.split(',').map(x=>x.trim()).filter(Boolean);if(!parts.length)return '';const last=parts[parts.length-1];return (/^[A-Z]{2}$/.test(last)&&parts.length>1?parts.slice(-2).join(', '):last).replace(/^(tp\.?|thành phố|tỉnh)\s*/i,'')};
  if(addr){out.addr=addr;found.push('addr');if(addr.includes(',')){out.city=lastPart(addr);found.push('city')}}
  else if(home){out.city=lastPart(home);if(out.city)found.push('city')}
+ if(home){out.born=home;found.push('born')}
  const bur=grab(/(an tang tai|an tang|hoa tang tai|hoa tang|an nghi tai|chon cat tai|buried at|interment at|laid to rest at)\s*:?/,100);
  const W="[A-ZÀ-ỸĐ][A-Za-zÀ-ỹĐđ]*";
  const tc=s=>s.split(/\s+/).map(w=>w.charAt(0)+w.slice(1).toLowerCase()).join(' ');
@@ -1694,6 +1699,7 @@ function applyRead(r,person,silent){
  if(set('f-birth',r.birthYear))got.push(t('cBirth')+': '+r.birthYear+(r.birthApprox?' ('+t('rdApprox')+')':''));
  if(set('f-death',r.deathYear))got.push(t('cDeath')+': '+r.deathYear);
  if(set('f-addr',r.addr))got.push(t('cAddr')+': '+r.addr);
+ if(set('f-born',r.born))got.push(t('cBorn')+': '+r.born);
  if(set('f-city',r.city))got.push(t('cCity')+': '+r.city);
  if(set('f-spouse',r.spouse))got.push(t('cSpouse')+': '+r.spouse);
  if(set('f-phone',r.phone))got.push(t('cPhone')+': '+r.phone);
@@ -1711,7 +1717,7 @@ function obitStart(){
  wireReader((r,msg)=>{
   const f=fold(r.name||''),last=f.split(' ').pop();
   const cand=f?ORDER.concat(SPOUSES).filter(i=>{const n=fold(P[i].name);return n===f||(n.endsWith(' '+last)&&(n.includes(f)||f.includes(n)))}).slice(0,8):[];
-  const facts=[r.name&&(t('cName')+': '+r.name),r.birthYear&&(t('cBirth')+': '+r.birthYear+(r.birthApprox?' ('+t('rdApprox')+')':'')),r.deathYear&&(t('cDeath')+': '+r.deathYear),r.addr&&(t('cAddr')+': '+r.addr),r.city&&(t('cCity')+': '+r.city),r.spouse&&(t('cSpouse')+': '+r.spouse)].filter(Boolean);
+  const facts=[r.name&&(t('cName')+': '+r.name),r.birthYear&&(t('cBirth')+': '+r.birthYear+(r.birthApprox?' ('+t('rdApprox')+')':'')),r.deathYear&&(t('cDeath')+': '+r.deathYear),r.born&&(t('cBorn')+': '+r.born),r.addr&&(t('cAddr')+': '+r.addr),r.city&&(t('cCity')+': '+r.city),r.spouse&&(t('cSpouse')+': '+r.spouse)].filter(Boolean);
   msg.textContent=facts.length?T[L].rdFound(facts.join(' · ')):t('rdNone');
   const res=document.getElementById('obitRes');
   res.innerHTML=`<h4 style="margin:14px 0 6px">${t('obitWho')}</h4>${cand.length?`<div class="pick">${cand.map(i=>`<button data-obitpick="${esc(i)}">${esc(P[i].name)} <small>${P[i].isSp?esc(spOfTxt(P[i])):t('gen')+' '+P[i].gen+(P[i].pa?' · '+t('childOf')+' '+esc(short(P[P[i].pa])):'')}</small></button>`).join('')}</div>`:`<p class="muted">${t('obitNoMatch')}</p>`}<div class="fg"><label class="w">${t('obitSearch')}<input id="obq" type="search" autocomplete="off" value="${esc(r.name||'')}"></label></div><div class="pick" id="obl"></div><div class="acts"><button class="btn" data-obitnew="1">${t('obitNew')}</button></div>`;
@@ -1736,7 +1742,7 @@ function renderQueue(){
  document.getElementById('qh').textContent=`${t('qH')} (${QUEUE.length})`;
  document.getElementById('adminNote').textContent=t('adminOn');
  if(!QUEUE.length){qList.innerHTML=`<p class="muted">${t('qEmpty')}</p>`;return}
- const lab={name:'cNewName',spouse:'cSpouse',birthYear:'cBirth',deathYear:'cDeath',addr:'cAddr',city:'cCity',phone:'cPhone',email:'cEmail',zalo:'cZalo',fb:'cFb',ig:'cIg',web:'cWeb',job:'cJob',about:'cAbout'};
+ const lab={name:'cNewName',spouse:'cSpouse',birthYear:'cBirth',deathYear:'cDeath',born:'cBorn',addr:'cAddr',city:'cCity',phone:'cPhone',email:'cEmail',zalo:'cZalo',fb:'cFb',ig:'cIg',web:'cWeb',job:'cJob',about:'cAbout'};
  const fields=pr=>{pr=cleanProf(pr);return Object.keys(lab).filter(k=>pr[k]).map(k=>`<div class="ln"><span class="muted">${t(lab[k])}:</span> ${esc(pr[k])}</div>`).join('')};
  const nm=id=>P[id]?esc(P[id].name):esc(id||'?');
  qList.innerHTML=QUEUE.map(s=>{const p=s.payload||{};let b='',k='';
